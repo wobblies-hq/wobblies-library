@@ -1,0 +1,312 @@
+# Examples catalog consumer guide
+
+This guide is for product surfaces, docs sites, installers, and internal tools that consume the generated `examples.json` catalog from `universe-backwards/wobblies-library`.
+
+Use [Examples v2 package and catalog spec](./examples-spec.md) as the normative schema contract. Use [Examples authoring guide](./examples-authoring-guide.md) for how examples are authored and reviewed. The public wobbly docs remain the source of truth for what `WOBBLY.md` means at runtime.
+
+The package and catalog effort is called Examples v2. The generated catalog now uses `schemaVersion: 2`. Consumers should validate the numeric catalog schema version, not the project nickname.
+
+## Consumer responsibilities
+
+Consumers should:
+
+- fetch repository-root `examples.json` instead of crawling `wobblys/`;
+- select one source ref for the catalog and any support files;
+- validate `schemaVersion === 2` and fail closed on unsupported versions;
+- use catalog metadata for discovery, filtering, cards, and install decisions;
+- use `entry.wobbly.content` as the `WOBBLY.md` source for install or rendering;
+- fetch only the support paths listed in `entry.scripts` and `entry.references`;
+- render and validate the full planned install set before writing any files;
+- preserve package-relative support paths under `.agents/wobblys/<id>/` when installing;
+- treat missing wobbly content or failed support-file fetches as blocking install failures.
+
+Consumers should not:
+
+- recursively copy `wobblys/<id>/`;
+- install `example.yml` into customer repositories;
+- fetch unlisted files from an example package;
+- use `source.url` as a machine fetch contract;
+- infer safety, readiness, or runtime behavior from publication flags alone;
+- parse catalog metadata out of `WOBBLY.md` frontmatter or body.
+
+
+## Node package API
+
+Node consumers can use the package API instead of fetching and parsing `examples.json` manually:
+
+```ts
+import {
+  createWobblyInstallPullRequest,
+  getWobblyExample,
+  listWobblyExamples,
+  listWobblyInstallPullRequests,
+  loadWobblyExamplesCatalog,
+} from "@wobblies/library";
+
+const catalog = await loadWobblyExamplesCatalog();
+const examples = await listWobblyExamples();
+const example = await getWobblyExample("js-ts-dependency-upgrades");
+
+await createWobblyInstallPullRequest({
+  repo: "owner/repo",
+  exampleId: "js-ts-dependency-upgrades",
+  base: "main",
+  adaptations: { package_manager: "pnpm" },
+});
+
+await listWobblyInstallPullRequests({ repo: "owner/repo" });
+```
+
+`loadWobblyExamplesCatalog()` reads the package-root `examples.json` in Node, validates the catalog schema, and returns the same catalog shape documented below. `listWobblyExamples()` returns `catalog.examples`, and `getWobblyExample(id)` returns the matching catalog entry or `null`.
+
+For install flows, the package also exports `createWobblyInstallPlan({ entry, installRoot })`. The planner validates source/support paths, maps catalog files into `.agents/wobblys/<id>/`, excludes `example.yml`, and includes Git tree-compatible file modes (`100644`/`100755`) before any writes.
+
+Install-PR consumers can use `createWobblyInstallPullRequest()` to render the same install plan into a GitHub pull request. The API writes via GitHub tree/commit/ref/PR REST APIs, uses deterministic `wobbly/wobbly-installs/<example-id>` branches, and stores a hidden `wobbly-wobbly-install-v1` marker in the PR body for reconciliation. Marker and result metadata include adaptation key names only; callers must not log or persist raw adaptation values unless their own product flow explicitly requires it.
+
+Use `listWobblyInstallPullRequests()` to reconcile install PRs by hidden marker plus deterministic refs. Listing results classify installs as `open`, `merged`, `closed_unmerged`, or `branchWithoutPullRequest`, and include warnings when a marker was removed or GitHub search had to fall back to branch reconciliation.
+
+## Catalog shape
+
+The committed catalog lives at the repository root:
+
+```text
+examples.json
+```
+
+Root shape:
+
+```json
+{
+  "schemaVersion": 2,
+  "source": {
+    "repository": "universe-backwards/wobblies-library",
+    "baseDirectory": "wobblys"
+  },
+  "examples": []
+}
+```
+
+Each `examples[]` entry includes the validated `example.yml` metadata plus generated fields:
+
+| Field | Consumer use |
+| --- | --- |
+| `id`, `title`, `summary`, `status`, `readiness` | Display, filtering, matching, and structured adaptation guidance. |
+| `showOnWebsite`, `showInDashboard` | Publication controls for specific surfaces. |
+| `fit`, `requirements` | Recommendation and prerequisite copy. |
+| `adaptations` | Structured string-only inputs for rendering `{{adapt.key}}` tokens. Always present in generated catalog entries; may be empty. |
+| `specializationIdeas` | Optional non-blocking ideas for further team-specific behavior changes. Always present in generated catalog entries; may be empty. |
+| `wobbly.path` | Currently always `WOBBLY.md`. |
+| `wobbly.content` | Embedded `WOBBLY.md` content for rendering and install. |
+| `scripts` | Package-relative support script paths to fetch separately. |
+| `references` | Package-relative support reference paths to fetch separately. |
+| `source.directory` | Package directory, such as `wobblys/pr-metadata`. |
+| `source.url` | Human GitHub tree URL for the package. Do not use it as the machine fetch contract. |
+
+Support file contents are not embedded in v2. Fetch each listed support file from `entry.source.directory` at the same source ref used for the catalog.
+
+## Source refs
+
+Use one source ref for the catalog and all support-file fetches in a single consume/install operation.
+
+| Consumer goal | Recommended ref |
+| --- | --- |
+| Reproducible install or audit trail | A commit SHA. |
+| Intentionally latest internal surface | `master`. |
+| Website or docs deployment | A deployment-pinned ref chosen by that deployment. |
+
+Catalog v2 intentionally omits nondeterministic fields such as `generatedAt` and `sourceCommit`. If a consumer needs auditability, record the selected source ref in the consuming system, install metadata, PR body, or deployment logs. Store the schema version read from the catalog at that same ref.
+
+Example install metadata:
+
+```json
+{
+  "catalogRepository": "universe-backwards/wobblies-library",
+  "catalogRef": "<catalog-commit-sha>",
+  "catalogSchemaVersion": 2,
+  "exampleId": "js-ts-dependency-upgrades"
+}
+```
+
+## Filtering entries
+
+Website and docs surfaces should show entries where:
+
+```ts
+entry.showOnWebsite === true && entry.status !== "deprecated"
+```
+
+Dashboard surfaces should show entries where:
+
+```ts
+entry.showInDashboard === true && entry.status === "ready"
+```
+
+`showOnWebsite` and `showInDashboard` are publication controls only. They do not mean an example is safe to install automatically, requires less review, or replaces the public wobbly docs.
+
+`readiness` also needs local interpretation:
+
+| Readiness | Meaning for consumers |
+| --- | --- |
+| `direct-copy` | The catalog declares no required structured adaptation inputs. Consumers still need local verification before enabling the wobbly. |
+| `adapt-before-use` | The consumer should collect required `adaptations[]` values before rendering and install. |
+
+
+## Structured adaptations
+
+`adaptations[]` describes renderable inputs for examples that contain `{{adapt.key}}` tokens in `WOBBLY.md`, `scripts[]`, or `references[]` support files.
+
+Each entry has:
+
+- `key`: token-safe identifier matching `^[a-z][a-z0-9_]*$`;
+- `label` and `description`: display/help copy;
+- `required`: whether a caller must provide a value;
+- `default`: required for optional inputs and forbidden for required inputs;
+- `suggestions`: optional string examples.
+
+Install consumers should merge values deterministically in this order: optional defaults, then adaptation-file values, then explicit CLI/UI values. Values are strings only. Reject unknown input keys, missing required keys, non-string values, malformed or unknown `{{adapt.*}}` tokens, and rendered files that still contain `{{adapt.*}}` tokens across every planned file before writing anything. Do not echo raw caller-provided adaptation values in logs or JSON output; reporting applied keys is sufficient.
+
+## Specialization ideas
+
+`specializationIdeas[]` is display metadata for optional behavior changes a team may consider after install. Consumers may show these ideas in browsing, docs, or review surfaces, but must not treat them as install blockers or adaptation inputs.
+
+## Install algorithm
+
+Install consumers should copy from one catalog entry into:
+
+```text
+.agents/wobblys/<id>/
+```
+
+Recommended flow:
+
+1. Choose a source ref.
+2. Fetch `examples.json` from repository root at that ref.
+3. Validate `catalog.schemaVersion === 2`.
+4. Select an entry from `catalog.examples`.
+5. Require `entry.wobbly.content` to be present.
+6. Collect and validate structured adaptation values for the entry.
+7. Build the full install plan: `WOBBLY.md` from `entry.wobbly.content`, every listed `entry.scripts` file, and every listed `entry.references` file.
+8. Fetch every listed support file from `entry.source.directory` at the same ref.
+9. Render `entry.wobbly.content` and all fetched support files with the collected adaptation values.
+10. Validate the rendered runtime wobbly.
+11. Reject malformed, unknown, missing, or still-unresolved `{{adapt.*}}` tokens across all planned files.
+12. Only after all fetch, render, and validation work succeeds, write all rendered planned files under `.agents/wobblys/<id>/` using the same package-relative paths.
+13. Apply planned file modes when the write surface supports them (`100644` for `WOBBLY.md`/references, `100755` for scripts).
+14. Exclude `example.yml` and all unlisted upstream files.
+15. Run the consumer's preflight, collision, review, and rollout checks before enabling the wobbly.
+
+Path mapping example:
+
+```text
+source:      wobblys/github-activity-digest/references/digest-template.md
+installed:   .agents/wobblys/github-activity-digest/references/digest-template.md
+```
+
+TypeScript-shaped pseudocode:
+
+```ts
+const catalog = await fetchJson("universe-backwards/wobblies-library", ref, "examples.json");
+
+if (catalog.schemaVersion !== 2) {
+  throw new Error(`Unsupported examples catalog schema: ${catalog.schemaVersion}`);
+}
+
+const entry = catalog.examples.find((candidate) => candidate.id === exampleId);
+if (!entry?.wobbly?.content) {
+  throw new Error(`Catalog entry ${exampleId} is missing wobbly.content`);
+}
+
+const plannedFiles = [
+  {
+    sourcePath: `${entry.source.directory}/WOBBLY.md`,
+    destinationPath: `.agents/wobblys/${entry.id}/WOBBLY.md`,
+    mode: "100644",
+    content: entry.wobbly.content,
+  },
+];
+
+for (const supportPath of [...entry.scripts, ...entry.references]) {
+  const sourcePath = `${entry.source.directory}/${supportPath}`;
+  plannedFiles.push({
+    sourcePath,
+    destinationPath: `.agents/wobblys/${entry.id}/${supportPath}`,
+    mode: supportPath.startsWith("scripts/") ? "100755" : "100644",
+    content: await fetchText("universe-backwards/wobblies-library", ref, sourcePath),
+  });
+}
+
+const renderedFiles = plannedFiles.map((file) => ({
+  ...file,
+  content: renderAdaptationTokens(file.content, values),
+}));
+
+await rejectAdaptationErrors(renderedFiles);
+await validateRuntimeWobblyMarkdown(
+  renderedFiles.find((file) => file.destinationPath.endsWith("/WOBBLY.md"))!.content,
+);
+
+for (const file of renderedFiles) {
+  await writePlannedFile(file.destinationPath, file.content, file.mode);
+}
+```
+
+This is intentionally not a recursive copy. The catalog controls the install set.
+
+## Support-file caveats
+
+Catalog v2 lists support file paths, not file contents or mode metadata. The package install planner derives write modes for consumers that need Git tree file modes: `100644` for `WOBBLY.md` and references, `100755` for scripts.
+
+If a consumer works directly from raw catalog JSON without the planner, support scripts may still need explicit executable handling through tree APIs or invocation through an interpreter. For example, the current catalog includes:
+
+```text
+wobblys/github-activity-digest/references/digest-template.md
+```
+
+That support file is listed in the catalog, but v2 does not include support file contents in `examples.json`.
+
+Consumers should treat any support-file fetch failure as a blocking install failure before writing files. A partial wobbly copy can be misleading if `WOBBLY.md` references scripts or reference material that were not installed.
+
+## `WOBBLY.md` and catalog metadata
+
+Public wobbly docs at `docs.wobblies.ai` define wobbly semantics. `WOBBLY.md` frontmatter and body are runtime guidance for Wobbly, not a catalog metadata container.
+
+Catalog metadata belongs in `example.yml` and the generated `examples.json`. The v2 schema rejects stale catalog metadata fields in `WOBBLY.md`, including fields such as `readiness`, `showOnWebsite`, `showInDashboard`, `bestFor`, `requirements`, `riskTier`, `activationMode`, `display`, and `metadata`.
+
+Consumers should not depend on catalog metadata appearing in `WOBBLY.md`, and authors should not add it there for consumer convenience.
+
+## Failure behavior
+
+Consumers should fail closed when:
+
+- `schemaVersion` is not `2`;
+- the selected entry is missing;
+- `entry.wobbly.content` is missing or empty;
+- a listed support path cannot be fetched from the selected ref;
+- install preflight detects collisions or unsafe local conditions;
+- required structured adaptation values are missing or not strings;
+- any planned file contains malformed or unknown `{{adapt.*}}` tokens;
+- rendered content still contains unresolved `{{adapt.*}}` tokens.
+
+Consumers may still display a non-installable entry for browsing if the surface clearly separates browsing from installation. Do not convert browsing eligibility into install eligibility.
+
+## Consumer checklist
+
+Before shipping a catalog integration, verify that it:
+
+- fetches `examples.json` instead of crawling `wobblys/`;
+- validates `schemaVersion === 2`;
+- uses one selected source ref for catalog and support files;
+- records that ref externally when auditability matters;
+- uses the correct surface filter;
+- treats surface flags as publication controls only;
+- collects and validates structured adaptation values before rendering;
+- builds a full install plan before writing files;
+- fetches only listed `scripts` and `references` support paths from the selected ref;
+- renders `{{adapt.key}}` tokens in `WOBBLY.md`, scripts, and references before writing any file;
+- rejects malformed, unknown, missing, or unresolved adaptation tokens across all planned files;
+- validates rendered `WOBBLY.md` before writing files;
+- writes rendered planned files under `.agents/wobblys/<id>/` while preserving package-relative paths;
+- excludes `example.yml` and unlisted files;
+- handles support script executable mode intentionally;
+- preserves existing collision, preflight, and human-review gates;
+- links readers to the public wobbly docs for wobbly semantics.

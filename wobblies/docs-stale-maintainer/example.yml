@@ -1,0 +1,26 @@
+id: docs-stale-maintainer
+title: Stale Docs Maintainer
+status: ready
+summary: Runs weekly to repair older outdated documentation in small source-backed PRs with a hard size limit.
+readiness: direct-copy
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - document
+  bestFor:
+    - Repositories with setup, API, README, or runbook docs that become outdated over time.
+    - Teams that want steady bounded stale-docs repair PRs instead of large occasional cleanup sweeps.
+  notFor:
+    - Repositories where stale documentation claims usually require product, legal, compliance, security, or policy judgment.
+    - Teams that want broad documentation rewrites or audit reports instead of small pull requests.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other:
+    - Repository documentation and source evidence are accessible through GitHub.
+specializationIdeas:
+  - Narrow stale-claim scans to a documentation area such as setup docs, API examples, or operational runbooks.
+  - Adjust the age or confidence threshold before older documentation is considered stale.
+  - Change the output from repair PRs to an audit or report style wobbly if the team wants review before edits.

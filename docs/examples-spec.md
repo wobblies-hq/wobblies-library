@@ -1,0 +1,446 @@
+# Examples v2 package and catalog spec
+
+This is the repo-owned contract for example wobbly packages in `universe-backwards/wobblies-library` and the generated `examples.json` catalog.
+
+It is normative for this repo's examples package layout, `example.yml` metadata, catalog generation, and validation. It is not a replacement for the public wobbly docs, which remain the source of truth for what `WOBBLY.md` means and how wobblys behave:
+
+- [Wobblys](https://docs.wobblies.ai/wobblys)
+- [Choosing wobblys](https://docs.wobblies.ai/wobblys/choosing-wobblys)
+- [Writing and editing WOBBLY.md](https://docs.wobblies.ai/wobblys/writing-and-editing-wobbly-md)
+- [WOBBLY.md reference](https://docs.wobblies.ai/wobblys/wobbly-md-reference)
+- [Testing and iterating on wobblys](https://docs.wobblies.ai/wobblys/testing-and-iterating-on-wobblys)
+
+## Contract goals
+
+Examples v2 exists to make wobbly examples:
+
+- **Repo-owned:** every public example lives in this repository under `wobblys/<id>/`.
+- **Catalogable:** each package has enough metadata to generate `examples.json` deterministically.
+- **Adaptable:** catalog copy explains fit, requirements, and required customization before a customer uses the example.
+- **Public-safe:** example content must be safe to publish outside Wobbly-controlled private surfaces.
+- **Stable:** example identity is stable across the directory name, `example.yml`, `WOBBLY.md`, and generated catalog.
+
+## Package layout
+
+Each example package lives under `wobblys/<id>/`:
+
+```text
+wobblys/<id>/
+  WOBBLY.md
+  example.yml
+  scripts/**      # optional support files
+  references/**   # optional support files
+```
+
+Rules:
+
+- `wobblys/` must be a directory.
+- Every non-hidden direct child of `wobblys/` must be an example package directory.
+- `<id>` must be a stable kebab-case slug: lowercase letters and numbers separated by single hyphens.
+- `WOBBLY.md` is required and must be a file.
+- `example.yml` is required and must be a file.
+- `scripts/` is optional. When present, it must be a directory.
+- `references/` is optional. When present, it must be a directory.
+- The only supported top-level entries in a package are `WOBBLY.md`, `example.yml`, `scripts`, and `references`.
+- Per-example `README.md` files are not supported. Put package/catalog documentation in this `docs/` area instead.
+- Other top-level files or directories are rejected as unsupported support paths.
+
+## Identity rules
+
+An example has one stable ID. The same ID must appear in all three places:
+
+1. the package directory name: `wobblys/<id>/`
+2. `example.yml` field: `id: <id>`
+3. `WOBBLY.md` frontmatter field: `id: <id>`
+
+Additional rules:
+
+- IDs must be kebab-case slugs.
+- Duplicate IDs are rejected.
+- Treat an ID as public identity. Do not rename it for copy tweaks or minor positioning changes.
+- If an example no longer represents a recommended pattern, prefer marking it `deprecated` in `example.yml` and hiding it from public surfaces instead of silently reusing the ID for a different pattern.
+
+## `WOBBLY.md` requirements for examples
+
+The public wobbly docs define `WOBBLY.md` semantics. This repository validates the subset needed for examples and catalog generation.
+
+An example `WOBBLY.md` must:
+
+- start with YAML frontmatter delimited by `---` lines;
+- use strict YAML with unique keys;
+- include required frontmatter fields:
+  - `id`: kebab-case slug matching the package ID;
+  - `purpose`: non-empty string;
+  - `routines`: non-empty array of non-empty strings;
+- include at least one activation path:
+  - `watch`: optional non-empty array of non-empty strings; and/or
+  - `schedule`: optional five-field UTC cron expression;
+- optionally include `deny` as a non-empty array of non-empty strings;
+- reject unknown frontmatter fields;
+- keep example/package metadata out of `WOBBLY.md` frontmatter;
+- include a non-empty Markdown body with runtime guidance.
+
+Stale metadata fields from earlier catalog experiments are rejected in `WOBBLY.md` frontmatter, including fields such as `readiness`, `showOnWebsite`, `showInDashboard`, `bestFor`, `requirements`, `riskTier`, `activationMode`, `display`, and `metadata`. Put catalog metadata in `example.yml` instead.
+
+## `example.yml` schema
+
+`example.yml` is the catalog metadata contract for each package. It uses strict YAML with unique keys, strict object keys, and these fields:
+
+```yaml
+id: example-id
+title: Human-readable title
+status: ready
+summary: One-sentence catalog summary.
+readiness: adapt-before-use
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - operate
+  bestFor:
+    - Teams with a clear recurring maintenance need.
+  notFor:
+    - One-off tasks or ambiguous ownership problems.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other:
+    - Wobbly-specific local policy or command prerequisite.
+adaptations:
+  - key: target_branch
+    label: Target branch
+    description: Branch name the installed wobbly should use for generated work.
+    required: false
+    default: wobbly/example
+  - key: destination_channel
+    label: Destination channel
+    description: Slack channel or other destination for wobbly output.
+    required: true
+    suggestions:
+      - '#team-alerts'
+specializationIdeas:
+  - Narrow this wobbly to a specific path area, label, channel, or review policy.
+```
+
+### Required top-level fields
+
+| Field | Type | Rules |
+| --- | --- | --- |
+| `id` | string | Required kebab-case slug. Must match the package directory and `WOBBLY.md` frontmatter ID. |
+| `title` | string | Required non-empty display title. |
+| `status` | enum | Required. One of `draft`, `ready`, or `deprecated`. |
+| `summary` | string | Required non-empty catalog summary. |
+| `readiness` | enum | Required. One of `direct-copy` or `adapt-before-use`. |
+| `showOnWebsite` | boolean | Required surface-control flag. |
+| `showInDashboard` | boolean | Required surface-control flag. |
+| `fit` | object | Required strict object describing where this example fits. |
+| `requirements` | object | Required strict object describing prerequisites. |
+| `adaptations` | array of objects | Optional structured render inputs. Defaults to `[]`; generated `examples.json` always includes it. |
+| `specializationIdeas` | array of strings | Optional non-required ideas for future behavior changes or team-specific variants. Defaults to `[]`; generated `examples.json` always includes it. |
+
+Unknown top-level keys are rejected.
+
+### `status`
+
+Allowed values:
+
+- `draft`: work in progress; not ready as a recommended pattern.
+- `ready`: ready for intended catalog surfaces, subject to the surface flags.
+- `deprecated`: preserved for compatibility or historical reference, but not recommended for new use.
+
+`status` describes the example package. It does not override validation: every committed example must still satisfy the package and schema contract.
+
+### `readiness`
+
+Allowed values:
+
+- `adapt-before-use`: the example declares at least one required structured adaptation input.
+- `direct-copy`: the example declares no required structured adaptation inputs.
+
+Readiness invariants:
+
+- `adapt-before-use` requires `adaptations[]` to contain at least one item with `required: true`.
+- `direct-copy` must not declare required adaptations. Optional adaptations with defaults remain allowed.
+- `direct-copy` does not mean "safe without review." Customers must still verify the wobbly against their repo, integrations, and rollout policy before using it.
+
+### Surface flags
+
+`showOnWebsite` and `showInDashboard` are publication controls only.
+
+They do not mean:
+
+- the example is safer than other examples;
+- the example requires less review;
+- the wobbly can be copied without local verification;
+- the example replaces the public wobbly docs.
+
+### `fit`
+
+`fit` is a strict object with:
+
+| Field | Type | Rules |
+| --- | --- | --- |
+| `jobsToBeDone` | array of enum values | Required, at least one item. |
+| `bestFor` | array of strings | Required, at least one item. |
+| `notFor` | array of strings | Required, at least one item. |
+
+Allowed `jobsToBeDone` values:
+
+- `maintain-and-modernize`
+- `organize`
+- `document`
+- `review-with-confidence`
+- `build-production-grade-typescript`
+- `operate`
+- `explain`
+- `plan`
+- `wobbly-operations`
+
+Use `bestFor` and `notFor` to help readers decide whether this pattern is appropriate before opening the wobbly file.
+
+### `requirements`
+
+`requirements` is a strict object with:
+
+| Field | Type | Rules |
+| --- | --- | --- |
+| `requiredIntegrations` | array of enum values | Required. May be empty. |
+| `optionalIntegrations` | array of enum values | Required. May be empty. |
+| `other` | array of strings | Required. May be empty. |
+
+Allowed integration values:
+
+- `github`
+- `linear`
+- `slack`
+- `sentry`
+
+List an integration as required only when the wobbly cannot perform its core job without it. Put wobbly-specific non-integration prerequisites, such as a label taxonomy, branch convention, destination convention, or configured command that the wobbly directly invokes, in `requirements.other`.
+
+### `adaptations`
+
+`adaptations` is optional structured metadata for values that can be rendered by install consumers such as `wobbly add`.
+
+Each item is a strict object with:
+
+| Field | Type | Rules |
+| --- | --- | --- |
+| `key` | string | Required. Must match `^[a-z][a-z0-9_]*$`; duplicate keys are rejected. |
+| `label` | string | Required non-empty display label. |
+| `description` | string | Required non-empty description for authors and consumers. |
+| `required` | boolean | Required. `true` means the install flow must receive a value. |
+| `default` | string | Required for optional adaptations; forbidden for required adaptations. |
+| `suggestions` | array of strings | Optional. Every value must be a string. |
+
+Structured values are string-only. Objects, arrays, numbers, booleans, and `null` are invalid. The generated catalog sorts `adaptations[]` by `key` for deterministic output.
+
+Use the exact token syntax `{{adapt.key}}` in `WOBBLY.md`, `scripts/**`, or `references/**` when a value should be rendered during install. Example validation rejects malformed adaptation tokens and tokens whose keys are not declared in `adaptations[]` before catalog generation succeeds. Consumers must still reject unknown input keys, malformed or unknown adaptation tokens, missing required values, non-string file values, and unresolved `{{adapt.*}}` tokens after rendering.
+
+
+### `specializationIdeas`
+
+`specializationIdeas` is optional catalog metadata for non-required ways a team might further tune an example after deterministic install. It is a list of non-empty strings.
+
+Use it for suggestions such as narrowing scope, adding team-specific output formats, changing conservative policies, or integrating additional evidence sources. Do not use it for required install inputs, placeholders that must be rendered, generic rollout advice, or warnings that belong in `fit.notFor`, `requirements.other`, or runtime deny rules.
+
+Install consumers must not treat `specializationIdeas[]` as required work. It is display guidance only and is not rendered into installed files.
+
+
+## Support files
+
+Support files are optional and live under `scripts/**` or `references/**` inside the package.
+
+Rules:
+
+- Support files are discovered recursively.
+- Support paths are normalized POSIX paths relative to the package, such as `scripts/check.ts` or `references/rubric.md`.
+- Paths must stay under `scripts/` or `references/`.
+- Backslashes, absolute paths, empty path segments, `.`, `..`, and duplicate slashes are rejected.
+- Discovered support paths are sorted lexicographically for deterministic catalog output.
+- Only files are valid support entries. Directories are traversed; unsupported non-file entries are rejected.
+- A support script that starts with a shebang (`#!`) must have executable file permissions.
+- Support file content is public-safety scanned.
+
+Use `scripts/**` for reusable helper scripts that are part of the example pattern. Use `references/**` for public-safe supporting material such as rubrics, templates, or taxonomies.
+
+## Customer copy semantics
+
+Examples are reference patterns, not automatically installed wobblys. Catalog consumers install an example into a customer repo under:
+
+```text
+.agents/wobblys/<id>/
+```
+
+Customer copies include:
+
+- rendered `WOBBLY.md`;
+- rendered files listed in catalog `scripts[]`;
+- rendered files listed in catalog `references[]`.
+
+Customer copies exclude:
+
+- `example.yml`;
+- any upstream package file that is not represented by the catalog contract.
+
+`example.yml` is public catalog metadata for discovery, recommendation, docs, dashboard, and adaptation flows. It is not part of the wobbly runtime contract and must not be copied into customer repositories.
+
+Catalog-based consumers must not recursively copy the whole upstream `wobblys/<id>/` directory. They should install from one `examples.json` entry by collecting and validating structured adaptation values, building a full install plan, fetching every listed `scripts[]` and `references[]` support file from the same source ref used to fetch the catalog, rendering `wobbly.content` and all fetched support files, validating the rendered `WOBBLY.md`, rejecting adaptation errors across all planned files, and only then writing rendered files under `.agents/wobblys/<id>/`.
+
+Before enabling a copied example in a customer repo:
+
+- Treat `WOBBLY.md` as a starting point that must be checked against the customer's desired behavior.
+- Review `example.yml` fit and requirements before using the pattern.
+- Provide required structured adaptation values for `adapt-before-use` examples.
+- Verify all watch conditions, schedules, routines, deny rules, output destinations, integration assumptions, and support files locally.
+- Keep public docs as the source of truth for `WOBBLY.md` semantics and rollout guidance.
+
+`direct-copy` only means the catalog metadata declares no required customization. It still requires local verification before use.
+
+## Generated `examples.json` contract
+
+`examples.json` is generated from the packages in `wobblys/**` and committed at the repository root.
+
+The committed artifact path is repository-root `examples.json`. It is generated from this repo's `wobblys/` package tree, the full `WOBBLY.md` content for each example, and discovered support files under `scripts/**` and `references/**`.
+
+Root shape:
+
+```json
+{
+  "schemaVersion": 2,
+  "source": {
+    "repository": "universe-backwards/wobblies-library",
+    "baseDirectory": "wobblys"
+  },
+  "examples": []
+}
+```
+
+Each item in `examples` contains:
+
+- all validated `example.yml` fields;
+- `wobbly.path`, always `WOBBLY.md`;
+- `wobbly.content`, the exact `WOBBLY.md` file content;
+- `scripts`, a sorted array of package-relative support paths under `scripts/**`;
+- `references`, a sorted array of package-relative support paths under `references/**`;
+- `source.directory`, such as `wobblys/pr-metadata`;
+- `source.url`, a GitHub tree URL for the source directory.
+
+Generation rules:
+
+- examples are sorted by `id`;
+- support path arrays are sorted lexicographically;
+- `source.directory` is the package path under `wobblys/`, such as `wobblys/pr-metadata`;
+- `source.url` is a human GitHub tree URL using the publication ref;
+- the default publication ref for source URLs is `master`;
+- machine consumers should use the same source ref for `examples.json`, `WOBBLY.md`, and support-file fetches;
+- v2 intentionally omits nondeterministic fields such as `generatedAt` or `sourceCommit`;
+- serialization is `JSON.stringify(catalog, null, 2)` followed by a trailing newline;
+- `examples.json` must match generated output exactly.
+
+Run `bun run generate:examples` after changing any example package. Commit `examples.json` if it changes.
+
+## Consumer behavior
+
+Website/docs consumers should show catalog entries where:
+
+- `showOnWebsite: true`;
+- `status !== "deprecated"`.
+
+Dashboard consumers should show catalog entries where:
+
+- `showInDashboard: true`;
+- `status === "ready"`.
+
+If dashboard draft previews are needed later, add an explicit preview-only consumer path instead of overloading the public catalog contract.
+
+Install consumers should:
+
+1. Fetch `examples.json` from one source ref.
+2. Select an entry from the catalog instead of crawling the repo tree.
+3. Collect and validate structured adaptation values.
+4. Build the full planned file set: `entry.wobbly.content` as `WOBBLY.md`, every listed `scripts[]` file, and every listed `references[]` file.
+5. Fetch every listed support file from `entry.source.directory` at the same source ref.
+6. Render `wobbly.content` and all fetched support files.
+7. Validate rendered `WOBBLY.md`.
+8. Reject malformed, unknown, missing, or unresolved `{{adapt.*}}` tokens across all planned files before writing any files.
+9. Write all rendered planned files under `.agents/wobblys/<id>/`, preserving support-file relative paths and modes.
+10. Exclude `example.yml` and all unlisted files.
+
+## Validation expectations
+
+Use the same checks locally before opening or updating a PR:
+
+```bash
+bun install --frozen-lockfile --registry https://registry.npmjs.org/
+bun run typecheck
+bun run test
+bun run generate:examples
+bun run validate:examples
+git diff --exit-code examples.json
+```
+
+`bun run validate:examples` regenerates the expected catalog in memory and fails if committed `examples.json` has drifted.
+
+Common validation error categories include:
+
+| Code | Meaning |
+| --- | --- |
+| `invalid_repository_layout` | `wobblys/` or a direct child of `wobblys/` has the wrong shape. |
+| `invalid_wobbly_id` | A package directory is not a kebab-case slug. |
+| `missing_wobbly_md` | Required `WOBBLY.md` is missing or not a file. |
+| `missing_example_yml` | Required `example.yml` is missing or not a file. |
+| `invalid_wobbly_md` | `WOBBLY.md` frontmatter, activation, schedule, or body validation failed. |
+| `invalid_example_yml` | `example.yml` YAML parsing failed. |
+| `missing_required_field` | A required schema field is missing. |
+| `invalid_enum_value` | A field uses a value outside the allowed enum. |
+| `invalid_field_value` | A custom invariant failed, such as readiness/required-adaptation mismatch. |
+| `unknown_key` | A strict schema object contains an unsupported key. |
+| `stale_metadata_field` | Deprecated catalog metadata was placed where it no longer belongs. |
+| `id_mismatch` | Directory, `example.yml`, and `WOBBLY.md` IDs do not all match. |
+| `duplicate_id` | More than one package declares the same example ID. |
+| `per_example_readme` | A package contains an unsupported `README.md`. |
+| `unsupported_support_path` | A package contains unsupported top-level entries or invalid support paths. |
+| `script_not_executable` | A shebang script is not executable. |
+| `unknown_adaptation_token` | `WOBBLY.md` or a support file uses `{{adapt.key}}` for a key missing from `adaptations[]`. |
+| `malformed_adaptation_token` | `WOBBLY.md` or a support file contains an adaptation token that does not use `{{adapt.key}}` with a token-safe key. |
+| `public_safety` | Public-safety scanning found private or credential-like content. |
+| `catalog_drift` | Committed `examples.json` differs from generated output. |
+
+## Public-safety rules
+
+The public-safety scanner runs against:
+
+- `example.yml`
+- `WOBBLY.md`
+- `scripts/**`
+- `references/**`
+
+It rejects content that looks like:
+
+- private Linear links;
+- private Slack links;
+- token-like values;
+- private key material;
+- credential-like assignments;
+- local machine paths;
+- private hostnames containing internal, corp, or staging markers.
+
+Authors should apply a broader public-safe standard than the scanner can enforce:
+
+- Do not include customer secrets, customer-private URLs, private issue links, internal source links, staging notes, sensitive provenance, or unreleased business context.
+- Use placeholders such as `<channel-id>`, `<team-id>`, `YOUR_TOKEN`, or `REPLACE_WITH_REPO_COMMAND` when a value must be supplied by a customer.
+- Keep references and scripts reusable without depending on private Wobbly infrastructure.
+- Prefer describing integration assumptions generically instead of copying real workspace, customer, or incident details.
+
+## Evolving this contract
+
+Changing this contract can affect published examples, website/dashboard ingestion, and customer copy behavior.
+
+When evolving it:
+
+- update `src/examples/**` and tests with the new behavior;
+- update this spec and the authoring guide in the same PR;
+- regenerate and validate `examples.json`;
+- preserve deterministic output;
+- bump `schemaVersion` only for catalog shape changes that downstream consumers must handle explicitly.

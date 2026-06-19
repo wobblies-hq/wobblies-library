@@ -1,0 +1,37 @@
+id: js-ts-dependency-upgrades
+title: JavaScript/TypeScript Dependency Update Maintainer
+status: ready
+summary: Opens low-noise JavaScript/TypeScript dependency upgrade PRs with a configured package manager.
+readiness: adapt-before-use
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - maintain-and-modernize
+    - operate
+  bestFor:
+    - Teams that want more flexible, repo-specific dependency update automation than rigid default bot configuration.
+    - JavaScript or TypeScript repositories with regular dependency drift and a lockfile-backed package manager.
+    - Teams that want reviewable upgrade PRs instead of large occasional dependency sweeps.
+  notFor:
+    - Repositories where dependency updates usually require manual migration planning.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other:
+    - A JavaScript or TypeScript package manager and matching lockfile are present.
+adaptations:
+  - key: package_manager
+    label: Package manager
+    description: The JavaScript package manager Wobbly should use when reporting and running dependency update commands.
+    required: true
+    suggestions:
+      - npm
+      - pnpm
+      - Yarn
+      - Bun
+specializationIdeas:
+  - Customize branch names, pull request titles, or labels for dependency update pull requests.
+  - Restrict updates to specific workspaces, package scopes, or dependency groups.
+  - Add package allowlists, blocklists, or security-only update behavior.
