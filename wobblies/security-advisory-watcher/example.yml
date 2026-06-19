@@ -1,0 +1,19 @@
+id: security-advisory-watcher
+title: "Security Advisory Watcher"
+status: ready
+summary: "Monitors GitHub security advisories for dependencies and opens issues for affected packages."
+readiness: direct-copy
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - maintain-and-modernize
+  bestFor:
+    - Teams that want automated enforcement of this pattern.
+  notFor:
+    - Teams that prefer manual review only.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other: []

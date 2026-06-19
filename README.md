@@ -1,6 +1,11 @@
+# wobblies-library
+
+[![Release](https://img.shields.io/github/v/tag/wobblie-hq/wobblies-library?label=release&sort=semver)](https://github.com/wobblie-hq/wobblies-library/releases)
+[![CI](https://img.shields.io/github/actions/workflow/status/wobblie-hq/wobblies-library/release.yml?label=ci)](https://github.com/wobblie-hq/wobblies-library/actions)
+
 This repo contains example wobbly files for common wobbly patterns.
 
-These examples are reference patterns for Wobbly wobblys. They are not the normative source of truth for the wobbly format or for authoring rules.
+These examples are reference patterns for wobblies. They are not the normative source of truth for the wobbly format or for authoring rules.
 
 ## Start here
 

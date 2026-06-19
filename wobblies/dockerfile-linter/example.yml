@@ -1,0 +1,19 @@
+id: dockerfile-linter
+title: "Dockerfile Linter"
+status: ready
+summary: "Reviews Dockerfiles in PRs for best practice violations and security issues."
+readiness: direct-copy
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - maintain-and-modernize
+  bestFor:
+    - Teams that want automated enforcement of this pattern.
+  notFor:
+    - Teams that prefer manual review only.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other: []

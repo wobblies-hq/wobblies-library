@@ -1,0 +1,19 @@
+id: commit-message-enforcer
+title: "Commit Message Enforcer"
+status: ready
+summary: "Validates commit messages follow Conventional Commits and comments with corrections."
+readiness: direct-copy
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - maintain-and-modernize
+  bestFor:
+    - Teams that want automated enforcement of this pattern.
+  notFor:
+    - Teams that prefer manual review only.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other: []

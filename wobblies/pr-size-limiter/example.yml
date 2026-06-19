@@ -1,0 +1,19 @@
+id: pr-size-limiter
+title: "PR Size Limiter"
+status: ready
+summary: "Flags pull requests that exceed a configurable diff size threshold and suggests splitting strategies."
+readiness: direct-copy
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - maintain-and-modernize
+  bestFor:
+    - Teams that want automated enforcement of this pattern.
+  notFor:
+    - Teams that prefer manual review only.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other: []

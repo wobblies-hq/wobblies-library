@@ -1,0 +1,19 @@
+id: test-coverage-gate
+title: "Test Coverage Gate"
+status: ready
+summary: "Blocks PRs that reduce overall test coverage below the configured threshold."
+readiness: direct-copy
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - maintain-and-modernize
+  bestFor:
+    - Teams that want automated enforcement of this pattern.
+  notFor:
+    - Teams that prefer manual review only.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other: []

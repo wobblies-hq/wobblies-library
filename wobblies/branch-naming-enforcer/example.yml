@@ -1,0 +1,19 @@
+id: branch-naming-enforcer
+title: "Branch Naming Enforcer"
+status: ready
+summary: "Validates branch names follow team conventions and comments with guidance when they don't."
+readiness: direct-copy
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - maintain-and-modernize
+  bestFor:
+    - Teams that want automated enforcement of this pattern.
+  notFor:
+    - Teams that prefer manual review only.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other: []
