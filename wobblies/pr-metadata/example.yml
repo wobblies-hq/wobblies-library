@@ -1,0 +1,29 @@
+id: pr-metadata
+title: PR Metadata Manager
+status: ready
+summary: Keeps pull request titles and bodies complete, current, and linked to the right issues.
+readiness: direct-copy
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - organize
+    - document
+  bestFor:
+    - Repositories with a consistent pull request body contract that reviewers rely on.
+    - Teams that use issue identifiers in PR titles or bodies for traceability.
+  notFor:
+    - Repositories where PR descriptions are intentionally free-form.
+    - Teams without a stable issue-reference format or review metadata standard.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations:
+    - linear
+  other:
+    - Pull request titles and bodies are editable by Wobbly.
+    - Issue identifiers are available from linked issue metadata or clear repository conventions.
+specializationIdeas:
+  - Customize required pull request body sections to match the team's template.
+  - Specialize issue-reference keywords such as Refs, Resolves, or tracker-specific syntax.
+  - Add rules for preserving generated pull request body sections from other automation.
