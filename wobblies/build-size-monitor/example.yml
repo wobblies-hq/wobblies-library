@@ -1,0 +1,19 @@
+id: build-size-monitor
+title: "Build Size Monitor"
+status: ready
+summary: "Tracks bundle size changes across PRs and flags significant increases with detailed breakdowns."
+readiness: direct-copy
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - maintain-and-modernize
+  bestFor:
+    - Teams that want automated enforcement of this pattern.
+  notFor:
+    - Teams that prefer manual review only.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other: []

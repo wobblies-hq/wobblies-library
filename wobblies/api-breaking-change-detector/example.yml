@@ -1,0 +1,19 @@
+id: api-breaking-change-detector
+title: "API Breaking Change Detector"
+status: ready
+summary: "Detects breaking changes in API endpoints and flags PRs that need versioning."
+readiness: direct-copy
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - maintain-and-modernize
+  bestFor:
+    - Teams that want automated enforcement of this pattern.
+  notFor:
+    - Teams that prefer manual review only.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other: []

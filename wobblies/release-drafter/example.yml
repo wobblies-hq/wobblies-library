@@ -1,0 +1,19 @@
+id: release-drafter
+title: "Release Drafter"
+status: ready
+summary: "Maintains a draft GitHub release with categorized changes from merged pull requests."
+readiness: direct-copy
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - maintain-and-modernize
+  bestFor:
+    - Teams that want automated enforcement of this pattern.
+  notFor:
+    - Teams that prefer manual review only.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other: []

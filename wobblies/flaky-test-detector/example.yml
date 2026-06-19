@@ -1,0 +1,19 @@
+id: flaky-test-detector
+title: "Flaky Test Detector"
+status: ready
+summary: "Identifies tests that intermittently fail across recent CI runs and opens issues to fix them."
+readiness: direct-copy
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - maintain-and-modernize
+  bestFor:
+    - Teams that want automated enforcement of this pattern.
+  notFor:
+    - Teams that prefer manual review only.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other: []

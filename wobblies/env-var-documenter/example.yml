@@ -1,0 +1,19 @@
+id: env-var-documenter
+title: "Env Var Documenter"
+status: ready
+summary: "Ensures all environment variables referenced in code are documented in the README or .env.example."
+readiness: direct-copy
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - maintain-and-modernize
+  bestFor:
+    - Teams that want automated enforcement of this pattern.
+  notFor:
+    - Teams that prefer manual review only.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other: []
