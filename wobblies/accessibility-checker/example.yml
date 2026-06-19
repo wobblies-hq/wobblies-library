@@ -1,0 +1,19 @@
+id: accessibility-checker
+title: "Accessibility Checker"
+status: ready
+summary: "Scans frontend code changes for accessibility violations like missing alt text and ARIA attributes."
+readiness: direct-copy
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - maintain-and-modernize
+  bestFor:
+    - Teams that want automated enforcement of this pattern.
+  notFor:
+    - Teams that prefer manual review only.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other: []

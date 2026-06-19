@@ -1,0 +1,19 @@
+id: migration-reviewer
+title: "Migration Reviewer"
+status: ready
+summary: "Reviews database migration files for safety issues like missing rollbacks or locking operations."
+readiness: direct-copy
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - maintain-and-modernize
+  bestFor:
+    - Teams that want automated enforcement of this pattern.
+  notFor:
+    - Teams that prefer manual review only.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other: []
