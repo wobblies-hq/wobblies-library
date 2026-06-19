@@ -1,0 +1,19 @@
+id: codeowner-validator
+title: "CODEOWNERS Validator"
+status: ready
+summary: "Validates CODEOWNERS file is complete and flags new directories without ownership."
+readiness: direct-copy
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - maintain-and-modernize
+  bestFor:
+    - Teams that want automated enforcement of this pattern.
+  notFor:
+    - Teams that prefer manual review only.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other: []

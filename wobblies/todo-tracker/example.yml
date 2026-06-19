@@ -1,0 +1,19 @@
+id: todo-tracker
+title: "TODO Tracker"
+status: ready
+summary: "Finds TODO and FIXME comments in code and creates linked issues for tracking."
+readiness: direct-copy
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - maintain-and-modernize
+  bestFor:
+    - Teams that want automated enforcement of this pattern.
+  notFor:
+    - Teams that prefer manual review only.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other: []
