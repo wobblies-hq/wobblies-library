@@ -1,0 +1,34 @@
+id: github-activity-digest
+title: GitHub Activity Digest
+status: ready
+summary: Posts a low-noise scheduled digest of meaningful pull request and CI activity.
+readiness: adapt-before-use
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - operate
+  bestFor:
+    - Teams that want lightweight visibility without manual GitHub status gathering.
+    - Repositories with enough pull request and CI activity to summarize daily.
+  notFor:
+    - Teams that need incident, release, or people-management reporting beyond GitHub activity.
+    - Repositories where activity volume is too low to justify a scheduled digest.
+requirements:
+  requiredIntegrations:
+    - github
+    - slack
+  optionalIntegrations: []
+  other:
+    - A configured Slack channel for the digest.
+adaptations:
+  - key: slack_channel
+    label: Slack channel
+    description: Slack channel where Wobbly should post the GitHub activity digest.
+    required: true
+    suggestions:
+      - '#team-updates'
+specializationIdeas:
+  - Tune the signal threshold for teams that want quiet-day confirmations or more aggressive digesting.
+  - Add release, incident, or deployment sections when those GitHub events matter to the team.
+  - Specialize duplicate detection around a channel-specific digest marker or thread convention.

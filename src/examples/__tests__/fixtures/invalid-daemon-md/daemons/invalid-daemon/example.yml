@@ -1,0 +1,19 @@
+id: invalid-wobbly
+title: invalid wobbly fixture
+status: ready
+summary: Demonstrates the invalid-wobbly package shape for catalog validation.
+readiness: direct-copy
+showOnWebsite: true
+showInDashboard: false
+fit:
+  jobsToBeDone:
+    - wobbly-operations
+  bestFor:
+    - Teams validating the examples catalog generator.
+  notFor:
+    - Production wobbly deployments without local review.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other: []
