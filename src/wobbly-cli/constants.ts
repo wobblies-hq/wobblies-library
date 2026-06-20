@@ -5,16 +5,16 @@ export const EXIT_CODE_USAGE = 64;
 export const EXIT_CODE_DATA = 65;
 export const EXIT_CODE_INTERNAL = 70;
 
-export const SOURCE_REPO = 'universe-backwards/wobblies-library';
-export const SOURCE_REPO_OWNER = 'wobblies';
-export const SOURCE_REPO_NAME = 'wobblys';
+export const SOURCE_REPO = 'wobblie-hq/wobblies-library';
+export const SOURCE_REPO_OWNER = 'wobblie-hq';
+export const SOURCE_REPO_NAME = 'wobblies-library';
 export const DEFAULT_CATALOG_REF = 'master';
 export const CATALOG_PATH = 'examples.json';
 export const SUPPORTED_CATALOG_SCHEMA_VERSION = 2;
-export const CATALOG_SOURCE_BASE_DIRECTORY = 'wobblys';
+export const CATALOG_SOURCE_BASE_DIRECTORY = 'wobblies';
 
-export const DEFAULT_WOBBLY_ROOT = '.agents/wobblys';
-export const WOBBLY_FILENAME = 'WOBBLY.md';
+export const DEFAULT_WOBBLY_ROOT = '.wobblies';
+export const WOBBLY_FILENAME = 'WOBBLIE.md';
 export const WOBBLY_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export const ACTIVATION_CAVEAT =
