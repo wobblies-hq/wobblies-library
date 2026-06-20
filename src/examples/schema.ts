@@ -244,7 +244,7 @@ const catalogExampleSchema = z
       });
     }
 
-    const expectedSourceDirectory = `wobblys/${value.id}`;
+    const expectedSourceDirectory = `wobblies/${value.id}`;
     if (value.source.directory !== expectedSourceDirectory) {
       context.addIssue({
         code: z.ZodIssueCode.custom,
@@ -260,7 +260,7 @@ const examplesCatalogSchema = z
     source: z
       .object({
         repository: z.literal('universe-backwards/wobblies-library'),
-        baseDirectory: z.literal('wobblys'),
+        baseDirectory: z.literal('wobblies'),
       })
       .strict(),
     examples: z.array(catalogExampleSchema),

@@ -15,11 +15,11 @@ import type {
 } from './types';
 import { machineError, normalizeThrownMessage } from './validation';
 
-const SOURCE_REPOSITORY = 'universe-backwards/wobblies-library';
-const SOURCE_BASE_DIRECTORY = 'wobblys';
+const SOURCE_REPOSITORY = 'wobblie-hq/wobblies-library';
+const SOURCE_BASE_DIRECTORY = 'wobblies';
 const DEFAULT_PUBLICATION_REF = 'master';
 const ROOT_CATALOG_PATH = 'examples.json';
-const ALLOWED_WOBBLY_PACKAGE_ENTRIES = new Set(['WOBBLY.md', 'example.yml', 'scripts', 'references']);
+const ALLOWED_WOBBLY_PACKAGE_ENTRIES = new Set(['WOBBLIE.md', 'example.yml', 'scripts', 'references']);
 const MUSTACHE_TOKEN_PATTERN = /{{\s*([^{}]*?)\s*}}/g;
 const ADAPTATION_EXPRESSION_PREFIX_PATTERN = /^adapt(?:$|[.\s])/;
 const ADAPTATION_TOKEN_EXPRESSION_PATTERN = /^adapt\.([a-z][a-z0-9_]*)$/;
@@ -202,7 +202,7 @@ async function discoverWobblyPackages(repoRoot: string): Promise<ValidationResul
     packages.push({
       directoryName: entry.name,
       directoryPath: entryPath,
-      wobblyPath: `${entryPath}/WOBBLY.md`,
+      wobblyPath: `${entryPath}/WOBBLIE.md`,
       examplePath: `${entryPath}/example.yml`,
     });
   }
@@ -272,7 +272,7 @@ async function loadCatalogExample(
         code: 'id_mismatch',
         path: wobblyPackage.wobblyPath,
         fieldPath: 'id',
-        message: `WOBBLY.md id ${wobblyFrontmatterId} must match directory id ${wobblyPackage.directoryName}.`,
+        message: `WOBBLIE.md id ${wobblyFrontmatterId} must match directory id ${wobblyPackage.directoryName}.`,
       })
     );
   }
@@ -283,7 +283,7 @@ async function loadCatalogExample(
         code: 'id_mismatch',
         path: wobblyPackage.examplePath,
         fieldPath: 'id',
-        message: `example.yml id ${exampleMetadata.id} must match WOBBLY.md id ${wobblyFrontmatterId}.`,
+        message: `example.yml id ${exampleMetadata.id} must match WOBBLIE.md id ${wobblyFrontmatterId}.`,
       })
     );
   }
@@ -340,7 +340,7 @@ async function loadCatalogExample(
       adaptations: catalogAdaptations(exampleMetadata.adaptations),
       specializationIdeas: [...exampleMetadata.specializationIdeas],
       wobbly: {
-        path: 'WOBBLY.md',
+        path: 'WOBBLIE.md',
         content: wobblyContent.value,
       },
       scripts: supportPaths.scripts,
@@ -370,7 +370,7 @@ async function validatePackageTopLevelEntries(
       machineError({
         code: entry.name === 'README.md' ? 'per_example_readme' : 'unsupported_support_path',
         path: `${wobblyDirectoryPath}/${entry.name}`,
-        message: 'Wobbly packages may only contain WOBBLY.md, example.yml, scripts/**, and references/**.',
+        message: 'Wobbly packages may only contain WOBBLIE.md, example.yml, scripts/**, and references/**.',
       })
     );
   }
