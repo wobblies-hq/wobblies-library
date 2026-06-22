@@ -63,7 +63,7 @@ Optional: {{ adapt.optional_value }}
 const catalog: ExamplesCatalog = {
   schemaVersion: 2,
   source: {
-    repository: 'universe-backwards/wobblies-library',
+    repository: 'wobblie-hq/wobblies-library',
     baseDirectory: 'wobblies',
   },
   examples: [
@@ -95,7 +95,7 @@ const catalog: ExamplesCatalog = {
       references: ['references/guide.md'],
       source: {
         directory: 'wobblies/ready-wobblie',
-        url: 'https://github.com/universe-backwards/wobblies-library/tree/master/wobblies/ready-wobblie',
+        url: 'https://github.com/wobblie-hq/wobblies-library/tree/master/wobblies/ready-wobblie',
       },
     },
     {
@@ -126,7 +126,7 @@ const catalog: ExamplesCatalog = {
       references: [],
       source: {
         directory: 'wobblies/deprecated-wobblie',
-        url: 'https://github.com/universe-backwards/wobblies-library/tree/master/wobblies/deprecated-wobblie',
+        url: 'https://github.com/wobblie-hq/wobblies-library/tree/master/wobblies/deprecated-wobblie',
       },
     },
     {
@@ -173,7 +173,7 @@ const catalog: ExamplesCatalog = {
       references: ['references/render.md'],
       source: {
         directory: 'wobblies/templated-wobblie',
-        url: 'https://github.com/universe-backwards/wobblies-library/tree/master/wobblies/templated-wobblie',
+        url: 'https://github.com/wobblie-hq/wobblies-library/tree/master/wobblies/templated-wobblie',
       },
     },
   ],
@@ -624,7 +624,7 @@ describe('wobblie CLI catalog commands', () => {
         references: ['other/guide.md'],
         source: {
           directory: 'wobblies/other-wobblie',
-          url: 'https://github.com/universe-backwards/wobblies-library/tree/master/wobblies/other-wobblie',
+          url: 'https://github.com/wobblie-hq/wobblies-library/tree/master/wobblies/other-wobblie',
         },
       };
 
