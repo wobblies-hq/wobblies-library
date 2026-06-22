@@ -8,7 +8,7 @@ describe('wobblie examples package API', () => {
     const firstExample = examples[0];
 
     expect(catalog.schemaVersion).toBe(2);
-    expect(catalog.source.repository).toBe('universe-backwards/wobblies-library');
+    expect(catalog.source.repository).toBe('wobblie-hq/wobblies-library');
     expect(examples.length).toBeGreaterThan(0);
     expect(examples.map((example) => example.id)).toEqual(catalog.examples.map((example) => example.id));
     expect(firstExample).toBeDefined();
