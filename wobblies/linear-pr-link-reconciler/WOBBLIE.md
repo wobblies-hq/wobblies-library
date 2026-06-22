@@ -84,7 +84,7 @@ Use a confirmation ask when multiple candidates are plausible. No-op when all ca
 
 ## Idempotency
 
-Before commenting, inspect existing Wobbly comments on the issue. If the same candidates were already suggested for the same trigger evidence, no-op.
+Before commenting, inspect existing Wobblie comments on the issue. If the same candidates were already suggested for the same trigger evidence, no-op.
 
 Do not post on every comment in an ongoing thread. Post only when new evidence materially changes the candidate set or human confirmation is newly needed.
 
@@ -94,4 +94,4 @@ Do not post on every comment in an ongoing thread. Post only when new evidence m
 - issue identity, repository mapping, or GitHub access is unavailable
 - candidate confidence is low or ambiguous
 - a matching link is already clearly present in the Linear issue context
-- an equivalent Wobbly candidate-link comment already exists
+- an equivalent Wobblie candidate-link comment already exists

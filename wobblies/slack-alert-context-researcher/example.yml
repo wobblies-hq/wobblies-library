@@ -13,7 +13,7 @@ fit:
     - Teams that receive monitoring or incident alerts in Slack and want faster first-pass context.
     - Workspaces mapped to repositories where recent code changes help explain operational alerts.
   notFor:
-    - Teams that want Wobbly to acknowledge, resolve, escalate, page, or mutate incident state automatically.
+    - Teams that want Wobblie to acknowledge, resolve, escalate, page, or mutate incident state automatically.
     - Channels where alert content is too sensitive to summarize in-thread.
 requirements:
   requiredIntegrations:
@@ -28,7 +28,7 @@ requirements:
 adaptations:
   - key: slack_channel
     label: Slack alert channel
-    description: Slack channel where Wobbly should watch for monitoring or incident alert messages.
+    description: Slack channel where Wobblie should watch for monitoring or incident alert messages.
     required: true
     suggestions:
       - '#alerts'

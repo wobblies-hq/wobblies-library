@@ -1,5 +1,5 @@
 import type { CatalogExample, ExamplesCatalog } from '../examples/types';
-import type { WobblyInstallPullRequestListing, WobblyInstallPullRequestOpenResult } from '../wobbly-install-pr';
+import type { WobblieInstallPullRequestListing, WobblieInstallPullRequestOpenResult } from '../wobblie-install-pr';
 
 export type CliIssue = {
   code: string;
@@ -48,7 +48,7 @@ export type ShowData = CatalogListItem & {
   otherRequirements: string[];
   scripts: string[];
   references: string[];
-  wobblyPath: string;
+  wobbliePath: string;
   sourceDirectory: string;
   sourceUrl: string;
   adaptations: CatalogExample['adaptations'];
@@ -61,12 +61,12 @@ export type InstallFileMode = '100644' | '100755';
 export type InstallFilePlan = {
   sourcePath: string;
   destinationPath: string;
-  kind: 'wobbly' | 'script' | 'reference';
+  kind: 'wobblie' | 'script' | 'reference';
   mode: InstallFileMode;
 };
 
 export type AddData = {
-  wobblyId: string;
+  wobblieId: string;
   filePath: string;
   targetRoot: string;
   dryRun: boolean;
@@ -87,16 +87,16 @@ export type AddData = {
 };
 
 
-export type PrOpenData = Omit<WobblyInstallPullRequestOpenResult, 'markerText'>;
+export type PrOpenData = Omit<WobblieInstallPullRequestOpenResult, 'markerText'>;
 
 export type PrListData = {
   repository: string;
   branchPrefix: string;
   count: number;
-  installPullRequests: WobblyInstallPullRequestListing[];
+  installPullRequests: WobblieInstallPullRequestListing[];
 };
 
-export type RuntimeWobbly = {
+export type RuntimeWobblie = {
   id: string;
   purpose: string;
   watch: string[];
@@ -111,7 +111,7 @@ export type ValidateFileResult = {
   ok: boolean;
   warnings: CliIssue[];
   errors: CliIssue[];
-  wobbly: RuntimeWobbly | null;
+  wobblie: RuntimeWobblie | null;
 };
 
 export type ValidateData = {

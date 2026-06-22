@@ -27,7 +27,7 @@ export type JobToBeDone =
   | 'operate'
   | 'explain'
   | 'plan'
-  | 'wobbly-operations';
+  | 'wobblie-operations';
 export type IntegrationSlug = 'github' | 'linear' | 'slack' | 'sentry';
 
 export type ExampleAdaptation = {
@@ -62,8 +62,8 @@ export type ExampleMetadata = {
 };
 
 export type CatalogExample = ExampleMetadata & {
-  wobbly: {
-    path: 'WOBBLY.md';
+  wobblie: {
+    path: 'WOBBLIE.md';
     content: string;
   };
   scripts: string[];
@@ -77,13 +77,13 @@ export type CatalogExample = ExampleMetadata & {
 export type ExamplesCatalog = {
   schemaVersion: 2;
   source: {
-    repository: 'universe-backwards/wobblies-library';
-    baseDirectory: 'wobblys';
+    repository: 'wobblie-hq/wobblies-library';
+    baseDirectory: 'wobblies';
   };
   examples: CatalogExample[];
 };
 
-export type WobblyFrontmatter = {
+export type WobblieFrontmatter = {
   id: string;
   purpose: string;
   watch?: string[] | undefined;
@@ -92,9 +92,9 @@ export type WobblyFrontmatter = {
   schedule?: string | undefined;
 };
 
-export type WobblyPackage = {
+export type WobbliePackage = {
   directoryName: string;
   directoryPath: string;
   examplePath: string;
-  wobblyPath: string;
+  wobbliePath: string;
 };

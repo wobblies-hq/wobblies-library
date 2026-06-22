@@ -1,23 +1,23 @@
 import path from 'node:path';
-import { CATALOG_SOURCE_BASE_DIRECTORY, WOBBLY_FILENAME, WOBBLY_ID_PATTERN, DEFAULT_WOBBLY_ROOT } from './constants';
+import { CATALOG_SOURCE_BASE_DIRECTORY, WOBBLIE_FILENAME, WOBBLIE_ID_PATTERN, DEFAULT_WOBBLIE_ROOT } from './constants';
 import { issue } from './issues';
 import type { CliIssue, InstallFilePlan } from './types';
 import type { CatalogExample } from '../examples/types';
 
-export type WobblyInstallFileMode = '100644' | '100755';
+export type WobblieInstallFileMode = '100644' | '100755';
 
-export type WobblyInstallPlanFile = InstallFilePlan;
+export type WobblieInstallPlanFile = InstallFilePlan;
 
-export type WobblyInstallPlan = {
-  wobblyId: string;
+export type WobblieInstallPlan = {
+  wobblieId: string;
   destinationDirectory: string;
-  files: WobblyInstallPlanFile[];
+  files: WobblieInstallPlanFile[];
 };
 
-export type WobblyInstallPlanResult =
+export type WobblieInstallPlanResult =
   | {
       ok: true;
-      plan: WobblyInstallPlan;
+      plan: WobblieInstallPlan;
     }
   | {
       ok: false;
@@ -60,7 +60,7 @@ function validateDestinationPath(args: {
   });
 }
 
-function supportFileMode(kind: InstallFilePlan['kind']): WobblyInstallFileMode {
+function supportFileMode(kind: InstallFilePlan['kind']): WobblieInstallFileMode {
   return kind === 'script' ? '100755' : '100644';
 }
 
@@ -105,12 +105,12 @@ function supportFilePlan(args: {
   };
 }
 
-export function createWobblyInstallPlan(args: { entry: CatalogExample; installRoot: string }): WobblyInstallPlanResult {
+export function createWobblieInstallPlan(args: { entry: CatalogExample; installRoot: string }): WobblieInstallPlanResult {
   const entry = args.entry;
   const errors: CliIssue[] = [];
 
-  if (!WOBBLY_ID_PATTERN.test(entry.id)) {
-    errors.push(issue({ code: 'INVALID_WOBBLY_ID', message: `Invalid example id '${entry.id}'. Expected kebab-case.`, field: 'id' }));
+  if (!WOBBLIE_ID_PATTERN.test(entry.id)) {
+    errors.push(issue({ code: 'INVALID_WOBBLIE_ID', message: `Invalid example id '${entry.id}'. Expected kebab-case.`, field: 'id' }));
   }
 
   const sourceDirectoryError = validateSafeRelativePath(entry.source.directory, 'source.directory');
@@ -127,30 +127,30 @@ export function createWobblyInstallPlan(args: { entry: CatalogExample; installRo
     );
   }
 
-  if (entry.wobbly.path !== WOBBLY_FILENAME) {
+  if (entry.wobblie.path !== WOBBLIE_FILENAME) {
     errors.push(
       issue({
-        code: 'INVALID_CATALOG_WOBBLY_PATH',
-        message: `Catalog wobbly path '${entry.wobbly.path}' must be '${WOBBLY_FILENAME}'.`,
-        field: 'wobbly.path',
+        code: 'INVALID_CATALOG_WOBBLIE_PATH',
+        message: `Catalog wobblie path '${entry.wobblie.path}' must be '${WOBBLIE_FILENAME}'.`,
+        field: 'wobblie.path',
       })
     );
   }
 
-  const destinationDirectory = path.resolve(args.installRoot, DEFAULT_WOBBLY_ROOT, entry.id);
-  const wobblyDestinationPath = path.join(destinationDirectory, WOBBLY_FILENAME);
-  const wobblyDestinationError = validateDestinationPath({
-    destinationPath: wobblyDestinationPath,
+  const destinationDirectory = path.resolve(args.installRoot, DEFAULT_WOBBLIE_ROOT, entry.id);
+  const wobblieDestinationPath = path.join(destinationDirectory, WOBBLIE_FILENAME);
+  const wobblieDestinationError = validateDestinationPath({
+    destinationPath: wobblieDestinationPath,
     destinationDirectory,
-    field: 'wobbly.path',
+    field: 'wobblie.path',
   });
-  if (wobblyDestinationError) errors.push(wobblyDestinationError);
+  if (wobblieDestinationError) errors.push(wobblieDestinationError);
 
   const files: InstallFilePlan[] = [
     {
-      sourcePath: `${entry.source.directory}/${WOBBLY_FILENAME}`,
-      destinationPath: wobblyDestinationPath,
-      kind: 'wobbly',
+      sourcePath: `${entry.source.directory}/${WOBBLIE_FILENAME}`,
+      destinationPath: wobblieDestinationPath,
+      kind: 'wobblie',
       mode: '100644',
     },
   ];
@@ -190,7 +190,7 @@ export function createWobblyInstallPlan(args: { entry: CatalogExample; installRo
   return {
     ok: true,
     plan: {
-      wobblyId: entry.id,
+      wobblieId: entry.id,
       destinationDirectory,
       files,
     },

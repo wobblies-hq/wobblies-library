@@ -1,10 +1,10 @@
 import { createGitHubCatalogClient } from './catalog-client';
-import { commandAliases, WOBBLY_CLI_VERSION, EXIT_CODE_SUCCESS, EXIT_CODE_USAGE } from './constants';
+import { commandAliases, WOBBLIE_CLI_VERSION, EXIT_CODE_SUCCESS, EXIT_CODE_USAGE } from './constants';
 import { getCommandHelpText, getRootHelpText } from './help';
 import { issue } from './issues';
 import { runAddCommand, runListCommand, runPrCommand, runShowCommand, runValidateCommand } from './commands';
 import type { CatalogClient, CliCommandResult, HelpData, VersionData } from './types';
-import type { WobblyInstallPrGitHubClient } from '../wobbly-install-pr';
+import type { WobblieInstallPrGitHubClient } from '../wobblie-install-pr';
 
 export type CliOutput = {
   stdout: (text: string) => void;
@@ -64,10 +64,10 @@ function versionResult(): CliCommandResult<VersionData> {
     command: 'version',
     ok: true,
     exitCode: EXIT_CODE_SUCCESS,
-    summary: `wobbly version ${WOBBLY_CLI_VERSION}`,
+    summary: `wobblie version ${WOBBLIE_CLI_VERSION}`,
     warnings: [],
     errors: [],
-    data: { version: WOBBLY_CLI_VERSION },
+    data: { version: WOBBLIE_CLI_VERSION },
   };
 }
 
@@ -87,7 +87,7 @@ async function runCommand(args: {
   argv: readonly string[];
   cwd: string;
   catalogClient: CatalogClient;
-  githubClient?: WobblyInstallPrGitHubClient | undefined;
+  githubClient?: WobblieInstallPrGitHubClient | undefined;
 }): Promise<{ flags: GlobalFlags; result: CliCommandResult }> {
   const parsed = parseGlobalFlags(args.argv);
 
@@ -168,7 +168,7 @@ function formatHumanResult(result: CliCommandResult, verbose: boolean): string {
   if (result.command === 'list' && data) {
     lines.push(`Source: ${String(data.sourceRepo)}@${String(data.sourceRef)}`);
     const examples = Array.isArray(data.examples) ? data.examples : [];
-    lines.push('Available wobbly examples:');
+    lines.push('Available wobblie examples:');
     for (const example of examples) {
       if (typeof example === 'object' && example !== null && 'id' in example) {
         const record = example as Record<string, unknown>;
@@ -295,7 +295,7 @@ export async function executeCli(args: {
   argv: readonly string[];
   output?: CliOutput;
   catalogClient?: CatalogClient;
-  githubClient?: WobblyInstallPrGitHubClient | undefined;
+  githubClient?: WobblieInstallPrGitHubClient | undefined;
 }): Promise<number> {
   const stdout = args.output?.stdout ?? ((text: string) => process.stdout.write(`${text}\n`));
   const stderr = args.output?.stderr ?? ((text: string) => process.stderr.write(`${text}\n`));

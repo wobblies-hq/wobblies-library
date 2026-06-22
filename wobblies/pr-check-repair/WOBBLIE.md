@@ -27,7 +27,7 @@ deny:
 
 Handle only the triggering failing check. If another failing check shares the same root cause, fix that root cause only when necessary for the triggering check. If another human or `pr-check-repair` activation already fixed the same root cause, stop/no-op without commenting unless human action is still needed.
 
-Expect parallel `pr-check-repair` activations for other failing checks. When overlap is plausible, refresh and inspect the current remote PR head before editing or pushing. When tools expose task status or transcripts, also inspect active/recent wobbly activity.
+Expect parallel `pr-check-repair` activations for other failing checks. When overlap is plausible, refresh and inspect the current remote PR head before editing or pushing. When tools expose task status or transcripts, also inspect active/recent wobblie activity.
 
 ## Repair decision policy
 
@@ -54,7 +54,7 @@ Stop/no-op and comment with the blocking reason when the fix requires human judg
 
 - Re-fetch and verify the current remote PR head before starting edits.
 - Re-fetch and verify the current remote PR head again before push.
-- If remote PR head moved, re-evaluate before continuing. Continue after compatible human/wobbly pushes, but never overwrite them.
+- If remote PR head moved, re-evaluate before continuing. Continue after compatible human/wobblie pushes, but never overwrite them.
 - If branch staleness is the only failure cause, stop/no-op because branch refresh is outside `pr-check-repair` scope.
 - If staleness is ambiguous, compare against current base when available. If base already fixes the issue and the PR branch is merely stale, do not push a repair commit.
 
@@ -62,4 +62,4 @@ Stop/no-op and comment with the blocking reason when the fix requires human judg
 
 Comment only after a pushed fix, flaky rerun, or blocked state requiring human action. Include the triggering check, action taken or blocking reason, commit pushed or rerun performed, and next human action when blocked.
 
-Do not comment for routine no-ops: stale triggers, checks already fixed, duplicate activations, another human/wobbly already fixing the same root cause, or failures clearly owned by another wobbly.
+Do not comment for routine no-ops: stale triggers, checks already fixed, duplicate activations, another human/wobblie already fixing the same root cause, or failures clearly owned by another wobblie.

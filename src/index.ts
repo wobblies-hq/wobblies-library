@@ -1,45 +1,45 @@
 export {
-  WobblyExamplesCatalogError,
-  getWobblyExample,
-  listWobblyExamples,
-  loadWobblyExamplesCatalog,
-} from './wobbly-examples';
+  WobblieExamplesCatalogError,
+  getWobblieExample,
+  listWobblieExamples,
+  loadWobblieExamplesCatalog,
+} from './wobblie-examples';
 export type {
-  WobblyExample,
-  WobblyExampleAdaptation,
-  WobblyExamplesCatalog,
-  LoadWobblyExamplesCatalogOptions,
-} from './wobbly-examples';
-export { createWobblyInstallPlan } from './wobbly-cli/install-plan';
+  WobblieExample,
+  WobblieExampleAdaptation,
+  WobblieExamplesCatalog,
+  LoadWobblieExamplesCatalogOptions,
+} from './wobblie-examples';
+export { createWobblieInstallPlan } from './wobblie-cli/install-plan';
 export type {
-  WobblyInstallFileMode,
-  WobblyInstallPlan,
-  WobblyInstallPlanFile,
-  WobblyInstallPlanResult,
-} from './wobbly-cli/install-plan';
+  WobblieInstallFileMode,
+  WobblieInstallPlan,
+  WobblieInstallPlanFile,
+  WobblieInstallPlanResult,
+} from './wobblie-cli/install-plan';
 
 
 export {
-  WOBBLY_INSTALL_BRANCH_PREFIX,
-  WOBBLY_INSTALL_MARKER_NAME,
-  WobblyInstallPullRequestError,
-  createWobblyInstallMarker,
-  createWobblyInstallPrGitHubClient,
-  createWobblyInstallPullRequest,
-  listWobblyInstallPullRequests,
-  parseWobblyInstallMarker,
-} from './wobbly-install-pr';
+  WOBBLIE_INSTALL_BRANCH_PREFIX,
+  WOBBLIE_INSTALL_MARKER_NAME,
+  WobblieInstallPullRequestError,
+  createWobblieInstallMarker,
+  createWobblieInstallPrGitHubClient,
+  createWobblieInstallPullRequest,
+  listWobblieInstallPullRequests,
+  parseWobblieInstallMarker,
+} from './wobblie-install-pr';
 export type {
-  CreateWobblyInstallPullRequestOptions,
-  WobblyInstallMarker,
-  WobblyInstallPrGitHubClient,
-  WobblyInstallPrGitHubRequestOptions,
-  WobblyInstallPullRequestInfo,
-  WobblyInstallPullRequestListing,
-  WobblyInstallPullRequestListingStatus,
-  WobblyInstallPullRequestListResult,
-  WobblyInstallPullRequestOpenResult,
-  WobblyInstallPullRequestOpenStatus,
+  CreateWobblieInstallPullRequestOptions,
+  WobblieInstallMarker,
+  WobblieInstallPrGitHubClient,
+  WobblieInstallPrGitHubRequestOptions,
+  WobblieInstallPullRequestInfo,
+  WobblieInstallPullRequestListing,
+  WobblieInstallPullRequestListingStatus,
+  WobblieInstallPullRequestListResult,
+  WobblieInstallPullRequestOpenResult,
+  WobblieInstallPullRequestOpenStatus,
   GitHubRepositoryRef,
-  ListWobblyInstallPullRequestsOptions,
-} from './wobbly-install-pr';
+  ListWobblieInstallPullRequestsOptions,
+} from './wobblie-install-pr';

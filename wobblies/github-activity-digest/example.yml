@@ -24,7 +24,7 @@ requirements:
 adaptations:
   - key: slack_channel
     label: Slack channel
-    description: Slack channel where Wobbly should post the GitHub activity digest.
+    description: Slack channel where Wobblie should post the GitHub activity digest.
     required: true
     suggestions:
       - '#team-updates'

@@ -1,40 +1,40 @@
 import { createHash } from 'node:crypto';
 import path from 'node:path';
-import { createGitHubCatalogClient } from './wobbly-cli/catalog-client';
+import { createGitHubCatalogClient } from './wobblie-cli/catalog-client';
 import {
   CATALOG_PATH,
-  WOBBLY_ID_PATTERN,
+  WOBBLIE_ID_PATTERN,
   DEFAULT_CATALOG_REF,
   SOURCE_REPO,
-} from './wobbly-cli/constants';
-import { toDisplayPath } from './wobbly-cli/fs-utils';
-import { createWobblyInstallPlan } from './wobbly-cli/install-plan';
-import { prepareWobblyInstallFiles, type RenderedWobblyInstallFile } from './wobbly-cli/install-rendering';
-import { validateRuntimeWobblyMarkdown } from './wobbly-cli/validation/runtime';
-import { issue, normalizeErrorMessage } from './wobbly-cli/issues';
-import { resolveAdaptations, type AdaptationValues } from './wobbly-cli/adaptations';
-import type { CatalogClient, CliIssue, InstallFilePlan } from './wobbly-cli/types';
+} from './wobblie-cli/constants';
+import { toDisplayPath } from './wobblie-cli/fs-utils';
+import { createWobblieInstallPlan } from './wobblie-cli/install-plan';
+import { prepareWobblieInstallFiles, type RenderedWobblieInstallFile } from './wobblie-cli/install-rendering';
+import { validateRuntimeWobblieMarkdown } from './wobblie-cli/validation/runtime';
+import { issue, normalizeErrorMessage } from './wobblie-cli/issues';
+import { resolveAdaptations, type AdaptationValues } from './wobblie-cli/adaptations';
+import type { CatalogClient, CliIssue, InstallFilePlan } from './wobblie-cli/types';
 import type { CatalogExample } from './examples/types';
 
-export const WOBBLY_INSTALL_BRANCH_PREFIX = 'wobbly/wobbly-installs/';
-export const WOBBLY_INSTALL_MARKER_NAME = 'wobbly-wobbly-install-v1';
+export const WOBBLIE_INSTALL_BRANCH_PREFIX = 'wobblie/wobblie-installs/';
+export const WOBBLIE_INSTALL_MARKER_NAME = 'wobblie-wobblie-install-v1';
 
 const DEFAULT_INSTALL_ROOT = '/repo';
 const GITHUB_API_BASE_URL = 'https://api.github.com';
 
 export type GitHubRepositoryRef = string | { owner: string; repo: string };
 
-export type WobblyInstallPrGitHubRequestOptions = {
+export type WobblieInstallPrGitHubRequestOptions = {
   query?: Record<string, string | number | boolean | null | undefined> | undefined;
   body?: unknown;
   headers?: Record<string, string> | undefined;
 };
 
-export type WobblyInstallPrGitHubClient = {
-  request<T>(method: string, path: string, options?: WobblyInstallPrGitHubRequestOptions): Promise<T>;
+export type WobblieInstallPrGitHubClient = {
+  request<T>(method: string, path: string, options?: WobblieInstallPrGitHubRequestOptions): Promise<T>;
 };
 
-export type WobblyInstallPullRequestInfo = {
+export type WobblieInstallPullRequestInfo = {
   number: number;
   title: string;
   url: string;
@@ -46,59 +46,59 @@ export type WobblyInstallPullRequestInfo = {
   baseRef: string;
 };
 
-export type WobblyInstallPullRequestOpenStatus = 'created' | 'existing_open' | 'recovered_branch';
+export type WobblieInstallPullRequestOpenStatus = 'created' | 'existing_open' | 'recovered_branch';
 
-export type WobblyInstallPullRequestOpenResult = {
-  status: WobblyInstallPullRequestOpenStatus;
+export type WobblieInstallPullRequestOpenResult = {
+  status: WobblieInstallPullRequestOpenStatus;
   repository: string;
-  wobblyId: string;
+  wobblieId: string;
   sourceRepo: string;
   sourceRef: string;
   catalogSchemaVersion: number;
   baseBranch: string;
   headBranch: string;
   headSha: string;
-  pullRequest: WobblyInstallPullRequestInfo;
+  pullRequest: WobblieInstallPullRequestInfo;
   filesPlanned: InstallFilePlan[];
   filesWritten: string[];
   adaptationsApplied: string[];
-  marker: WobblyInstallMarker;
+  marker: WobblieInstallMarker;
   markerText: string;
   warnings: CliIssue[];
 };
 
-export type WobblyInstallPullRequestListingStatus =
+export type WobblieInstallPullRequestListingStatus =
   | 'open'
   | 'merged'
   | 'closed_unmerged'
   | 'branchWithoutPullRequest';
 
-export type WobblyInstallPullRequestListing = {
-  status: WobblyInstallPullRequestListingStatus;
+export type WobblieInstallPullRequestListing = {
+  status: WobblieInstallPullRequestListingStatus;
   repository: string;
-  wobblyId: string | null;
+  wobblieId: string | null;
   sourceRepo: string | null;
   sourceRef: string | null;
   catalogSchemaVersion: number | null;
   baseBranch: string | null;
   headBranch: string;
   headSha: string | null;
-  pullRequest: WobblyInstallPullRequestInfo | null;
-  marker: WobblyInstallMarker | null;
+  pullRequest: WobblieInstallPullRequestInfo | null;
+  marker: WobblieInstallMarker | null;
   markerPresent: boolean;
   markerValid: boolean;
   warnings: CliIssue[];
 };
 
-export type WobblyInstallPullRequestListResult = {
+export type WobblieInstallPullRequestListResult = {
   repository: string;
   branchPrefix: string;
-  installPullRequests: WobblyInstallPullRequestListing[];
+  installPullRequests: WobblieInstallPullRequestListing[];
   count: number;
   warnings: CliIssue[];
 };
 
-export type WobblyInstallMarker = {
+export type WobblieInstallMarker = {
   version: 1;
   exampleId: string;
   sourceRepo: string;
@@ -111,7 +111,7 @@ export type WobblyInstallMarker = {
   branch: string;
 };
 
-export type CreateWobblyInstallPullRequestOptions = {
+export type CreateWobblieInstallPullRequestOptions = {
   repo: GitHubRepositoryRef;
   exampleId: string;
   sourceRef?: string | undefined;
@@ -123,26 +123,26 @@ export type CreateWobblyInstallPullRequestOptions = {
   allowDeprecated?: boolean | undefined;
   force?: boolean | undefined;
   catalogClient?: CatalogClient | undefined;
-  githubClient?: WobblyInstallPrGitHubClient | undefined;
+  githubClient?: WobblieInstallPrGitHubClient | undefined;
   authToken?: string | undefined;
   installRoot?: string | undefined;
   headBranch?: string | undefined;
 };
 
-export type ListWobblyInstallPullRequestsOptions = {
+export type ListWobblieInstallPullRequestsOptions = {
   repo: GitHubRepositoryRef;
-  githubClient?: WobblyInstallPrGitHubClient | undefined;
+  githubClient?: WobblieInstallPrGitHubClient | undefined;
   authToken?: string | undefined;
 };
 
-export class WobblyInstallPullRequestError extends Error {
+export class WobblieInstallPullRequestError extends Error {
   readonly code: string;
   readonly errors: CliIssue[];
   readonly data: unknown;
 
   constructor(args: { code: string; message: string; errors?: CliIssue[] | undefined; data?: unknown }) {
     super(args.message);
-    this.name = 'WobblyInstallPullRequestError';
+    this.name = 'WobblieInstallPullRequestError';
     this.code = args.code;
     this.errors = args.errors ?? [issue({ code: args.code, message: args.message })];
     this.data = args.data ?? null;
@@ -253,7 +253,7 @@ function parseRepository(repo: GitHubRepositoryRef): ParsedRepository {
     const owner = repo.owner.trim();
     const repoName = repo.repo.trim();
     if (!owner || !repoName || owner.includes('/') || repoName.includes('/')) {
-      throw new WobblyInstallPullRequestError({
+      throw new WobblieInstallPullRequestError({
         code: 'INVALID_REPOSITORY',
         message: 'Repository must be an owner/repo pair.',
       });
@@ -263,7 +263,7 @@ function parseRepository(repo: GitHubRepositoryRef): ParsedRepository {
 
   const [owner, repoName, extra] = repo.split('/');
   if (!owner || !repoName || extra !== undefined) {
-    throw new WobblyInstallPullRequestError({
+    throw new WobblieInstallPullRequestError({
       code: 'INVALID_REPOSITORY',
       message: `Repository '${repo}' must use owner/repo syntax.`,
     });
@@ -278,7 +278,7 @@ function toValueMap(values: Record<string, string> | ReadonlyMap<string, string>
 }
 
 function deterministicInstallBranch(exampleId: string): string {
-  return `${WOBBLY_INSTALL_BRANCH_PREFIX}${exampleId}`;
+  return `${WOBBLIE_INSTALL_BRANCH_PREFIX}${exampleId}`;
 }
 
 function stableJson(value: unknown): string {
@@ -291,15 +291,15 @@ function stableJson(value: unknown): string {
     .join(',')}}`;
 }
 
-export function createWobblyInstallMarker(marker: WobblyInstallMarker): string {
-  return `<!-- ${WOBBLY_INSTALL_MARKER_NAME} ${stableJson(marker)} -->`;
+export function createWobblieInstallMarker(marker: WobblieInstallMarker): string {
+  return `<!-- ${WOBBLIE_INSTALL_MARKER_NAME} ${stableJson(marker)} -->`;
 }
 
-export function parseWobblyInstallMarker(body: string | null | undefined):
-  | { ok: true; marker: WobblyInstallMarker }
+export function parseWobblieInstallMarker(body: string | null | undefined):
+  | { ok: true; marker: WobblieInstallMarker }
   | { ok: false; present: boolean; error: CliIssue | null } {
   if (!body) return { ok: false, present: false, error: null };
-  const regex = new RegExp(`<!--\\s*${WOBBLY_INSTALL_MARKER_NAME}\\s+([\\s\\S]*?)\\s*-->`);
+  const regex = new RegExp(`<!--\\s*${WOBBLIE_INSTALL_MARKER_NAME}\\s+([\\s\\S]*?)\\s*-->`);
   const match = body.match(regex);
   if (!match) return { ok: false, present: false, error: null };
   const rawJson = match[1] ?? '';
@@ -360,15 +360,15 @@ export function parseWobblyInstallMarker(body: string | null | undefined):
   };
 }
 
-export function createWobblyInstallPrGitHubClient(args: {
+export function createWobblieInstallPrGitHubClient(args: {
   authToken?: string | undefined;
   baseUrl?: string | undefined;
-} = {}): WobblyInstallPrGitHubClient {
+} = {}): WobblieInstallPrGitHubClient {
   const baseUrl = args.baseUrl ?? GITHUB_API_BASE_URL;
   const authToken = args.authToken ?? process.env.GITHUB_TOKEN ?? process.env.GH_TOKEN;
 
   return {
-    async request<T>(method: string, requestPath: string, options: WobblyInstallPrGitHubRequestOptions = {}): Promise<T> {
+    async request<T>(method: string, requestPath: string, options: WobblieInstallPrGitHubRequestOptions = {}): Promise<T> {
       const url = new URL(requestPath, baseUrl);
       for (const [key, value] of Object.entries(options.query ?? {})) {
         if (value !== undefined && value !== null) {
@@ -379,7 +379,7 @@ export function createWobblyInstallPrGitHubClient(args: {
       const headers: Record<string, string> = {
         Accept: 'application/vnd.github+json',
         'X-GitHub-Api-Version': '2022-11-28',
-        'User-Agent': '@wobblies/library wobbly install PR API',
+        'User-Agent': '@wobblies/library wobblie install PR API',
         ...(options.headers ?? {}),
       };
       let body: string | undefined;
@@ -395,7 +395,7 @@ export function createWobblyInstallPrGitHubClient(args: {
       try {
         response = await fetch(url, { method, headers, body });
       } catch (error) {
-        throw new WobblyInstallPullRequestError({
+        throw new WobblieInstallPullRequestError({
           code: 'GITHUB_REQUEST_FAILED',
           message: `GitHub ${method} ${requestPath} failed: ${normalizeErrorMessage(error)}`,
         });
@@ -403,10 +403,10 @@ export function createWobblyInstallPrGitHubClient(args: {
 
       if (!response.ok) {
         const responseText = await response.text().catch(() => '');
-        const error = new WobblyInstallPullRequestError({
+        const error = new WobblieInstallPullRequestError({
           code: response.status === 404 ? 'GITHUB_NOT_FOUND' : 'GITHUB_REQUEST_FAILED',
           message: `GitHub ${method} ${requestPath} failed: HTTP ${response.status.toString()} ${response.statusText}${responseText ? `: ${responseText.slice(0, 500)}` : ''}`,
-        }) as WobblyInstallPullRequestError & { status: number; response: { status: number } };
+        }) as WobblieInstallPullRequestError & { status: number; response: { status: number } };
         error.status = response.status;
         error.response = { status: response.status };
         throw error;
@@ -420,13 +420,13 @@ export function createWobblyInstallPrGitHubClient(args: {
   };
 }
 
-async function getDefaultBranch(args: { githubClient: WobblyInstallPrGitHubClient; repository: ParsedRepository }): Promise<string> {
+async function getDefaultBranch(args: { githubClient: WobblieInstallPrGitHubClient; repository: ParsedRepository }): Promise<string> {
   const response = await args.githubClient.request<GitHubRepositoryResponse>('GET', pathForRepo(args.repository, ''));
   return response.default_branch;
 }
 
 async function getRef(args: {
-  githubClient: WobblyInstallPrGitHubClient;
+  githubClient: WobblieInstallPrGitHubClient;
   repository: ParsedRepository;
   ref: string;
 }): Promise<GitHubRef | null> {
@@ -442,7 +442,7 @@ async function getRef(args: {
 }
 
 async function getCommit(args: {
-  githubClient: WobblyInstallPrGitHubClient;
+  githubClient: WobblieInstallPrGitHubClient;
   repository: ParsedRepository;
   sha: string;
 }): Promise<GitHubCommit> {
@@ -450,7 +450,7 @@ async function getCommit(args: {
 }
 
 async function getTree(args: {
-  githubClient: WobblyInstallPrGitHubClient;
+  githubClient: WobblieInstallPrGitHubClient;
   repository: ParsedRepository;
   sha: string;
   recursive?: boolean | undefined;
@@ -461,7 +461,7 @@ async function getTree(args: {
 }
 
 async function listPullsForHead(args: {
-  githubClient: WobblyInstallPrGitHubClient;
+  githubClient: WobblieInstallPrGitHubClient;
   repository: ParsedRepository;
   branch: string;
   state: 'open' | 'closed' | 'all';
@@ -477,7 +477,7 @@ async function listPullsForHead(args: {
 }
 
 async function findOpenPullRequestForExactHead(args: {
-  githubClient: WobblyInstallPrGitHubClient;
+  githubClient: WobblieInstallPrGitHubClient;
   repository: ParsedRepository;
   branch: string;
   headSha: string;
@@ -493,7 +493,7 @@ async function findOpenPullRequestForExactHead(args: {
   return pulls.find((pull) => pull.head.ref === args.branch && pull.head.sha === args.headSha && pull.base.ref === args.baseBranch) ?? null;
 }
 
-function pullInfo(pull: GitHubPull): WobblyInstallPullRequestInfo {
+function pullInfo(pull: GitHubPull): WobblieInstallPullRequestInfo {
   return {
     number: pull.number,
     title: pull.title,
@@ -515,7 +515,7 @@ function gitBlobSha(content: string): string {
     .digest('hex');
 }
 
-function renderedFilesToDisplay(args: { installRoot: string; files: readonly RenderedWobblyInstallFile[] }): InstallFilePlan[] {
+function renderedFilesToDisplay(args: { installRoot: string; files: readonly RenderedWobblieInstallFile[] }): InstallFilePlan[] {
   return args.files.map((file) => ({
     sourcePath: file.sourcePath,
     destinationPath: toDisplayPath(args.installRoot, file.destinationPath),
@@ -524,7 +524,7 @@ function renderedFilesToDisplay(args: { installRoot: string; files: readonly Ren
   }));
 }
 
-function renderedFilesToTreeEntries(args: { installRoot: string; files: readonly RenderedWobblyInstallFile[] }) {
+function renderedFilesToTreeEntries(args: { installRoot: string; files: readonly RenderedWobblieInstallFile[] }) {
   return args.files.map((file) => ({
     path: toDisplayPath(args.installRoot, file.destinationPath),
     mode: file.mode,
@@ -545,7 +545,7 @@ function markerForInstall(args: {
   files: readonly InstallFilePlan[];
   adaptationKeys: readonly string[];
   branch: string;
-}): WobblyInstallMarker {
+}): WobblieInstallMarker {
   return {
     version: 1,
     exampleId: args.entry.id,
@@ -560,7 +560,7 @@ function markerForInstall(args: {
   };
 }
 
-type WobblyInstallPrBodyWobblyMetadata = {
+type WobblieInstallPrBodyWobblieMetadata = {
   id: string;
   purpose: string;
   watch: string[];
@@ -579,11 +579,11 @@ function markdownListLines(items: readonly string[], args: { code?: boolean | un
 function createPullRequestBody(args: {
   entry: CatalogExample;
   repository: ParsedRepository;
-  wobbly: WobblyInstallPrBodyWobblyMetadata;
+  wobblie: WobblieInstallPrBodyWobblieMetadata;
   markerText: string;
   body?: string | undefined;
 }): string {
-  const wobblyId = args.wobbly.id;
+  const wobblieId = args.wobblie.id;
   const requiredIntegrations = args.entry.requirements.requiredIntegrations;
   const optionalIntegrations = args.entry.requirements.optionalIntegrations;
   const lines: string[] = [];
@@ -593,63 +593,63 @@ function createPullRequestBody(args: {
   lines.push(
     '## Summary',
     '',
-    `This PR installs the \`${wobblyId}\` Wobbly wobbly to \`.wobblies/${wobblyId}/WOBBLIE.md\`. It was generated by Wobbly from the [\`${wobblyId}\` example](https://github.com/${SOURCE_REPO}/blob/master/wobblies/${wobblyId}/WOBBLIE.md).`,
+    `This PR installs the \`${wobblieId}\` Wobblie wobblie to \`.wobblies/${wobblieId}/WOBBLIE.md\`. It was generated by Wobblie from the [\`${wobblieId}\` example](https://github.com/${SOURCE_REPO}/blob/master/wobblies/${wobblieId}/WOBBLIE.md).`,
     '',
-    `The wobbly won't start working until it's merged to the repo's default branch.`,
+    `The wobblie won't start working until it's merged to the repo's default branch.`,
     '',
-    '## What Wobbly wobblys are',
+    '## What Wobblie wobblies are',
     '',
-    'Wobbly is an async engineering teammate that works in the tools your team already uses. In GitHub, Wobbly can inspect code, review changes, propose patches, open PRs, and comment with findings. With connected integrations, Wobbly can also use Linear, Slack, and Sentry context to understand issues, conversations, alerts, and follow-up work.',
+    'Wobblie is an async engineering teammate that works in the tools your team already uses. In GitHub, Wobblie can inspect code, review changes, propose patches, open PRs, and comment with findings. With connected integrations, Wobblie can also use Linear, Slack, and Sentry context to understand issues, conversations, alerts, and follow-up work.',
     '',
-    'A wobbly is a recurring role for Wobbly. Instead of waiting for someone to mention Wobbly every time the same kind of maintenance work appears, the repo contains a small role definition that tells Wobbly when to wake up and what job to do.',
+    'A wobblie is a recurring role for Wobblie. Instead of waiting for someone to mention Wobblie every time the same kind of maintenance work appears, the repo contains a small role definition that tells Wobblie when to wake up and what job to do.',
     '',
-    `This PR adds that role at \`.wobblies/${wobblyId}/WOBBLIE.md\`. The file controls:`,
+    `This PR adds that role at \`.wobblies/${wobblieId}/WOBBLIE.md\`. The file controls:`,
     '',
-    '- when Wobbly can activate, through `watch` conditions or a `schedule`',
-    '- what work Wobbly should perform, through `purpose` and `routines`',
-    '- what Wobbly should avoid, through `deny` rules and body guidance',
+    '- when Wobblie can activate, through `watch` conditions or a `schedule`',
+    '- what work Wobblie should perform, through `purpose` and `routines`',
+    '- what Wobblie should avoid, through `deny` rules and body guidance',
     '',
-    'After this PR is merged and Wobbly ingests the default-branch version, the wobbly can start handling that recurring work inside the limits defined in `WOBBLIE.md`.',
+    'After this PR is merged and Wobblie ingests the default-branch version, the wobblie can start handling that recurring work inside the limits defined in `WOBBLIE.md`.',
     '',
-    'Learn more: https://docs.wobblies.ai/wobblys',
+    'Learn more: https://docs.wobblies.ai/wobblies',
     '',
-    '## What this wobbly does',
+    '## What this wobblie does',
     '',
     '`WOBBLIE.md` purpose:',
     '',
-    `> ${args.wobbly.purpose.replaceAll('\n', '\n> ')}`,
+    `> ${args.wobblie.purpose.replaceAll('\n', '\n> ')}`,
     '',
-    'This wobbly’s configured routines are:',
+    'This wobblie’s configured routines are:',
     '',
-    ...markdownListLines(args.wobbly.routines),
+    ...markdownListLines(args.wobblie.routines),
     '',
-    '## When this wobbly can activate',
+    '## When this wobblie can activate',
     '',
-    'This PR only installs wobbly files. The wobbly becomes eligible for live activations after both are true:',
+    'This PR only installs wobblie files. The wobblie becomes eligible for live activations after both are true:',
     '',
     `1. this PR is merged to the repo's default branch`,
-    '2. Wobbly ingests the merged default-branch version of `WOBBLIE.md`'
+    '2. Wobblie ingests the merged default-branch version of `WOBBLIE.md`'
   );
 
-  if (args.wobbly.watch.length > 0) {
+  if (args.wobblie.watch.length > 0) {
     lines.push(
       '',
       '### Watch conditions',
       '',
-      'Wobbly may wake this wobbly when these `watch` conditions match:',
+      'Wobblie may wake this wobblie when these `watch` conditions match:',
       '',
-      ...markdownListLines(args.wobbly.watch)
+      ...markdownListLines(args.wobblie.watch)
     );
   }
 
-  if (args.wobbly.schedule) {
+  if (args.wobblie.schedule) {
     lines.push(
       '',
       '### Schedule',
       '',
-      'Wobbly may also wake this wobbly on this `schedule`:',
+      'Wobblie may also wake this wobblie on this `schedule`:',
       '',
-      `- \`${args.wobbly.schedule}\``,
+      `- \`${args.wobblie.schedule}\``,
       '',
       'Schedules use five-field UTC cron syntax.'
     );
@@ -659,7 +659,7 @@ function createPullRequestBody(args: {
 
   if (requiredIntegrations.length > 0) {
     lines.push(
-      'This wobbly requires these integrations to work as intended:',
+      'This wobblie requires these integrations to work as intended:',
       '',
       ...markdownListLines(requiredIntegrations, { code: true }),
       ''
@@ -668,7 +668,7 @@ function createPullRequestBody(args: {
 
   if (optionalIntegrations.length > 0) {
     lines.push(
-      'This wobbly declares these optional integrations:',
+      'This wobblie declares these optional integrations:',
       '',
       ...markdownListLines(optionalIntegrations, { code: true }),
       ''
@@ -688,27 +688,27 @@ function createPullRequestBody(args: {
     '',
     'Before merging, review the installed `WOBBLIE.md` and confirm that:',
     '',
-    '- the `purpose` matches the recurring work you want Wobbly to own',
+    '- the `purpose` matches the recurring work you want Wobblie to own',
     '- the `watch` conditions and/or `schedule` are narrow enough for initial rollout',
     '- the `routines` are concrete and bounded',
-    '- the `deny` rules cover actions Wobbly should not take',
+    '- the `deny` rules cover actions Wobblie should not take',
     '- any required integrations above are connected for this organization',
     '',
-    'You can ask Wobbly on this PR to adjust the wobbly before merging. Just leave a comment mentioning `@WobblyHelps`.',
+    'You can ask Wobblie on this PR to adjust the wobblie before merging. Just leave a comment mentioning `@WobblieHelps`.',
     '',
     'For rollout and iteration guidance:',
     '',
-    'https://docs.wobblies.ai/wobblys/testing-and-iterating-on-wobblys',
+    'https://docs.wobblies.ai/wobblies/testing-and-iterating-on-wobblies',
     '',
     '## Activity and future tuning',
     '',
-    'After this wobbly is merged and ingested, you can review wobbly activity here:',
+    'After this wobblie is merged and ingested, you can review wobblie activity here:',
     '',
-    `https://dash.wobblies.ai/organizations/${args.repository.owner}/activity?wobblyId=${wobblyId}`,
+    `https://dash.wobblies.ai/organizations/${args.repository.owner}/activity?wobblieId=${wobblieId}`,
     '',
-    'To browse more wobbly examples:',
+    'To browse more wobblie examples:',
     '',
-    'https://github.com/universe-backwards/wobblies-library/blob/master/README.md',
+    'https://github.com/wobblie-hq/wobblies-library/blob/master/README.md',
     '',
     args.markerText
   );
@@ -716,7 +716,7 @@ function createPullRequestBody(args: {
   return lines.join('\n');
 }
 
-function classifyPull(pull: GitHubPull): WobblyInstallPullRequestListingStatus {
+function classifyPull(pull: GitHubPull): WobblieInstallPullRequestListingStatus {
   if (pull.state === 'open') return 'open';
   return pull.merged_at ? 'merged' : 'closed_unmerged';
 }
@@ -750,10 +750,10 @@ function detectBaseCollisions(args: {
 }
 
 async function branchContainsRenderedFiles(args: {
-  githubClient: WobblyInstallPrGitHubClient;
+  githubClient: WobblieInstallPrGitHubClient;
   repository: ParsedRepository;
   branchSha: string;
-  files: readonly RenderedWobblyInstallFile[];
+  files: readonly RenderedWobblieInstallFile[];
   installRoot: string;
 }): Promise<boolean> {
   const branchCommit = await getCommit({ githubClient: args.githubClient, repository: args.repository, sha: args.branchSha });
@@ -770,7 +770,7 @@ async function branchContainsRenderedFiles(args: {
 }
 
 async function createPullRequest(args: {
-  githubClient: WobblyInstallPrGitHubClient;
+  githubClient: WobblieInstallPrGitHubClient;
   repository: ParsedRepository;
   title: string;
   body: string;
@@ -788,7 +788,7 @@ async function createPullRequest(args: {
 }
 
 async function openPullFromExistingBranch(args: {
-  githubClient: WobblyInstallPrGitHubClient;
+  githubClient: WobblieInstallPrGitHubClient;
   repository: ParsedRepository;
   branch: string;
   branchSha: string;
@@ -831,14 +831,14 @@ async function openPullFromExistingBranch(args: {
 }
 
 async function recoverExistingBranch(args: {
-  githubClient: WobblyInstallPrGitHubClient;
+  githubClient: WobblieInstallPrGitHubClient;
   repository: ParsedRepository;
   branch: string;
   branchSha: string;
   baseBranch: string;
   title: string;
   body: string;
-  renderedFiles: readonly RenderedWobblyInstallFile[];
+  renderedFiles: readonly RenderedWobblieInstallFile[];
   installRoot: string;
 }): Promise<{ status: 'existing_open' | 'recovered_branch'; pull: GitHubPull }> {
   const open = await findOpenPullRequestForExactHead({
@@ -858,13 +858,13 @@ async function recoverExistingBranch(args: {
     installRoot: args.installRoot,
   });
   if (!branchMatches) {
-    throw new WobblyInstallPullRequestError({
+    throw new WobblieInstallPullRequestError({
       code: 'INSTALL_BRANCH_COLLISION',
-      message: `Branch '${args.branch}' already exists but does not contain the expected wobbly install files.`,
+      message: `Branch '${args.branch}' already exists but does not contain the expected wobblie install files.`,
       errors: [
         markerIssue(
           'INSTALL_BRANCH_COLLISION',
-          `Branch '${args.branch}' already exists but does not contain the expected wobbly install files.`
+          `Branch '${args.branch}' already exists but does not contain the expected wobblie install files.`
         ),
       ],
     });
@@ -873,14 +873,14 @@ async function recoverExistingBranch(args: {
   return await openPullFromExistingBranch(args);
 }
 
-export async function createWobblyInstallPullRequest(
-  options: CreateWobblyInstallPullRequestOptions
-): Promise<WobblyInstallPullRequestOpenResult> {
+export async function createWobblieInstallPullRequest(
+  options: CreateWobblieInstallPullRequestOptions
+): Promise<WobblieInstallPullRequestOpenResult> {
   const repository = parseRepository(options.repo);
   const exampleId = options.exampleId;
-  if (!WOBBLY_ID_PATTERN.test(exampleId)) {
-    throw new WobblyInstallPullRequestError({
-      code: 'INVALID_WOBBLY_ID',
+  if (!WOBBLIE_ID_PATTERN.test(exampleId)) {
+    throw new WobblieInstallPullRequestError({
+      code: 'INVALID_WOBBLIE_ID',
       message: `Invalid example id '${exampleId}'. Expected kebab-case.`,
     });
   }
@@ -888,25 +888,25 @@ export async function createWobblyInstallPullRequest(
   const sourceRef = options.sourceRef ?? DEFAULT_CATALOG_REF;
   const installRoot = options.installRoot ?? DEFAULT_INSTALL_ROOT;
   const catalogClient = options.catalogClient ?? createGitHubCatalogClient();
-  const githubClient = options.githubClient ?? createWobblyInstallPrGitHubClient({ authToken: options.authToken });
+  const githubClient = options.githubClient ?? createWobblieInstallPrGitHubClient({ authToken: options.authToken });
   const catalog = await catalogClient.loadCatalog(sourceRef);
   const entry = catalog.examples.find((candidate) => candidate.id === exampleId);
   if (!entry) {
-    throw new WobblyInstallPullRequestError({
+    throw new WobblieInstallPullRequestError({
       code: 'EXAMPLE_NOT_FOUND',
-      message: `No wobbly example found for '${exampleId}'.`,
+      message: `No wobblie example found for '${exampleId}'.`,
     });
   }
   if (entry.status === 'deprecated' && options.allowDeprecated !== true) {
-    throw new WobblyInstallPullRequestError({
+    throw new WobblieInstallPullRequestError({
       code: 'DEPRECATED_EXAMPLE_BLOCKED',
       message: `Example '${exampleId}' is deprecated.`,
     });
   }
 
-  const installPlanResult = createWobblyInstallPlan({ entry, installRoot });
+  const installPlanResult = createWobblieInstallPlan({ entry, installRoot });
   if (!installPlanResult.ok) {
-    throw new WobblyInstallPullRequestError({
+    throw new WobblieInstallPullRequestError({
       code: 'INSTALL_PLAN_INVALID',
       message: `Catalog entry '${exampleId}' cannot be installed safely.`,
       errors: installPlanResult.errors,
@@ -917,14 +917,14 @@ export async function createWobblyInstallPullRequest(
   const cliValues = toValueMap(options.adaptations);
   const adaptationResolution = resolveAdaptations({ entry, fileValues, cliValues });
   if (!adaptationResolution.ok) {
-    throw new WobblyInstallPullRequestError({
+    throw new WobblieInstallPullRequestError({
       code: 'ADAPTATION_INPUTS_INVALID',
       message: `Adaptation inputs for '${exampleId}' are incomplete or invalid.`,
       errors: adaptationResolution.errors,
     });
   }
 
-  const rendered = await prepareWobblyInstallFiles({
+  const rendered = await prepareWobblieInstallFiles({
     entry,
     ref: sourceRef,
     catalogClient,
@@ -933,19 +933,19 @@ export async function createWobblyInstallPullRequest(
     resolution: adaptationResolution.resolution,
   });
   if (!rendered.ok) {
-    throw new WobblyInstallPullRequestError({
+    throw new WobblieInstallPullRequestError({
       code: 'RENDERED_INSTALL_INVALID',
-      message: `Rendered wobbly example '${exampleId}' is invalid.`,
+      message: `Rendered wobblie example '${exampleId}' is invalid.`,
       errors: rendered.errors,
     });
   }
 
   const baseBranch = options.base ?? (await getDefaultBranch({ githubClient, repository }));
   const headBranch = options.headBranch ?? deterministicInstallBranch(entry.id);
-  if (!headBranch.startsWith(WOBBLY_INSTALL_BRANCH_PREFIX)) {
-    throw new WobblyInstallPullRequestError({
+  if (!headBranch.startsWith(WOBBLIE_INSTALL_BRANCH_PREFIX)) {
+    throw new WobblieInstallPullRequestError({
       code: 'INVALID_INSTALL_BRANCH',
-      message: `Install branch '${headBranch}' must be under '${WOBBLY_INSTALL_BRANCH_PREFIX}'.`,
+      message: `Install branch '${headBranch}' must be under '${WOBBLIE_INSTALL_BRANCH_PREFIX}'.`,
     });
   }
 
@@ -960,33 +960,33 @@ export async function createWobblyInstallPullRequest(
     adaptationKeys: adaptationResolution.resolution.appliedKeys,
     branch: headBranch,
   });
-  const markerText = createWobblyInstallMarker(marker);
-  const wobblyFile = rendered.files.find((file) => file.kind === 'wobbly');
-  if (!wobblyFile) {
-    throw new WobblyInstallPullRequestError({
-      code: 'INSTALL_PLAN_MISSING_WOBBLY',
+  const markerText = createWobblieInstallMarker(marker);
+  const wobblieFile = rendered.files.find((file) => file.kind === 'wobblie');
+  if (!wobblieFile) {
+    throw new WobblieInstallPullRequestError({
+      code: 'INSTALL_PLAN_MISSING_WOBBLIE',
       message: 'Install plan did not include WOBBLIE.md.',
     });
   }
-  const wobblyDisplayPath = toDisplayPath(installRoot, wobblyFile.destinationPath);
-  const wobblyValidation = validateRuntimeWobblyMarkdown({
-    content: wobblyFile.content,
-    path: wobblyDisplayPath,
+  const wobblieDisplayPath = toDisplayPath(installRoot, wobblieFile.destinationPath);
+  const wobblieValidation = validateRuntimeWobblieMarkdown({
+    content: wobblieFile.content,
+    path: wobblieDisplayPath,
     expectedId: entry.id,
   });
-  if (!wobblyValidation.ok) {
-    throw new WobblyInstallPullRequestError({
-      code: 'RENDERED_WOBBLY_METADATA_INVALID',
-      message: `Rendered wobbly example '${exampleId}' metadata could not be read for PR body generation.`,
-      errors: wobblyValidation.errors,
+  if (!wobblieValidation.ok) {
+    throw new WobblieInstallPullRequestError({
+      code: 'RENDERED_WOBBLIE_METADATA_INVALID',
+      message: `Rendered wobblie example '${exampleId}' metadata could not be read for PR body generation.`,
+      errors: wobblieValidation.errors,
     });
   }
 
-  const title = options.title ?? `Install ${entry.id} wobbly`;
+  const title = options.title ?? `Install ${entry.id} wobblie`;
   const body = createPullRequestBody({
     entry,
     repository,
-    wobbly: wobblyValidation.wobbly,
+    wobblie: wobblieValidation.wobblie,
     markerText,
     body: options.body,
   });
@@ -1007,7 +1007,7 @@ export async function createWobblyInstallPullRequest(
     return {
       status: recovered.status,
       repository: repository.fullName,
-      wobblyId: entry.id,
+      wobblieId: entry.id,
       sourceRepo: SOURCE_REPO,
       sourceRef,
       catalogSchemaVersion: catalog.schemaVersion,
@@ -1026,7 +1026,7 @@ export async function createWobblyInstallPullRequest(
 
   const baseRef = await getRef({ githubClient, repository, ref: `heads/${baseBranch}` });
   if (!baseRef) {
-    throw new WobblyInstallPullRequestError({
+    throw new WobblieInstallPullRequestError({
       code: 'BASE_REF_NOT_FOUND',
       message: `Base branch '${baseBranch}' was not found in '${repository.fullName}'.`,
     });
@@ -1039,9 +1039,9 @@ export async function createWobblyInstallPullRequest(
     files: plannedDisplayFiles,
   });
   if (collisions.length > 0 && options.force !== true) {
-    throw new WobblyInstallPullRequestError({
+    throw new WobblieInstallPullRequestError({
       code: 'INSTALL_COLLISION',
-      message: `Refusing to open wobbly install PR because ${collisions.length.toString()} target path${collisions.length === 1 ? '' : 's'} already exist.`,
+      message: `Refusing to open wobblie install PR because ${collisions.length.toString()} target path${collisions.length === 1 ? '' : 's'} already exist.`,
       errors: collisions.map((collision) =>
         markerIssue('INSTALL_COLLISION', `Target path already exists: ${collision}`, null, collision)
       ),
@@ -1057,7 +1057,7 @@ export async function createWobblyInstallPullRequest(
   });
   const createdCommit = await githubClient.request<GitHubCommit>('POST', pathForRepo(repository, '/git/commits'), {
     body: {
-      message: `Install ${entry.id} wobbly`,
+      message: `Install ${entry.id} wobblie`,
       tree: createdTree.sha,
       parents: [baseRef.object.sha],
     },
@@ -1088,7 +1088,7 @@ export async function createWobblyInstallPullRequest(
     return {
       status: recovered.status,
       repository: repository.fullName,
-      wobblyId: entry.id,
+      wobblieId: entry.id,
       sourceRepo: SOURCE_REPO,
       sourceRef,
       catalogSchemaVersion: catalog.schemaVersion,
@@ -1131,7 +1131,7 @@ export async function createWobblyInstallPullRequest(
   return {
     status: 'created',
     repository: repository.fullName,
-    wobblyId: entry.id,
+    wobblieId: entry.id,
     sourceRepo: SOURCE_REPO,
     sourceRef,
     catalogSchemaVersion: catalog.schemaVersion,
@@ -1149,13 +1149,13 @@ export async function createWobblyInstallPullRequest(
 }
 
 async function listMatchingRefs(args: {
-  githubClient: WobblyInstallPrGitHubClient;
+  githubClient: WobblieInstallPrGitHubClient;
   repository: ParsedRepository;
 }): Promise<GitHubRef[]> {
   try {
     return await args.githubClient.request<GitHubRef[]>(
       'GET',
-      pathForRepo(args.repository, `/git/matching-refs/heads/${WOBBLY_INSTALL_BRANCH_PREFIX}`)
+      pathForRepo(args.repository, `/git/matching-refs/heads/${WOBBLIE_INSTALL_BRANCH_PREFIX}`)
     );
   } catch (error) {
     if (isNotFound(error)) return [];
@@ -1164,14 +1164,14 @@ async function listMatchingRefs(args: {
 }
 
 async function searchMarkerPullRequests(args: {
-  githubClient: WobblyInstallPrGitHubClient;
+  githubClient: WobblieInstallPrGitHubClient;
   repository: ParsedRepository;
   warnings: CliIssue[];
 }): Promise<number[]> {
   try {
     const search = await args.githubClient.request<GitHubSearchIssuesResponse>('GET', '/search/issues', {
       query: {
-        q: `repo:${args.repository.fullName} is:pr in:body ${WOBBLY_INSTALL_MARKER_NAME}`,
+        q: `repo:${args.repository.fullName} is:pr in:body ${WOBBLIE_INSTALL_MARKER_NAME}`,
         per_page: '100',
       },
     });
@@ -1188,7 +1188,7 @@ async function searchMarkerPullRequests(args: {
 }
 
 async function getPull(args: {
-  githubClient: WobblyInstallPrGitHubClient;
+  githubClient: WobblieInstallPrGitHubClient;
   repository: ParsedRepository;
   number: number;
 }): Promise<GitHubPull | null> {
@@ -1200,10 +1200,10 @@ async function getPull(args: {
   }
 }
 
-function listingFromPull(args: { repository: ParsedRepository; pull: GitHubPull }): WobblyInstallPullRequestListing {
-  const markerResult = parseWobblyInstallMarker(args.pull.body);
+function listingFromPull(args: { repository: ParsedRepository; pull: GitHubPull }): WobblieInstallPullRequestListing {
+  const markerResult = parseWobblieInstallMarker(args.pull.body);
   const warnings: CliIssue[] = [];
-  let marker: WobblyInstallMarker | null = null;
+  let marker: WobblieInstallMarker | null = null;
   let markerPresent = false;
   let markerValid = false;
   if (markerResult.ok) {
@@ -1214,7 +1214,7 @@ function listingFromPull(args: { repository: ParsedRepository; pull: GitHubPull 
     markerPresent = markerResult.present;
     markerValid = false;
     if (markerResult.error) warnings.push(markerResult.error);
-    if (!markerPresent && args.pull.head.ref.startsWith(WOBBLY_INSTALL_BRANCH_PREFIX)) {
+    if (!markerPresent && args.pull.head.ref.startsWith(WOBBLIE_INSTALL_BRANCH_PREFIX)) {
       warnings.push(
         markerIssue(
           'INSTALL_MARKER_MISSING',
@@ -1227,7 +1227,7 @@ function listingFromPull(args: { repository: ParsedRepository; pull: GitHubPull 
   return {
     status: classifyPull(args.pull),
     repository: args.repository.fullName,
-    wobblyId: marker?.exampleId ?? wobblyIdFromBranch(args.pull.head.ref),
+    wobblieId: marker?.exampleId ?? wobblieIdFromBranch(args.pull.head.ref),
     sourceRepo: marker?.sourceRepo ?? null,
     sourceRef: marker?.sourceRef ?? null,
     catalogSchemaVersion: marker?.catalogSchemaVersion ?? null,
@@ -1242,19 +1242,19 @@ function listingFromPull(args: { repository: ParsedRepository; pull: GitHubPull 
   };
 }
 
-function wobblyIdFromBranch(branch: string): string | null {
-  if (!branch.startsWith(WOBBLY_INSTALL_BRANCH_PREFIX)) return null;
-  const id = branch.slice(WOBBLY_INSTALL_BRANCH_PREFIX.length);
-  return WOBBLY_ID_PATTERN.test(id) ? id : null;
+function wobblieIdFromBranch(branch: string): string | null {
+  if (!branch.startsWith(WOBBLIE_INSTALL_BRANCH_PREFIX)) return null;
+  const id = branch.slice(WOBBLIE_INSTALL_BRANCH_PREFIX.length);
+  return WOBBLIE_ID_PATTERN.test(id) ? id : null;
 }
 
-export async function listWobblyInstallPullRequests(
-  options: ListWobblyInstallPullRequestsOptions
-): Promise<WobblyInstallPullRequestListResult> {
+export async function listWobblieInstallPullRequests(
+  options: ListWobblieInstallPullRequestsOptions
+): Promise<WobblieInstallPullRequestListResult> {
   const repository = parseRepository(options.repo);
-  const githubClient = options.githubClient ?? createWobblyInstallPrGitHubClient({ authToken: options.authToken });
+  const githubClient = options.githubClient ?? createWobblieInstallPrGitHubClient({ authToken: options.authToken });
   const warnings: CliIssue[] = [];
-  const listingsByKey = new Map<string, WobblyInstallPullRequestListing>();
+  const listingsByKey = new Map<string, WobblieInstallPullRequestListing>();
 
   const markerPullNumbers = await searchMarkerPullRequests({ githubClient, repository, warnings });
   for (const pullNumber of markerPullNumbers) {
@@ -1272,7 +1272,7 @@ export async function listWobblyInstallPullRequests(
       listingsByKey.set(`branch:${branch}`, {
         status: 'branchWithoutPullRequest',
         repository: repository.fullName,
-        wobblyId: wobblyIdFromBranch(branch),
+        wobblieId: wobblieIdFromBranch(branch),
         sourceRepo: null,
         sourceRef: null,
         catalogSchemaVersion: null,
@@ -1305,7 +1305,7 @@ export async function listWobblyInstallPullRequests(
 
   return {
     repository: repository.fullName,
-    branchPrefix: WOBBLY_INSTALL_BRANCH_PREFIX,
+    branchPrefix: WOBBLIE_INSTALL_BRANCH_PREFIX,
     installPullRequests,
     count: installPullRequests.length,
     warnings,

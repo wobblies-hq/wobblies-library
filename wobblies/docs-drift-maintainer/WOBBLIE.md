@@ -62,7 +62,7 @@ Run repository-discoverable documentation formatting, linting, or link checks wh
 
 ## Coordination
 
-Before opening a new PR, inspect existing open documentation PRs. Update an existing wobbly-owned PR when it covers the same source change or documentation target. Do not open duplicate docs PRs for the same stale claim.
+Before opening a new PR, inspect existing open documentation PRs. Update an existing wobblie-owned PR when it covers the same source change or documentation target. Do not open duplicate docs PRs for the same stale claim.
 
 Do not push to human-owned documentation PRs. If a human-owned PR already covers the same source change or documentation target, no-op.
 

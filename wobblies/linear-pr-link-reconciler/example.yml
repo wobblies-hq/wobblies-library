@@ -13,7 +13,7 @@ fit:
     - Teams that discuss active code work in Linear before every related GitHub PR or branch is linked.
     - Workspaces where Linear teams are mapped to the repositories that contain their implementation work.
   notFor:
-    - Teams that want Wobbly to automatically edit Linear links, PR descriptions, issue state, or GitHub metadata.
+    - Teams that want Wobblie to automatically edit Linear links, PR descriptions, issue state, or GitHub metadata.
     - Issues spanning many repositories where the correct repository cannot be inferred confidently from team mapping.
 requirements:
   requiredIntegrations:

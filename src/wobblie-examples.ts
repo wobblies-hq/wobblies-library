@@ -4,23 +4,23 @@ import { fileURLToPath } from 'node:url';
 import { parseExamplesCatalogContent } from './examples/schema';
 import type { CatalogExample, ExampleAdaptation, ExamplesCatalog, ValidationError } from './examples/types';
 
-export type WobblyExample = CatalogExample;
-export type WobblyExampleAdaptation = ExampleAdaptation;
-export type WobblyExamplesCatalog = ExamplesCatalog;
+export type WobblieExample = CatalogExample;
+export type WobblieExampleAdaptation = ExampleAdaptation;
+export type WobblieExamplesCatalog = ExamplesCatalog;
 
-export type LoadWobblyExamplesCatalogOptions = {
+export type LoadWobblieExamplesCatalogOptions = {
   /** Override the catalog path. Defaults to the packaged repository-root examples.json. */
   catalogPath?: string | URL | undefined;
 };
 
-export class WobblyExamplesCatalogError extends Error {
+export class WobblieExamplesCatalogError extends Error {
   readonly code: string;
   readonly path: string;
   readonly validationErrors: ValidationError[];
 
   constructor(args: { code: string; path: string; message: string; validationErrors?: ValidationError[] | undefined }) {
     super(args.message);
-    this.name = 'WobblyExamplesCatalogError';
+    this.name = 'WobblieExamplesCatalogError';
     this.code = args.code;
     this.path = args.path;
     this.validationErrors = args.validationErrors ?? [];
@@ -35,9 +35,9 @@ function catalogPathForDisplay(catalogPath: string | URL): string {
   return catalogPath instanceof URL ? catalogPath.href : catalogPath;
 }
 
-export async function loadWobblyExamplesCatalog(
-  options: LoadWobblyExamplesCatalogOptions = {}
-): Promise<WobblyExamplesCatalog> {
+export async function loadWobblieExamplesCatalog(
+  options: LoadWobblieExamplesCatalogOptions = {}
+): Promise<WobblieExamplesCatalog> {
   const catalogPath = options.catalogPath ?? defaultCatalogPath();
   const displayPath = catalogPathForDisplay(catalogPath);
 
@@ -45,19 +45,19 @@ export async function loadWobblyExamplesCatalog(
   try {
     content = await readFile(catalogPath, 'utf8');
   } catch (error) {
-    throw new WobblyExamplesCatalogError({
+    throw new WobblieExamplesCatalogError({
       code: 'CATALOG_READ_FAILED',
       path: displayPath,
-      message: `Unable to read wobbly examples catalog at ${displayPath}: ${error instanceof Error ? error.message : String(error)}`,
+      message: `Unable to read wobblie examples catalog at ${displayPath}: ${error instanceof Error ? error.message : String(error)}`,
     });
   }
 
   const parsed = parseExamplesCatalogContent({ content, path: displayPath });
   if (!parsed.ok) {
-    throw new WobblyExamplesCatalogError({
+    throw new WobblieExamplesCatalogError({
       code: 'INVALID_CATALOG',
       path: displayPath,
-      message: `Wobbly examples catalog at ${displayPath} is invalid.`,
+      message: `Wobblie examples catalog at ${displayPath} is invalid.`,
       validationErrors: parsed.errors,
     });
   }
@@ -65,17 +65,17 @@ export async function loadWobblyExamplesCatalog(
   return parsed.value;
 }
 
-export async function listWobblyExamples(
-  options: LoadWobblyExamplesCatalogOptions = {}
-): Promise<WobblyExample[]> {
-  const catalog = await loadWobblyExamplesCatalog(options);
+export async function listWobblieExamples(
+  options: LoadWobblieExamplesCatalogOptions = {}
+): Promise<WobblieExample[]> {
+  const catalog = await loadWobblieExamplesCatalog(options);
   return [...catalog.examples];
 }
 
-export async function getWobblyExample(
+export async function getWobblieExample(
   id: string,
-  options: LoadWobblyExamplesCatalogOptions = {}
-): Promise<WobblyExample | null> {
-  const catalog = await loadWobblyExamplesCatalog(options);
+  options: LoadWobblieExamplesCatalogOptions = {}
+): Promise<WobblieExample | null> {
+  const catalog = await loadWobblieExamplesCatalog(options);
   return catalog.examples.find((example) => example.id === id) ?? null;
 }

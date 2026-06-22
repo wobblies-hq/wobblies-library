@@ -1,21 +1,21 @@
 # Examples authoring guide
 
-This guide is for authors and reviewers adding or editing example wobbly packages in this repository.
+This guide is for authors and reviewers adding or editing example wobblie packages in this repository.
 
 The goal is to make every example easy to find, safe to publish, realistic enough to copy from, and explicit about what a customer must adapt.
 
 ## Required reading before authoring or review
 
-Before adding or reviewing an example, read the relevant Wobbly wobbly docs first. Treat this as a review requirement, not optional background: if an example conflicts with these docs, fix the example or explain why the docs should change.
+Before adding or reviewing an example, read the relevant Wobblie wobblie docs first. Treat this as a review requirement, not optional background: if an example conflicts with these docs, fix the example or explain why the docs should change.
 
 Read these pages before continuing through this guide:
 
 - [Examples v2 package and catalog spec](./examples-spec.md) for the repo-owned package/catalog contract.
-- [Wobblys overview](https://docs.wobblies.ai/wobblys) for what wobblys are, the wake model, and how `WOBBLY.md` controls behavior.
-- [Choosing wobblys](https://docs.wobblies.ai/wobblys/choosing-wobblys) for deciding whether the customer job is a wobbly candidate rather than a one-off Wobbly task.
-- [Writing and editing `WOBBLY.md`](https://docs.wobblies.ai/wobblys/writing-and-editing-wobbly-md) for authoring narrow, explicit, repeatable wobbly behavior.
-- [`WOBBLY.md` reference](https://docs.wobblies.ai/wobblys/wobbly-md-reference) for the exact authored file contract, field names, validation rules, and support-tree semantics.
-- [Testing and iterating on wobblys](https://docs.wobblies.ai/wobblys/testing-and-iterating-on-wobblys) for rollout, containment, observability, and verification guidance.
+- [Wobblies overview](https://docs.wobblies.ai/wobblies) for what wobblies are, the wake model, and how `WOBBLIE.md` controls behavior.
+- [Choosing wobblies](https://docs.wobblies.ai/wobblies/choosing-wobblies) for deciding whether the customer job is a wobblie candidate rather than a one-off Wobblie task.
+- [Writing and editing `WOBBLIE.md`](https://docs.wobblies.ai/wobblies/writing-and-editing-wobblie-md) for authoring narrow, explicit, repeatable wobblie behavior.
+- [`WOBBLIE.md` reference](https://docs.wobblies.ai/wobblies/wobblie-md-reference) for the exact authored file contract, field names, validation rules, and support-tree semantics.
+- [Testing and iterating on wobblies](https://docs.wobblies.ai/wobblies/testing-and-iterating-on-wobblies) for rollout, containment, observability, and verification guidance.
 
 Then use the rest of this guide to align the example package, catalog metadata, support files, and public-safety notes with those docs.
 
@@ -23,7 +23,7 @@ Then use the rest of this guide to align the example package, catalog metadata, 
 
 Start from a customer job-to-be-done, not from an integration demo or clever automation idea. Every example should map to at least one approved `fit.jobsToBeDone` slug. If the customer job is unclear, the example is probably not ready for the public catalog.
 
-Add or keep an example when it shows a reusable wobbly pattern that is clearer as source than as prose alone.
+Add or keep an example when it shows a reusable wobblie pattern that is clearer as source than as prose alone.
 
 Good examples usually have:
 
@@ -47,11 +47,11 @@ Do not add an example for:
 
 ## Adaptation, risk, and platform boundaries
 
-Public examples look copyable, but target repos vary by integrations, conventions, permissions, commands, source-of-truth systems, output preferences, existing automation, scale, and tolerance for noise. Make those assumptions visible in `requirements`, `adaptations[]`, `specializationIdeas[]`, support files, or `WOBBLY.md` runtime policy.
+Public examples look copyable, but target repos vary by integrations, conventions, permissions, commands, source-of-truth systems, output preferences, existing automation, scale, and tolerance for noise. Make those assumptions visible in `requirements`, `adaptations[]`, `specializationIdeas[]`, support files, or `WOBBLIE.md` runtime policy.
 
-Keep the boundary clear: `WOBBLY.md` is runtime policy for Wobbly after the wobbly is installed and adapted. Instructions about how to use, configure, or modify an example belong in `example.yml`, not in the wobbly body where Wobbly may treat them as active policy. Support references can provide reusable detail when `example.yml` points readers there.
+Keep the boundary clear: `WOBBLIE.md` is runtime policy for Wobblie after the wobblie is installed and adapted. Instructions about how to use, configure, or modify an example belong in `example.yml`, not in the wobblie body where Wobblie may treat them as active policy. Support references can provide reusable detail when `example.yml` points readers there.
 
-High-risk examples are allowed when they address real operational burden, but author them intentionally. High-risk does not mean "opens a PR touching important code"; reviewable artifacts are usually low operational risk because humans can close, ignore, or revert them. High-risk means the wobbly could interfere with human workflows or take actions that are hard or annoying to reverse, such as mutating production state, deleting resources, force-pushing over human changes, closing or reprioritizing many issues, changing production flags, or posting noisy output across surfaces.
+High-risk examples are allowed when they address real operational burden, but author them intentionally. High-risk does not mean "opens a PR touching important code"; reviewable artifacts are usually low operational risk because humans can close, ignore, or revert them. High-risk means the wobblie could interfere with human workflows or take actions that are hard or annoying to reverse, such as mutating production state, deleting resources, force-pushing over human changes, closing or reprioritizing many issues, changing production flags, or posting noisy output across surfaces.
 
 For high-risk examples:
 
@@ -62,9 +62,9 @@ For high-risk examples:
 - deny nearby risky shortcuts;
 - make visible output easy to review.
 
-If a platform changes the wobbly's source of truth, routines, output surface, or required permissions, prefer a separate example instead of hiding branches inside one wobbly. `requirements.optionalIntegrations` means the wobbly can still perform its core role without that integration; it must not encode one-of-many required alternatives.
+If a platform changes the wobblie's source of truth, routines, output surface, or required permissions, prefer a separate example instead of hiding branches inside one wobblie. `requirements.optionalIntegrations` means the wobblie can still perform its core role without that integration; it must not encode one-of-many required alternatives.
 
-Do not imply unsupported event wakes. Routed GitHub, Linear, and Slack events can be used for `watch` when Wobbly can infer the repository and wobbly inventory. Write `watch` around observable provider-visible events, and use `schedule` for surveys, reconciliation, reports, or sources without a supported routed event wake.
+Do not imply unsupported event wakes. Routed GitHub, Linear, and Slack events can be used for `watch` when Wobblie can infer the repository and wobblie inventory. Write `watch` around observable provider-visible events, and use `schedule` for surveys, reconciliation, reports, or sources without a supported routed event wake.
 
 ## Authoring workflow
 
@@ -87,9 +87,9 @@ Avoid IDs that are:
 
 The ID must match all three places:
 
-- `wobblys/<id>/`
-- `wobblys/<id>/example.yml`
-- `wobblys/<id>/WOBBLY.md` frontmatter
+- `wobblies/<id>/`
+- `wobblies/<id>/example.yml`
+- `wobblies/<id>/WOBBLIE.md` frontmatter
 
 Treat renames as breaking. If an example's recommendation changes substantially, consider creating a new example or marking the old one `deprecated`.
 
@@ -98,8 +98,8 @@ Treat renames as breaking. If an example's recommendation changes substantially,
 Use this shape:
 
 ```text
-wobblys/<id>/
-  WOBBLY.md
+wobblies/<id>/
+  WOBBLIE.md
   example.yml
   scripts/**      # optional
   references/**   # optional
@@ -107,15 +107,15 @@ wobblys/<id>/
 
 Keep package contents small. Do not add a package-local `README.md`, screenshots, private source notes, or unrelated sample files.
 
-### 3. Write `WOBBLY.md`
+### 3. Write `WOBBLIE.md`
 
-Write the wobbly file as if a customer might copy it after reading the catalog metadata.
+Write the wobblie file as if a customer might copy it after reading the catalog metadata.
 
-A strong example `WOBBLY.md` has:
+A strong example `WOBBLIE.md` has:
 
 - a purpose that states the outcome, not just the mechanism;
 - wake conditions that are specific enough to avoid noise;
-- routines that describe bounded work Wobbly can actually perform;
+- routines that describe bounded work Wobblie can actually perform;
 - deny rules for adjacent risky behavior;
 - body guidance only where it improves runtime decisions after installation;
 - public-safe placeholders for customer-specific values;
@@ -125,13 +125,13 @@ At least one activation path is required:
 
 - use `watch` for event-driven work;
 - use `schedule` for recurring surveys, reports, or maintenance windows;
-- use both only when the wobbly has both event-driven and scheduled responsibilities.
+- use both only when the wobblie has both event-driven and scheduled responsibilities.
 
 Avoid:
 
 - invented frontmatter fields;
-- catalog metadata in `WOBBLY.md`;
-- rollout instructions, validation checklists, setup tutorials, copy-time configuration notes, or catalog presentation notes in `WOBBLY.md`;
+- catalog metadata in `WOBBLIE.md`;
+- rollout instructions, validation checklists, setup tutorials, copy-time configuration notes, or catalog presentation notes in `WOBBLIE.md`;
 - copying stale metadata such as `readiness`, `showOnWebsite`, or `bestFor` into frontmatter;
 - long generic filler that does not change behavior;
 - body headings that imply schema beyond the public docs.
@@ -140,7 +140,7 @@ Avoid:
 
 `example.yml` explains how the example should be discovered, evaluated, and adapted.
 
-Use `example.yml` for required adaptation, branch selection, package-manager command replacement, issue-tracker selection, output destinations, and other copy-time configuration guidance. Keep `WOBBLY.md` focused on the wobbly's runtime behavior after those decisions have been made.
+Use `example.yml` for required adaptation, branch selection, package-manager command replacement, issue-tracker selection, output destinations, and other copy-time configuration guidance. Keep `WOBBLIE.md` focused on the wobblie's runtime behavior after those decisions have been made.
 
 Use this template:
 
@@ -148,7 +148,7 @@ Use this template:
 id: example-id
 title: Example Display Title
 status: ready
-summary: One sentence explaining the outcome this wobbly provides.
+summary: One sentence explaining the outcome this wobblie provides.
 readiness: adapt-before-use
 showOnWebsite: true
 showInDashboard: true
@@ -156,7 +156,7 @@ fit:
   jobsToBeDone:
     - operate
   bestFor:
-    - Teams with a recurring need this wobbly can address safely.
+    - Teams with a recurring need this wobblie can address safely.
   notFor:
     - Teams where the required decision authority is unclear.
 requirements:
@@ -164,15 +164,15 @@ requirements:
     - github
   optionalIntegrations: []
   other:
-    - A repo-local command or policy this wobbly relies on.
+    - A repo-local command or policy this wobblie relies on.
 adaptations:
   - key: target_branch
     label: Target branch
-    description: Branch name the installed wobbly should use for generated work.
+    description: Branch name the installed wobblie should use for generated work.
     required: false
-    default: wobbly/example
+    default: wobblie/example
 specializationIdeas:
-  - Narrow this wobbly to one repository area if the default scope is too broad.
+  - Narrow this wobblie to one repository area if the default scope is too broad.
 ```
 
 #### Summary
@@ -199,7 +199,7 @@ Choose the smallest accurate set from the allowed values:
 - `operate`
 - `explain`
 - `plan`
-- `wobbly-operations`
+- `wobblie-operations`
 
 Do not add new job strings without updating the schema, tests, generated catalog, and spec.
 
@@ -214,8 +214,8 @@ Use `fit.bestFor` for positive matching criteria:
 
 Use `fit.notFor` to prevent over-application:
 
-- cases requiring human judgment outside Wobbly's authority;
-- workflows too low-volume for a wobbly;
+- cases requiring human judgment outside Wobblie's authority;
+- workflows too low-volume for a wobblie;
 - teams without the required policy or taxonomy;
 - scenarios where a one-off task is safer.
 
@@ -225,7 +225,7 @@ Keep both fields precise. `bestFor` can position the example against broad needs
 
 Put integration requirements in `requiredIntegrations` or `optionalIntegrations`.
 
-List an integration as optional only when the wobbly can still perform its core role without it. Do not use `optionalIntegrations` to encode required alternatives such as "GitHub or Linear"; if the source-of-truth platform changes wobbly behavior, create platform-specific examples.
+List an integration as optional only when the wobblie can still perform its core role without it. Do not use `optionalIntegrations` to encode required alternatives such as "GitHub or Linear"; if the source-of-truth platform changes wobblie behavior, create platform-specific examples.
 
 Allowed integration values are:
 
@@ -234,16 +234,16 @@ Allowed integration values are:
 - `slack`
 - `sentry`
 
-Put wobbly-specific non-integration prerequisites in `requirements.other`, such as:
+Put wobblie-specific non-integration prerequisites in `requirements.other`, such as:
 
 - a documented label taxonomy;
 - known repository paths;
 - destination channel conventions;
 - branch, title, or label conventions;
 - signal thresholds or routing rules.
-- configured tool commands that the wobbly directly invokes.
+- configured tool commands that the wobblie directly invokes.
 
-Do not use `requirements.other` as a generic repo-health checklist. Broad expectations like having local verification available usually apply to many wobblys and should appear only when this specific example depends on a named command, policy, or convention.
+Do not use `requirements.other` as a generic repo-health checklist. Broad expectations like having local verification available usually apply to many wobblies and should appear only when this specific example depends on a named command, policy, or convention.
 
 #### Readiness and adaptation
 
@@ -259,7 +259,7 @@ Use `adapt-before-use` when a customer must provide a required structured adapta
 - thresholds, schedules, or quiet-hours policies;
 - support script assumptions.
 
-Use `direct-copy` only when no required structured adaptation is declared. Even then, reviewers should verify that the wobbly is safe, useful, and accurate for the target repo before use.
+Use `direct-copy` only when no required structured adaptation is declared. Even then, reviewers should verify that the wobblie is safe, useful, and accurate for the target repo before use.
 
 #### Configurable examples
 
@@ -268,16 +268,16 @@ Some examples intentionally require local values, such as package-manager comman
 For configurable examples:
 
 - keep runtime placeholder values in one obvious configuration block or support reference when possible;
-- use `adaptations[]` for structured string values that `wobbly add` or another installer can render;
+- use `adaptations[]` for structured string values that `wobblie add` or another installer can render;
 - use token-safe keys matching `^[a-z][a-z0-9_]*$` and exact render tokens like `{{adapt.target_branch}}`;
 - declare required inputs with `required: true` and no `default`; declare optional inputs with `required: false` and a string `default`;
 - keep `suggestions[]` string-only, public-safe, and useful as examples rather than hidden configuration;
-- refer to configured values from the rest of the wobbly instead of repeating placeholders throughout the body;
-- avoid putting "change this before enabling" prose inside runtime wobbly policy.
+- refer to configured values from the rest of the wobblie instead of repeating placeholders throughout the body;
+- avoid putting "change this before enabling" prose inside runtime wobblie policy.
 
 #### Specialization ideas
 
-Use `specializationIdeas` for optional ways a team could tune the wobbly after install, such as narrowing scope, changing conservative defaults, adding an evidence source, or adopting a team-specific output format.
+Use `specializationIdeas` for optional ways a team could tune the wobblie after install, such as narrowing scope, changing conservative defaults, adding an evidence source, or adopting a team-specific output format.
 
 Do not use `specializationIdeas` for required install inputs, placeholder replacement, rollout advice, or safety warnings. If a value must be supplied for deterministic install, use `adaptations[]`. If a condition determines whether the example is appropriate, use `fit.bestFor`, `fit.notFor`, or `requirements.other`.
 
@@ -325,7 +325,7 @@ When editing an example, first decide what kind of change it is.
 | Change type | Guidance |
 | --- | --- |
 | Copy improvement | Keep the ID. Tighten `summary`, `bestFor`, `notFor`, `adaptations[]`, or `specializationIdeas[]`. |
-| WOBBLY.md behavior refinement | Keep the ID if the core pattern is the same. Update fit, requirements, adaptations, or specialization ideas if expectations changed. |
+| WOBBLIE.md behavior refinement | Keep the ID if the core pattern is the same. Update fit, requirements, adaptations, or specialization ideas if expectations changed. |
 | Support file update | Keep the ID. Re-run generation and validation. |
 | Surface change | Update `showOnWebsite` or `showInDashboard`; do not imply this changes safety. |
 | Deprecated pattern | Set `status: deprecated`, usually hide public surfaces, and explain replacement guidance in fit or requirements when useful. |
@@ -339,15 +339,15 @@ Avoid these common failures:
 
 - One example tries to cover multiple platforms with hidden branching.
 - `example.yml` becomes a configuration language.
-- `WOBBLY.md` contains setup, tutorial, rollout, checklist, or catalog metadata.
-- `WOBBLY.md` explains how to modify the example instead of describing runtime behavior.
-- `requirements.other` lists broad repo hygiene instead of wobbly-specific prerequisites.
+- `WOBBLIE.md` contains setup, tutorial, rollout, checklist, or catalog metadata.
+- `WOBBLIE.md` explains how to modify the example instead of describing runtime behavior.
+- `requirements.other` lists broad repo hygiene instead of wobblie-specific prerequisites.
 - Required customization is described only in prose instead of structured `adaptations[]`.
 - Optional integrations are used to encode required alternatives.
-- The wobbly assumes event wakes outside supported routed GitHub, Linear, Slack, or scheduled activation paths.
-- The wobbly requires production secrets or mutating infra commands to be useful.
-- The wobbly mostly produces noise or restates known information.
-- The wobbly is so broad that every activation requires judgment outside its authored policy.
+- The wobblie assumes event wakes outside supported routed GitHub, Linear, Slack, or scheduled activation paths.
+- The wobblie requires production secrets or mutating infra commands to be useful.
+- The wobblie mostly produces noise or restates known information.
+- The wobblie is so broad that every activation requires judgment outside its authored policy.
 
 ## Review checklist
 
@@ -355,19 +355,19 @@ Use this checklist before approving example changes.
 
 ### Package layout
 
-- The package is under `wobblys/<id>/`.
-- `WOBBLY.md` and `example.yml` exist.
+- The package is under `wobblies/<id>/`.
+- `WOBBLIE.md` and `example.yml` exist.
 - Optional files are only under `scripts/**` or `references/**`.
 - There is no per-example `README.md`.
 - The package does not include unrelated artifacts.
 
 ### Identity
 
-- Directory name, `example.yml` `id`, and `WOBBLY.md` frontmatter `id` all match.
+- Directory name, `example.yml` `id`, and `WOBBLIE.md` frontmatter `id` all match.
 - The ID is kebab-case and stable.
-- The PR is not silently repurposing an existing ID for a different wobbly pattern.
+- The PR is not silently repurposing an existing ID for a different wobblie pattern.
 
-### `WOBBLY.md`
+### `WOBBLIE.md`
 
 - Purpose is outcome-oriented.
 - At least one activation path is present.
@@ -387,10 +387,10 @@ Use this checklist before approving example changes.
 - `bestFor` and `notFor` help readers decide quickly.
 - `notFor` lists real exclusions, not scenarios that repo policy can support.
 - Required and optional integrations are accurate.
-- `requirements.other` names wobbly-specific non-integration prerequisites.
+- `requirements.other` names wobblie-specific non-integration prerequisites.
 - `readiness` matches whether `adaptations[]` contains required inputs.
 - `adaptations[]` keys are unique, token-safe, string-only, and have correct required/default behavior.
-- Every `{{adapt.key}}` token in `WOBBLY.md`, `scripts/**`, and `references/**` uses exact token syntax and references a declared `adaptations[]` key.
+- Every `{{adapt.key}}` token in `WOBBLIE.md`, `scripts/**`, and `references/**` uses exact token syntax and references a declared `adaptations[]` key.
 - `specializationIdeas[]` contains only optional tuning ideas and does not describe required install work.
 - Surface flags are intentional.
 
@@ -420,9 +420,9 @@ Use this checklist before approving example changes.
 
 | Symptom | Likely fix |
 | --- | --- |
-| ID mismatch | Make directory name, `example.yml` `id`, and `WOBBLY.md` `id` identical. |
+| ID mismatch | Make directory name, `example.yml` `id`, and `WOBBLIE.md` `id` identical. |
 | Unknown key | Remove the field or update the schema and docs intentionally. |
-| Stale metadata field | Move catalog metadata from `WOBBLY.md` to `example.yml`. |
+| Stale metadata field | Move catalog metadata from `WOBBLIE.md` to `example.yml`. |
 | Missing activation path | Add `watch`, `schedule`, or both. |
 | Invalid schedule | Use a five-field UTC cron expression. |
 | Direct-copy adaptation error | Remove required adaptations or change readiness to `adapt-before-use`. |
@@ -432,17 +432,17 @@ Use this checklist before approving example changes.
 | Public-safety failure | Replace private or credential-like content with public-safe placeholders. |
 | Catalog drift | Run `bun run generate:examples` and commit `examples.json`. |
 | Adaptation metadata error | Use unique `^[a-z][a-z0-9_]*$` keys, string-only fields/suggestions, no default on required items, and a default on optional items. |
-| Adaptation token error | Use exact `{{adapt.key}}` token syntax in `WOBBLY.md` and support files, and declare each referenced key in `adaptations[]`. |
+| Adaptation token error | Use exact `{{adapt.key}}` token syntax in `WOBBLIE.md` and support files, and declare each referenced key in `adaptations[]`. |
 
 ## Quality bar
 
 A good example should let a reader answer these questions without reading validation code:
 
-1. What recurring job does this wobbly perform?
+1. What recurring job does this wobblie perform?
 2. What wakes it, and how often should it act?
 3. What integrations and local policies does it require?
 4. Who should use this pattern?
 5. Who should avoid it?
 6. What must be customized before use?
-7. What is Wobbly explicitly not allowed to do?
+7. What is Wobblie explicitly not allowed to do?
 8. How can a reviewer verify that the example and catalog stayed in sync?

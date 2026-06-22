@@ -26,6 +26,6 @@
     "index.ts",
     "scripts/**/*.ts",
     "src/**/*.ts",
-    "wobblys/**/*.ts"
+    "wobblies/**/*.ts"
   ]
 }

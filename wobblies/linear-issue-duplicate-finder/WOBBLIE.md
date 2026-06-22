@@ -73,7 +73,7 @@ Limit the list to the five best candidates. Prefer fewer candidates with clear e
 
 ## Idempotency
 
-Before commenting, check existing Wobbly comments on the issue. If the same candidate set and evidence were already posted for the current issue title/body, no-op.
+Before commenting, check existing Wobblie comments on the issue. If the same candidate set and evidence were already posted for the current issue title/body, no-op.
 
 If candidates changed materially after issue edits, post a new concise follow-up only when the updated evidence improves triage.
 
@@ -84,4 +84,4 @@ If candidates changed materially after issue edits, post a new concise follow-up
 - no candidate reaches medium confidence
 - issue identity or mapped repository context is unavailable
 - search results are broad keyword matches without concrete duplicate evidence
-- an equivalent Wobbly duplicate-finder comment already exists
+- an equivalent Wobblie duplicate-finder comment already exists

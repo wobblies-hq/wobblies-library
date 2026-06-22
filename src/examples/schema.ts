@@ -1,11 +1,11 @@
 import { parseDocument } from 'yaml';
 import { z, type ZodIssue } from 'zod';
-import { validateCronExpression } from '../wobbly-cli/validation/cron';
+import { validateCronExpression } from '../wobblie-cli/validation/cron';
 import { findPublicSafetyErrors } from './public-safety';
 import { isKebabCaseSlug, isSupportPath } from './paths';
 import type {
   CatalogExample,
-  WobblyFrontmatter,
+  WobblieFrontmatter,
   ExampleAdaptation,
   ExampleMetadata,
   ExamplesCatalog,
@@ -98,7 +98,7 @@ const jobToBeDoneSchema = z.enum([
   'operate',
   'explain',
   'plan',
-  'wobbly-operations',
+  'wobblie-operations',
 ]);
 
 const integrationSchema = z.enum(['github', 'linear', 'slack', 'sentry']);
@@ -158,7 +158,7 @@ const fiveFieldCronSchema = z.string().superRefine((value, context) => {
   }
 });
 
-const wobblyFrontmatterSchema = z
+const wobblieFrontmatterSchema = z
   .object({
     id: slugSchema,
     purpose: nonEmptyStringSchema,
@@ -173,7 +173,7 @@ const wobblyFrontmatterSchema = z
       context.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['watch'],
-        message: 'WOBBLY.md must define at least one activation path through watch or schedule.',
+        message: 'WOBBLIE.md must define at least one activation path through watch or schedule.',
       });
     }
   });
@@ -203,20 +203,20 @@ const catalogExampleSchema = z
       .strict(),
     adaptations: adaptationsSchema,
     specializationIdeas: stringListSchema.default([]),
-    wobbly: z
+    wobblie: z
       .object({
-        path: z.literal('WOBBLY.md'),
+        path: z.literal('WOBBLIE.md'),
         content: nonEmptyStringSchema,
       })
       .strict(),
     scripts: z.array(
       z.string().refine((value) => isSupportPath(value, 'scripts'), {
-        message: 'Expected a wobbly-package-relative scripts/ support path.',
+        message: 'Expected a wobblie-package-relative scripts/ support path.',
       })
     ),
     references: z.array(
       z.string().refine((value) => isSupportPath(value, 'references'), {
-        message: 'Expected a wobbly-package-relative references/ support path.',
+        message: 'Expected a wobblie-package-relative references/ support path.',
       })
     ),
     source: z
@@ -259,7 +259,7 @@ const examplesCatalogSchema = z
     schemaVersion: z.literal(2),
     source: z
       .object({
-        repository: z.literal('universe-backwards/wobblies-library'),
+        repository: z.literal('wobblie-hq/wobblies-library'),
         baseDirectory: z.literal('wobblies'),
       })
       .strict(),
@@ -362,30 +362,30 @@ export function parseExampleYaml(args: {
   return { ok: true, value: parsed.data, errors: [] };
 }
 
-export function parseWobblyMarkdown(args: {
+export function parseWobblieMarkdown(args: {
   content: string;
   path: string;
-}): ValidationResult<{ frontmatter: WobblyFrontmatter; body: string }> {
+}): ValidationResult<{ frontmatter: WobblieFrontmatter; body: string }> {
   const publicSafetyErrors = findPublicSafetyErrors({ content: args.content, path: args.path });
   const frontmatter = splitFrontmatter(args.content, args.path);
   if (!frontmatter.ok) {
     return { ok: false, errors: [...frontmatter.errors, ...publicSafetyErrors] };
   }
 
-  const yamlResult = parseYamlContent(frontmatter.value.yaml, args.path, 'invalid_wobbly_md');
+  const yamlResult = parseYamlContent(frontmatter.value.yaml, args.path, 'invalid_wobblie_md');
   if (!yamlResult.ok) {
     return { ok: false, errors: [...yamlResult.errors, ...publicSafetyErrors] };
   }
 
-  const parsed = wobblyFrontmatterSchema.safeParse(yamlResult.value);
+  const parsed = wobblieFrontmatterSchema.safeParse(yamlResult.value);
   const errors = parsed.success ? [] : zodIssuesToValidationErrors(parsed.error.issues, args.path);
 
   if (frontmatter.value.body.trim().length === 0) {
     errors.push(
       machineError({
-        code: 'invalid_wobbly_md',
+        code: 'invalid_wobblie_md',
         path: args.path,
-        message: 'WOBBLY.md body must contain runtime guidance.',
+        message: 'WOBBLIE.md body must contain runtime guidance.',
       })
     );
   }
@@ -406,7 +406,7 @@ export function parseWobblyMarkdown(args: {
 function parseYamlContent(
   content: string,
   path: string,
-  invalidCode: 'invalid_example_yml' | 'invalid_wobbly_md'
+  invalidCode: 'invalid_example_yml' | 'invalid_wobblie_md'
 ): ValidationResult<unknown> {
   const document = parseDocument(content, {
     prettyErrors: false,
@@ -442,9 +442,9 @@ function splitFrontmatter(
       ok: false,
       errors: [
         machineError({
-          code: 'invalid_wobbly_md',
+          code: 'invalid_wobblie_md',
           path,
-          message: 'WOBBLY.md must start with YAML frontmatter delimited by --- lines.',
+          message: 'WOBBLIE.md must start with YAML frontmatter delimited by --- lines.',
         }),
       ],
     };
@@ -456,9 +456,9 @@ function splitFrontmatter(
       ok: false,
       errors: [
         machineError({
-          code: 'invalid_wobbly_md',
+          code: 'invalid_wobblie_md',
           path,
-          message: 'WOBBLY.md frontmatter must end with a closing --- delimiter.',
+          message: 'WOBBLIE.md frontmatter must end with a closing --- delimiter.',
         }),
       ],
     };

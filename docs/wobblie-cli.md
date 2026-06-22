@@ -1,15 +1,15 @@
-# Wobbly catalog CLI
+# Wobblie catalog CLI
 
-The `@wobblies/library` package provides the public `wobbly` binary for browsing the wobbly examples catalog, scaffolding examples into repositories, and validating runtime `WOBBLY.md` files.
+The `@wobblies/library` package provides the public `wobblie` binary for browsing the wobblie examples catalog, scaffolding examples into repositories, and validating runtime `WOBBLIE.md` files.
 
-The CLI is designed for both humans and Wobbly automation. Every command supports the stable `--json` envelope:
+The CLI is designed for both humans and Wobblie automation. Every command supports the stable `--json` envelope:
 
 ```json
 {
   "command": "show",
   "ok": true,
   "exitCode": 0,
-  "summary": "ready-wobbly: Ready wobbly",
+  "summary": "ready-wobblie: Ready wobblie",
   "warnings": [],
   "errors": [],
   "data": {}
@@ -21,7 +21,7 @@ The CLI is designed for both humans and Wobbly automation. Every command support
 ```bash
 npm install -g @wobblies/library
 
-wobbly --help
+wobblie --help
 ```
 
 From this repository during development:
@@ -36,15 +36,15 @@ node dist/bin.js list --json
 The root `examples.json` file is the source of truth. The CLI reads it from `universe-backwards/wobblies-library` and defaults to `master`:
 
 ```bash
-wobbly list
+wobblie list
 ```
 
 Use `--ref <sha|branch|tag>` for reproducible reads and installs:
 
 ```bash
-wobbly show dependency-upgrades --ref 11da8066b1e0cf968d07ce512f65a9a817f9bc10
+wobblie show dependency-upgrades --ref 11da8066b1e0cf968d07ce512f65a9a817f9bc10
 
-wobbly add dependency-upgrades --ref 11da8066b1e0cf968d07ce512f65a9a817f9bc10
+wobblie add dependency-upgrades --ref 11da8066b1e0cf968d07ce512f65a9a817f9bc10
 ```
 
 A single command uses the same ref for `examples.json` and every support-file fetch.
@@ -53,19 +53,19 @@ The v2 catalog uses `schemaVersion: 2`, and the CLI fails closed on unsupported 
 
 ## Commands
 
-### `wobbly list`
+### `wobblie list`
 
 Reads root `examples.json` and prints stable example IDs.
 
 ```bash
-wobbly list
+wobblie list
 
-wobbly list --ref master --json
+wobblie list --ref master --json
 ```
 
 JSON data includes `exampleIds[]`, compact `examples[]`, `sourceRepo`, `sourceRef`, and `schemaVersion`.
 
-### `wobbly show <example-id>`
+### `wobblie show <example-id>`
 
 Shows catalog details for one example:
 
@@ -77,20 +77,20 @@ Shows catalog details for one example:
 - the activation caveat
 
 ```bash
-wobbly show pr-metadata
+wobblie show pr-metadata
 
-wobbly show pr-metadata --json
+wobblie show pr-metadata --json
 ```
 
 `show` returns `data.adaptations[]` for structured render inputs and `data.specializationIdeas[]` for optional follow-up tuning ideas. No explicit acknowledgement flag is required; the adaptation inputs are prominent in both human and JSON output.
 
-### `wobbly add <example-id>` / `wobbly install <example-id>`
+### `wobblie add <example-id>` / `wobblie install <example-id>`
 
 Scaffolds a catalog example into the current repository:
 
 ```text
-.agents/wobblys/<example-id>/
-  WOBBLY.md
+.agents/wobblies/<example-id>/
+  WOBBLIE.md
   scripts/      # only catalog-listed scripts
   references/   # only catalog-listed references
 ```
@@ -99,28 +99,28 @@ If the current working directory is inside a git repository, the destination roo
 
 Install behavior is intentionally narrow:
 
-- writes rendered `WOBBLY.md` from `entry.wobbly.content`
+- writes rendered `WOBBLIE.md` from `entry.wobblie.content`
 - fetches only paths listed in `entry.scripts[]` and `entry.references[]`
 - fetches support files from the same catalog ref as `examples.json`
 - never copies `example.yml`
-- never crawls upstream wobbly directories
-- plans destination paths and file modes before writing (`100644` for `WOBBLY.md`/references, `100755` for scripts)
+- never crawls upstream wobblie directories
+- plans destination paths and file modes before writing (`100644` for `WOBBLIE.md`/references, `100755` for scripts)
 - refuses to use an existing destination directory or overwrite existing destination files unless `--force` is provided
 - blocks deprecated examples unless `--allow-deprecated` is provided
 - supports `--dry-run` for read-only planning
-- renders `{{adapt.key}}` tokens in `WOBBLY.md`, scripts, and references before validating and writing
+- renders `{{adapt.key}}` tokens in `WOBBLIE.md`, scripts, and references before validating and writing
 
 Examples:
 
 ```bash
-wobbly add js-ts-dependency-upgrades --dry-run \
+wobblie add js-ts-dependency-upgrades --dry-run \
   --adapt package_manager=pnpm
 
-wobbly install docs-drift-maintainer --ref master
+wobblie install docs-drift-maintainer --ref master
 
-wobbly add pr-merge-conflict-repair --allow-deprecated --dry-run
+wobblie add pr-merge-conflict-repair --allow-deprecated --dry-run
 
-wobbly add js-ts-dependency-upgrades --force \
+wobblie add js-ts-dependency-upgrades --force \
   --adapt package_manager=pnpm
 ```
 
@@ -130,7 +130,7 @@ Structured adaptation inputs:
 - repeat `--adapt key=value` for explicit values;
 - use `--adapt-file adaptations.json` for a JSON object of string values;
 - optional defaults from the catalog are applied first, then file values, then CLI flag values;
-- empty string values are accepted when explicitly provided, but rendered `WOBBLY.md` must still pass runtime validation;
+- empty string values are accepted when explicitly provided, but rendered `WOBBLIE.md` must still pass runtime validation;
 - unknown keys, non-string file values, missing required values, malformed or unknown `{{adapt.*}}` tokens, and unresolved adaptation tokens fail before any files are written.
 
 `adaptations.json` example:
@@ -151,16 +151,16 @@ JSON data includes:
 - `deprecatedBlocked`
 - `sourceRef`
 
-Scaffolding does **not** activate a wobbly. The wobbly becomes eligible only after the change is merged to the target repository default branch and Wobbly ingests that merged version.
+Scaffolding does **not** activate a wobblie. The wobblie becomes eligible only after the change is merged to the target repository default branch and Wobblie ingests that merged version.
 
 
 
-### `wobbly pr open <example-id>`
+### `wobblie pr open <example-id>`
 
-Renders a catalog example the same way as `wobbly add`, but writes the install as a GitHub pull request in a target repository instead of writing to the local filesystem:
+Renders a catalog example the same way as `wobblie add`, but writes the install as a GitHub pull request in a target repository instead of writing to the local filesystem:
 
 ```bash
-wobbly pr open js-ts-dependency-upgrades \
+wobblie pr open js-ts-dependency-upgrades \
   --repo owner/repo \
   --base main \
   --adapt package_manager=pnpm
@@ -169,16 +169,16 @@ wobbly pr open js-ts-dependency-upgrades \
 Options:
 
 - `--repo owner/repo` is required and selects the target GitHub repository.
-- `--ref <sha|branch|tag>` pins the wobbly catalog source ref. It defaults to `master`.
+- `--ref <sha|branch|tag>` pins the wobblie catalog source ref. It defaults to `master`.
 - `--base <branch>` selects the target PR base branch. If omitted, the GitHub repository default branch is used.
-- `--adapt key=value` and `--adapt-file adaptations.json` use the same structured adaptation rules and precedence as `wobbly add`.
-- `--force` allows the PR commit to write catalog-managed install paths even when the target base already contains `.agents/wobblys/<example-id>/`. Without `--force`, existing target files or directories are reported as collisions and no branch is created.
+- `--adapt key=value` and `--adapt-file adaptations.json` use the same structured adaptation rules and precedence as `wobblie add`.
+- `--force` allows the PR commit to write catalog-managed install paths even when the target base already contains `.agents/wobblies/<example-id>/`. Without `--force`, existing target files or directories are reported as collisions and no branch is created.
 
-The command uses `GITHUB_TOKEN` or `GH_TOKEN` for GitHub API authentication. Node callers can pass an explicit token or injected GitHub client to `createWobblyInstallPullRequest()`.
+The command uses `GITHUB_TOKEN` or `GH_TOKEN` for GitHub API authentication. Node callers can pass an explicit token or injected GitHub client to `createWobblieInstallPullRequest()`.
 
 PR creation is idempotent for a given target repo and example ID:
 
-- the install branch is deterministic: `wobbly/wobbly-installs/<example-id>`;
+- the install branch is deterministic: `wobblie/wobblie-installs/<example-id>`;
 - if an exact-head open PR already exists for that branch and base, the command returns it instead of opening another PR;
 - if the branch exists without a PR and its files match the rendered install, the command opens a PR from that existing branch;
 - if the branch exists but does not match the rendered install, the command fails closed with a branch-collision error;
@@ -187,34 +187,34 @@ PR creation is idempotent for a given target repo and example ID:
 The implementation writes via GitHub's tree, commit, ref, and pull-request REST APIs. The PR body includes a hidden marker in this format:
 
 ```html
-<!-- wobbly-wobbly-install-v1 {"adaptationKeys":["package_manager"],"...":"..."} -->
+<!-- wobblie-wobblie-install-v1 {"adaptationKeys":["package_manager"],"...":"..."} -->
 ```
 
 The marker is used for reconciliation and intentionally stores only adaptation keys, never raw adaptation values. JSON output likewise reports `adaptationsApplied[]` keys only.
 
 JSON data includes:
 
-- `repository`, `wobblyId`, `sourceRepo`, `sourceRef`, and `catalogSchemaVersion`;
+- `repository`, `wobblieId`, `sourceRepo`, `sourceRef`, and `catalogSchemaVersion`;
 - `baseBranch`, deterministic `headBranch`, and `headSha`;
 - `pullRequest` number, URL, state, head/base refs, and merge metadata;
 - `filesPlanned[]` / `filesWritten[]` with destination paths and Git file modes;
 - `adaptationsApplied[]` key names;
 - parsed marker metadata.
 
-### `wobbly pr list`
+### `wobblie pr list`
 
-Lists wobbly install PRs and deterministic install branches in a target repository:
+Lists wobblie install PRs and deterministic install branches in a target repository:
 
 ```bash
-wobbly pr list --repo owner/repo
+wobblie pr list --repo owner/repo
 
-wobbly pr list --repo owner/repo --json
+wobblie pr list --repo owner/repo --json
 ```
 
 The listing reconciles two sources:
 
-1. GitHub issue search for PR bodies containing the hidden `wobbly-wobbly-install-v1` marker.
-2. Git refs under `heads/wobbly/wobbly-installs/`.
+1. GitHub issue search for PR bodies containing the hidden `wobblie-wobblie-install-v1` marker.
+2. Git refs under `heads/wobblie/wobblie-installs/`.
 
 Each item is classified as:
 
@@ -223,29 +223,29 @@ Each item is classified as:
 - `closed_unmerged` — a closed PR that was not merged;
 - `branchWithoutPullRequest` — a deterministic install branch with no associated PR.
 
-If a PR body was edited and the hidden marker was removed, `wobbly pr list` still reports the PR while the deterministic branch exists, with a warning that marker metadata is missing. If GitHub search is temporarily stale or unavailable, the command falls back to branch reconciliation and returns a warning.
+If a PR body was edited and the hidden marker was removed, `wobblie pr list` still reports the PR while the deterministic branch exists, with a warning that marker metadata is missing. If GitHub search is temporarily stale or unavailable, the command falls back to branch reconciliation and returns a warning.
 
 ## Runtime validation
 
-`wobbly validate` validates runtime wobbly files, not catalog metadata.
+`wobblie validate` validates runtime wobblie files, not catalog metadata.
 
 ```bash
-wobbly validate .agents/wobblys/pr-metadata/WOBBLY.md
+wobblie validate .agents/wobblies/pr-metadata/WOBBLIE.md
 
-wobbly validate --all
+wobblie validate --all
 
-wobbly validate --all --dry-run --json
+wobblie validate --all --dry-run --json
 ```
 
-`--all` discovers runtime wobbly files under:
+`--all` discovers runtime wobblie files under:
 
 ```text
-.agents/wobblys/**/WOBBLY.md
+.agents/wobblies/**/WOBBLIE.md
 ```
 
 `--dry-run` is accepted for validation as an explicit read-only/no-op flag and is reported in output.
 
-Validation enforces the canonical runtime `WOBBLY.md` contract:
+Validation enforces the canonical runtime `WOBBLIE.md` contract:
 
 - YAML frontmatter must parse separately from the Markdown body.
 - Frontmatter must be a YAML object.
@@ -258,7 +258,7 @@ Validation enforces the canonical runtime `WOBBLY.md` contract:
 - `schedule`, when present and non-blank, must be a standard five-field cron expression.
 - Cron validation returns field-level reasons such as `cron:minute value out of range`.
 - The Markdown body below frontmatter must be non-empty.
-- Files under `.agents/wobblys/<id>/WOBBLY.md` must have matching frontmatter `id` and directory slug.
+- Files under `.agents/wobblies/<id>/WOBBLIE.md` must have matching frontmatter `id` and directory slug.
 
 ## Exit codes
 
@@ -271,11 +271,11 @@ Validation enforces the canonical runtime `WOBBLY.md` contract:
 
 ## Examples are patterns
 
-The catalog examples are reference patterns to adapt before production use. Treat required `adaptations[]` entries as required local inputs before enabling or relying on a scaffolded wobbly.
+The catalog examples are reference patterns to adapt before production use. Treat required `adaptations[]` entries as required local inputs before enabling or relying on a scaffolded wobblie.
 
-Use the public wobbly docs for the runtime contract:
+Use the public wobblie docs for the runtime contract:
 
-- [Wobblys](https://docs.wobblies.ai/wobblys)
-- [WOBBLY.md reference](https://docs.wobblies.ai/wobblys/wobbly-md-reference)
-- [Writing and editing WOBBLY.md](https://docs.wobblies.ai/wobblys/writing-and-editing-wobbly-md)
-- [Testing and iterating on wobblys](https://docs.wobblies.ai/wobblys/testing-and-iterating-on-wobblys)
+- [Wobblies](https://docs.wobblies.ai/wobblies)
+- [WOBBLIE.md reference](https://docs.wobblies.ai/wobblies/wobblie-md-reference)
+- [Writing and editing WOBBLIE.md](https://docs.wobblies.ai/wobblies/writing-and-editing-wobblie-md)
+- [Testing and iterating on wobblies](https://docs.wobblies.ai/wobblies/testing-and-iterating-on-wobblies)

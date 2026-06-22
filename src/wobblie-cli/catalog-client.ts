@@ -28,7 +28,7 @@ async function readGitHubTextFile(args: { ref: string; path: string }): Promise<
 
   const headers: Record<string, string> = {
     Accept: 'application/vnd.github.raw+json',
-    'User-Agent': '@wobblies/library wobbly CLI',
+    'User-Agent': '@wobblies/library wobblie CLI',
   };
 
   const token = process.env.GITHUB_TOKEN ?? process.env.GH_TOKEN;

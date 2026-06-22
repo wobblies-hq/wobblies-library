@@ -26,4 +26,4 @@ requirements:
 specializationIdeas:
   - Broaden or narrow duplicate search across Linear teams mapped to the same repository.
   - Adjust the completed or canceled issue lookback window.
-  - Tune confidence thresholds before Wobbly comments with possible matches.
+  - Tune confidence thresholds before Wobblie comments with possible matches.
