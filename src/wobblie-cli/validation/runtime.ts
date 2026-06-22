@@ -2,11 +2,11 @@ import { parseDocument } from 'yaml';
 import {
   canonicalFrontmatterKeys,
   catalogMetadataFrontmatterKeys,
-  WOBBLY_ID_PATTERN,
+  WOBBLIE_ID_PATTERN,
   legacyFrontmatterKeyToCanonicalField,
 } from '../constants';
 import { issue } from '../issues';
-import type { CliIssue, RuntimeWobbly } from '../types';
+import type { CliIssue, RuntimeWobblie } from '../types';
 import { validateCronExpression } from './cron';
 
 type ParsedFrontmatterResult =
@@ -14,8 +14,8 @@ type ParsedFrontmatterResult =
   | { ok: false; errors: CliIssue[]; warnings: CliIssue[] };
 
 export type RuntimeValidationResult =
-  | { ok: true; wobbly: RuntimeWobbly; warnings: CliIssue[]; errors: [] }
-  | { ok: false; wobbly: null; warnings: CliIssue[]; errors: CliIssue[] };
+  | { ok: true; wobblie: RuntimeWobblie; warnings: CliIssue[]; errors: [] }
+  | { ok: false; wobblie: null; warnings: CliIssue[]; errors: CliIssue[] };
 
 const FRONTMATTER_BLOCK_PATTERN = /^---[ \t]*\n([\s\S]*?)\n---[ \t]*(?:\n|$)/;
 const canonicalKeySet = new Set<string>(canonicalFrontmatterKeys);
@@ -217,7 +217,7 @@ function validateSchema(args: {
       pushIssue({
         issues: errors,
         code: 'FRONTMATTER_CATALOG_METADATA_NOT_ALLOWED',
-        message: `Catalog/example metadata key '${key}' is not valid runtime wobbly frontmatter. Allowed keys: ${canonicalFrontmatterKeys.join(', ')}.`,
+        message: `Catalog/example metadata key '${key}' is not valid runtime wobblie frontmatter. Allowed keys: ${canonicalFrontmatterKeys.join(', ')}.`,
         field: key,
         path: args.path,
       });
@@ -245,7 +245,7 @@ function validateSchema(args: {
     const normalizedId = rawId.trim();
     if (normalizedId.length === 0) {
       pushIssue({ issues: errors, code: 'FRONTMATTER_ID_EMPTY', message: "Frontmatter field 'id' must not be empty.", field: 'id', path: args.path });
-    } else if (!WOBBLY_ID_PATTERN.test(normalizedId)) {
+    } else if (!WOBBLIE_ID_PATTERN.test(normalizedId)) {
       pushIssue({ issues: errors, code: 'FRONTMATTER_ID_INVALID_FORMAT', message: "Frontmatter field 'id' must match ^[a-z0-9]+(?:-[a-z0-9]+)*$.", field: 'id', path: args.path });
     } else {
       id = normalizedId;
@@ -343,20 +343,20 @@ function validateSchema(args: {
   if (body.length === 0) {
     pushIssue({
       issues: errors,
-      code: 'WOBBLY_BODY_MISSING',
+      code: 'WOBBLIE_BODY_MISSING',
       message: 'Markdown body is required below the frontmatter. Add guidance content in the body section.',
       path: args.path,
     });
   }
 
   if (errors.length > 0) {
-    return { ok: false, wobbly: null, warnings: [], errors };
+    return { ok: false, wobblie: null, warnings: [], errors };
   }
 
   if (!id || !purpose || !routines || !watch || !deny) {
     return {
       ok: false,
-      wobbly: null,
+      wobblie: null,
       warnings: [],
       errors: [
         issue({
@@ -370,7 +370,7 @@ function validateSchema(args: {
 
   return {
     ok: true,
-    wobbly: {
+    wobblie: {
       id,
       purpose,
       watch,
@@ -384,7 +384,7 @@ function validateSchema(args: {
   };
 }
 
-export function validateRuntimeWobblyMarkdown(args: {
+export function validateRuntimeWobblieMarkdown(args: {
   content: string;
   path?: string;
   expectedId?: string | null;
@@ -392,24 +392,24 @@ export function validateRuntimeWobblyMarkdown(args: {
   const path = args.path ?? null;
   const parsed = parseFrontmatterAndBody({ markdown: args.content, path: path ?? undefined });
   if (!parsed.ok) {
-    return { ok: false, wobbly: null, warnings: parsed.warnings, errors: parsed.errors };
+    return { ok: false, wobblie: null, warnings: parsed.warnings, errors: parsed.errors };
   }
 
   const validated = validateSchema({ frontmatter: parsed.frontmatter, body: parsed.body, path });
   const warnings = [...parsed.warnings, ...validated.warnings];
   if (!validated.ok) {
-    return { ok: false, wobbly: null, warnings, errors: validated.errors };
+    return { ok: false, wobblie: null, warnings, errors: validated.errors };
   }
 
-  if (args.expectedId && validated.wobbly.id !== args.expectedId) {
+  if (args.expectedId && validated.wobblie.id !== args.expectedId) {
     return {
       ok: false,
-      wobbly: null,
+      wobblie: null,
       warnings,
       errors: [
         issue({
-          code: 'WOBBLY_ID_PATH_MISMATCH',
-          message: `WOBBLY.md id '${validated.wobbly.id}' must match directory slug '${args.expectedId}'.`,
+          code: 'WOBBLIE_ID_PATH_MISMATCH',
+          message: `WOBBLIE.md id '${validated.wobblie.id}' must match directory slug '${args.expectedId}'.`,
           field: 'id',
           path,
         }),
@@ -417,5 +417,5 @@ export function validateRuntimeWobblyMarkdown(args: {
     };
   }
 
-  return { ok: true, wobbly: validated.wobbly, warnings, errors: [] };
+  return { ok: true, wobblie: validated.wobblie, warnings, errors: [] };
 }

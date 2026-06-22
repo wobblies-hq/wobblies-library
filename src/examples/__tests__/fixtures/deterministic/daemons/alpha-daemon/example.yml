@@ -1,17 +1,17 @@
-id: alpha-wobbly
-title: alpha wobbly fixture
+id: alpha-wobblie
+title: alpha wobblie fixture
 status: ready
-summary: Demonstrates the alpha-wobbly package shape for catalog validation.
+summary: Demonstrates the alpha-wobblie package shape for catalog validation.
 readiness: direct-copy
 showOnWebsite: true
 showInDashboard: false
 fit:
   jobsToBeDone:
-    - wobbly-operations
+    - wobblie-operations
   bestFor:
     - Teams validating the examples catalog generator.
   notFor:
-    - Production wobbly deployments without local review.
+    - Production wobblie deployments without local review.
 requirements:
   requiredIntegrations:
     - github

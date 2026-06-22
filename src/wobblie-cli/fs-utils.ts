@@ -2,7 +2,7 @@ import { constants } from 'node:fs';
 import { access, mkdir, readdir, readFile, stat, writeFile, chmod } from 'node:fs/promises';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
-import { DEFAULT_WOBBLY_ROOT, WOBBLY_FILENAME } from './constants';
+import { DEFAULT_WOBBLIE_ROOT, WOBBLIE_FILENAME } from './constants';
 
 export async function pathExists(pathValue: string): Promise<boolean> {
   try {
@@ -58,18 +58,18 @@ export function toDisplayPath(root: string, absolutePath: string): string {
   return relativePath.length === 0 || relativePath.startsWith('..') ? absolutePath : relativePath;
 }
 
-export function expectedWobblyIdFromPath(filePath: string): string | null {
+export function expectedWobblieIdFromPath(filePath: string): string | null {
   const normalized = filePath.replaceAll('\\', '/');
   const parts = normalized.split('/');
-  if (parts.at(-1) !== WOBBLY_FILENAME) {
+  if (parts.at(-1) !== WOBBLIE_FILENAME) {
     return null;
   }
 
-  const wobblyRootParts = DEFAULT_WOBBLY_ROOT.split('/');
-  for (let index = 0; index <= parts.length - wobblyRootParts.length - 2; index += 1) {
-    const maybeRoot = parts.slice(index, index + wobblyRootParts.length).join('/');
-    if (maybeRoot === DEFAULT_WOBBLY_ROOT) {
-      return parts[index + wobblyRootParts.length] ?? null;
+  const wobblieRootParts = DEFAULT_WOBBLIE_ROOT.split('/');
+  for (let index = 0; index <= parts.length - wobblieRootParts.length - 2; index += 1) {
+    const maybeRoot = parts.slice(index, index + wobblieRootParts.length).join('/');
+    if (maybeRoot === DEFAULT_WOBBLIE_ROOT) {
+      return parts[index + wobblieRootParts.length] ?? null;
     }
   }
 
@@ -77,9 +77,9 @@ export function expectedWobblyIdFromPath(filePath: string): string | null {
   return parent && parent !== '.' ? parent : null;
 }
 
-export async function discoverRuntimeWobblyFiles(root: string): Promise<string[]> {
-  const wobblyRoot = path.join(root, DEFAULT_WOBBLY_ROOT);
-  if (!(await pathExists(wobblyRoot))) {
+export async function discoverRuntimeWobblieFiles(root: string): Promise<string[]> {
+  const wobblieRoot = path.join(root, DEFAULT_WOBBLIE_ROOT);
+  if (!(await pathExists(wobblieRoot))) {
     return [];
   }
 
@@ -93,18 +93,18 @@ export async function discoverRuntimeWobblyFiles(root: string): Promise<string[]
         await walk(entryPath);
         continue;
       }
-      if (entry.isFile() && entry.name === WOBBLY_FILENAME) {
+      if (entry.isFile() && entry.name === WOBBLIE_FILENAME) {
         found.push(entryPath);
       }
     }
   }
 
-  const rootStat = await stat(wobblyRoot);
+  const rootStat = await stat(wobblieRoot);
   if (!rootStat.isDirectory()) {
     return [];
   }
 
-  await walk(wobblyRoot);
+  await walk(wobblieRoot);
   return found.sort((left, right) => left.localeCompare(right));
 }
 

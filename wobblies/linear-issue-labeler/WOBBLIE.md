@@ -31,7 +31,7 @@ Default scope:
 - open issues only
 - issue teams or projects configured for this repository or workspace
 
-Do not scan the entire workspace unless the wobbly file is intentionally updated to do so.
+Do not scan the entire workspace unless the wobblie file is intentionally updated to do so.
 
 ## Decision policy
 

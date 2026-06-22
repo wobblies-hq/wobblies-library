@@ -24,7 +24,7 @@ Use this repository-specific value:
 
 ## Scope
 
-Collect activity from the repository that contains this wobbly.
+Collect activity from the repository that contains this wobblie.
 
 Default window:
 

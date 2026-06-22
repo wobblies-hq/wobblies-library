@@ -4,7 +4,7 @@ purpose: Resolve merge conflicts on non-draft pull requests found after reposito
 watch:
   - A GitHub push updates the repository default branch.
 routines:
-  - Run `bun .agents/wobblys/pr-merge-conflict-repair/scripts/find-conflicted-pulls.ts` to find open non-draft PRs with mergeability state `CONFLICTING`.
+  - Run `bun .agents/wobblies/pr-merge-conflict-repair/scripts/find-conflicted-pulls.ts` to find open non-draft PRs with mergeability state `CONFLICTING`.
   - Re-fetch the current remote PR head and the PR's current base branch before editing each conflicted PR.
   - Resolve the conflict and push to the existing PR branch when repo context, tests, and PR intent make the resolution clear.
   - Run focused verification after conflict resolution when feasible.
@@ -42,6 +42,6 @@ If the base branch moves during the run, re-fetch and re-evaluate against the ne
 
 ## Comment policy
 
-Comment only when blocked and human action is needed. Include the PR, conflict summary, what was attempted, why the wobbly stopped, and the next human action.
+Comment only when blocked and human action is needed. Include the PR, conflict summary, what was attempted, why the wobblie stopped, and the next human action.
 
 Do not comment for routine no-ops: no conflicted candidates, draft PRs, PRs no longer conflicting, PR head changed, or mergeability still `UNKNOWN`.

@@ -9,7 +9,7 @@ routines:
   - Reply in the same Slack thread with likely impact, recent related changes, useful links, and a short triage checklist.
 deny:
   - Do not acknowledge alerts, resolve incidents, change incident status, silence monitors, page people, assign owners, or mutate external incident systems.
-  - Do not reply to human-authored messages unless they are part of an alert thread and the reply is clearly requested by the wobbly policy.
+  - Do not reply to human-authored messages unless they are part of an alert thread and the reply is clearly requested by the wobblie policy.
   - Do not post outside the triggering Slack thread.
   - Do not include more than five useful links in one reply.
   - Do not repeat an equivalent context reply for the same alert message.
@@ -56,9 +56,9 @@ Omit empty sections. If the affected service cannot be inferred, say so briefly 
 
 ## Safety and idempotency
 
-This wobbly provides context only. It must never acknowledge, resolve, silence, escalate, page, assign, or otherwise mutate incident state.
+This wobblie provides context only. It must never acknowledge, resolve, silence, escalate, page, assign, or otherwise mutate incident state.
 
-Before replying, inspect the thread for an existing Wobbly alert-context reply for the same alert message or alert fingerprint. If one exists and remains current, no-op.
+Before replying, inspect the thread for an existing Wobblie alert-context reply for the same alert message or alert fingerprint. If one exists and remains current, no-op.
 
 ## No-op when
 
@@ -67,4 +67,4 @@ Before replying, inspect the thread for an existing Wobbly alert-context reply f
 - the workspace or channel is not mapped to this repository
 - the alert appears private, restricted, or inappropriate to summarize in-thread
 - the affected service cannot be inferred and no useful checklist can be produced
-- an equivalent Wobbly context reply already exists
+- an equivalent Wobblie context reply already exists

@@ -10,7 +10,7 @@ const FIXTURES_DIR = join(dirname(fileURLToPath(import.meta.url)), 'fixtures');
 
 describe('examples catalog generator and validator', () => {
 
-  test('validates wobbly-directory-relative support path rules', () => {
+  test('validates wobblie-directory-relative support path rules', () => {
     expect(isSupportPath('scripts/run.ts', 'scripts')).toBe(true);
     expect(isSupportPath('scripts/nested/run.ts', 'scripts')).toBe(true);
     expect(isSupportPath('/scripts/run.ts', 'scripts')).toBe(false);
@@ -40,8 +40,8 @@ describe('examples catalog generator and validator', () => {
 
   test('emits empty support arrays when support directories are empty', async () => {
     await withFixture('valid-no-support', async (repoRoot) => {
-      await mkdir(join(repoRoot, 'wobblys/no-support/scripts'), { recursive: true });
-      await mkdir(join(repoRoot, 'wobblys/no-support/references'), { recursive: true });
+      await mkdir(join(repoRoot, 'wobblies/no-support/scripts'), { recursive: true });
+      await mkdir(join(repoRoot, 'wobblies/no-support/references'), { recursive: true });
 
       const result = await generateCatalogFromRepository(repoRoot);
 
@@ -75,7 +75,7 @@ describe('examples catalog generator and validator', () => {
     });
   });
 
-  test('reports ID mismatches across path, example.yml, and WOBBLY.md', async () => {
+  test('reports ID mismatches across path, example.yml, and WOBBLIE.md', async () => {
     await withFixture('invalid-id-mismatch', async (repoRoot) => {
       const result = await generateCatalogFromRepository(repoRoot);
 
@@ -85,7 +85,7 @@ describe('examples catalog generator and validator', () => {
       }
 
       expect(result.errors.map((error) => error.code)).toContain('id_mismatch');
-      expect(result.errors.some((error) => error.path === 'wobblys/path-id/example.yml')).toBe(true);
+      expect(result.errors.some((error) => error.path === 'wobblies/path-id/example.yml')).toBe(true);
     });
   });
 
@@ -101,15 +101,15 @@ describe('examples catalog generator and validator', () => {
       expect(result.errors).toContainEqual(
         expect.objectContaining({
           code: 'stale_metadata_field',
-          path: 'wobblys/stale-metadata/WOBBLY.md',
+          path: 'wobblies/stale-metadata/WOBBLIE.md',
           fieldPath: 'readiness',
         })
       );
     });
   });
 
-  test('reports invalid WOBBLY.md frontmatter and body failures', async () => {
-    await withFixture('invalid-wobbly-md', async (repoRoot) => {
+  test('reports invalid WOBBLIE.md frontmatter and body failures', async () => {
+    await withFixture('invalid-wobblie-md', async (repoRoot) => {
       const result = await generateCatalogFromRepository(repoRoot);
 
       expect(result.ok).toBe(false);
@@ -118,7 +118,7 @@ describe('examples catalog generator and validator', () => {
       }
 
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'invalid_wobbly_md', path: 'wobblys/invalid-wobbly/WOBBLY.md' })
+        expect.objectContaining({ code: 'invalid_wobblie_md', path: 'wobblies/invalid-wobblie/WOBBLIE.md' })
       );
     });
   });
@@ -141,7 +141,7 @@ describe('examples catalog generator and validator', () => {
   test('emits structured adaptations in deterministic key order', async () => {
     await withFixture('valid-no-support', async (repoRoot) => {
       await writeFile(
-        join(repoRoot, 'wobblys/no-support/example.yml'),
+        join(repoRoot, 'wobblies/no-support/example.yml'),
         `id: no-support
 title: no support fixture
 status: ready
@@ -151,11 +151,11 @@ showOnWebsite: true
 showInDashboard: false
 fit:
   jobsToBeDone:
-    - wobbly-operations
+    - wobblie-operations
   bestFor:
     - Teams validating the examples catalog generator.
   notFor:
-    - Production wobbly deployments without local review.
+    - Production wobblie deployments without local review.
 requirements:
   requiredIntegrations:
     - github
@@ -164,7 +164,7 @@ requirements:
 adaptations:
   - key: target_repo
     label: Target repository
-    description: Repository slug to mention in rendered wobbly files.
+    description: Repository slug to mention in rendered wobblie files.
     required: true
     suggestions:
       - owner/repo
@@ -172,7 +172,7 @@ adaptations:
     label: Branch prefix
     description: Branch prefix for generated work.
     required: false
-    default: wobbly/example
+    default: wobblie/example
 `,
         'utf8'
       );
@@ -190,12 +190,12 @@ adaptations:
           label: 'Branch prefix',
           description: 'Branch prefix for generated work.',
           required: false,
-          default: 'wobbly/example',
+          default: 'wobblie/example',
         },
         {
           key: 'target_repo',
           label: 'Target repository',
-          description: 'Repository slug to mention in rendered wobbly files.',
+          description: 'Repository slug to mention in rendered wobblie files.',
           required: true,
           suggestions: ['owner/repo'],
         },
@@ -204,11 +204,11 @@ adaptations:
   });
 
 
-  test('reports undeclared adaptation tokens in WOBBLY.md', async () => {
+  test('reports undeclared adaptation tokens in WOBBLIE.md', async () => {
     await withFixture('valid-no-support', async (repoRoot) => {
       await writeFile(
-        join(repoRoot, 'wobblys/no-support/WOBBLY.md'),
-        `${validWobblyMarkdown('no-support')}\nUse {{adapt.slack_chanel}} for notifications.\n`,
+        join(repoRoot, 'wobblies/no-support/WOBBLIE.md'),
+        `${validWobblieMarkdown('no-support')}\nUse {{adapt.slack_chanel}} for notifications.\n`,
         'utf8'
       );
 
@@ -222,7 +222,7 @@ adaptations:
       expect(result.errors).toContainEqual(
         expect.objectContaining({
           code: 'unknown_adaptation_token',
-          path: 'wobblys/no-support/WOBBLY.md',
+          path: 'wobblies/no-support/WOBBLIE.md',
         })
       );
       expect(result.errors.find((error) => error.code === 'unknown_adaptation_token')?.message).toContain(
@@ -233,9 +233,9 @@ adaptations:
 
   test('reports undeclared adaptation tokens in script support files', async () => {
     await withFixture('valid-no-support', async (repoRoot) => {
-      await mkdir(join(repoRoot, 'wobblys/no-support/scripts'), { recursive: true });
+      await mkdir(join(repoRoot, 'wobblies/no-support/scripts'), { recursive: true });
       await writeFile(
-        join(repoRoot, 'wobblys/no-support/scripts/render.ts'),
+        join(repoRoot, 'wobblies/no-support/scripts/render.ts'),
         'console.log("{{ adapt.slack_chanel }}");\n',
         'utf8'
       );
@@ -250,7 +250,7 @@ adaptations:
       expect(result.errors).toContainEqual(
         expect.objectContaining({
           code: 'unknown_adaptation_token',
-          path: 'wobblys/no-support/scripts/render.ts',
+          path: 'wobblies/no-support/scripts/render.ts',
         })
       );
     });
@@ -258,9 +258,9 @@ adaptations:
 
   test('reports undeclared adaptation tokens in reference support files', async () => {
     await withFixture('valid-no-support', async (repoRoot) => {
-      await mkdir(join(repoRoot, 'wobblys/no-support/references'), { recursive: true });
+      await mkdir(join(repoRoot, 'wobblies/no-support/references'), { recursive: true });
       await writeFile(
-        join(repoRoot, 'wobblys/no-support/references/routing.md'),
+        join(repoRoot, 'wobblies/no-support/references/routing.md'),
         'Send updates to {{adapt.slack_chanel}}.\n',
         'utf8'
       );
@@ -275,28 +275,28 @@ adaptations:
       expect(result.errors).toContainEqual(
         expect.objectContaining({
           code: 'unknown_adaptation_token',
-          path: 'wobblys/no-support/references/routing.md',
+          path: 'wobblies/no-support/references/routing.md',
         })
       );
     });
   });
 
-  test('reports malformed adaptation tokens in wobbly and support files', async () => {
+  test('reports malformed adaptation tokens in wobblie and support files', async () => {
     await withFixture('valid-no-support', async (repoRoot) => {
       await writeFile(
-        join(repoRoot, 'wobblys/no-support/WOBBLY.md'),
-        `${validWobblyMarkdown('no-support')}\nUse {{ adapt.slack-channel }} for notifications.\n`,
+        join(repoRoot, 'wobblies/no-support/WOBBLIE.md'),
+        `${validWobblieMarkdown('no-support')}\nUse {{ adapt.slack-channel }} for notifications.\n`,
         'utf8'
       );
-      await mkdir(join(repoRoot, 'wobblys/no-support/scripts'), { recursive: true });
-      await mkdir(join(repoRoot, 'wobblys/no-support/references'), { recursive: true });
+      await mkdir(join(repoRoot, 'wobblies/no-support/scripts'), { recursive: true });
+      await mkdir(join(repoRoot, 'wobblies/no-support/references'), { recursive: true });
       await writeFile(
-        join(repoRoot, 'wobblys/no-support/scripts/render.ts'),
+        join(repoRoot, 'wobblies/no-support/scripts/render.ts'),
         'console.log("{{ adapt .slack_channel }}");\n',
         'utf8'
       );
       await writeFile(
-        join(repoRoot, 'wobblys/no-support/references/routing.md'),
+        join(repoRoot, 'wobblies/no-support/references/routing.md'),
         'Send updates to {{ adapt. }}.\n',
         'utf8'
       );
@@ -312,25 +312,25 @@ adaptations:
         expect.arrayContaining([
           expect.objectContaining({
             code: 'malformed_adaptation_token',
-            path: 'wobblys/no-support/WOBBLY.md',
+            path: 'wobblies/no-support/WOBBLIE.md',
           }),
           expect.objectContaining({
             code: 'malformed_adaptation_token',
-            path: 'wobblys/no-support/scripts/render.ts',
+            path: 'wobblies/no-support/scripts/render.ts',
           }),
           expect.objectContaining({
             code: 'malformed_adaptation_token',
-            path: 'wobblys/no-support/references/routing.md',
+            path: 'wobblies/no-support/references/routing.md',
           }),
         ])
       );
     });
   });
 
-  test('allows declared adaptation tokens in wobbly and support files', async () => {
+  test('allows declared adaptation tokens in wobblie and support files', async () => {
     await withFixture('valid-no-support', async (repoRoot) => {
       await writeFile(
-        join(repoRoot, 'wobblys/no-support/example.yml'),
+        join(repoRoot, 'wobblies/no-support/example.yml'),
         `id: no-support
 title: no support fixture
 status: ready
@@ -340,11 +340,11 @@ showOnWebsite: true
 showInDashboard: false
 fit:
   jobsToBeDone:
-    - wobbly-operations
+    - wobblie-operations
   bestFor:
     - Teams validating the examples catalog generator.
   notFor:
-    - Production wobbly deployments without local review.
+    - Production wobblie deployments without local review.
 requirements:
   requiredIntegrations:
     - github
@@ -360,19 +360,19 @@ adaptations:
         'utf8'
       );
       await writeFile(
-        join(repoRoot, 'wobblys/no-support/WOBBLY.md'),
-        `${validWobblyMarkdown('no-support')}\nRun {{ adapt.package_manager }} install before checks.\n`,
+        join(repoRoot, 'wobblies/no-support/WOBBLIE.md'),
+        `${validWobblieMarkdown('no-support')}\nRun {{ adapt.package_manager }} install before checks.\n`,
         'utf8'
       );
-      await mkdir(join(repoRoot, 'wobblys/no-support/scripts'), { recursive: true });
-      await mkdir(join(repoRoot, 'wobblys/no-support/references'), { recursive: true });
+      await mkdir(join(repoRoot, 'wobblies/no-support/scripts'), { recursive: true });
+      await mkdir(join(repoRoot, 'wobblies/no-support/references'), { recursive: true });
       await writeFile(
-        join(repoRoot, 'wobblys/no-support/scripts/render.ts'),
+        join(repoRoot, 'wobblies/no-support/scripts/render.ts'),
         'console.log("{{adapt.package_manager}}");\n',
         'utf8'
       );
       await writeFile(
-        join(repoRoot, 'wobblys/no-support/references/routing.md'),
+        join(repoRoot, 'wobblies/no-support/references/routing.md'),
         'Use {{ adapt.package_manager }} for package commands.\n',
         'utf8'
       );
@@ -399,7 +399,7 @@ adaptations:
   test('emits optional specialization ideas', async () => {
     await withFixture('valid-no-support', async (repoRoot) => {
       await writeFile(
-        join(repoRoot, 'wobblys/no-support/example.yml'),
+        join(repoRoot, 'wobblies/no-support/example.yml'),
         `id: no-support
 title: no support fixture
 status: ready
@@ -409,18 +409,18 @@ showOnWebsite: true
 showInDashboard: false
 fit:
   jobsToBeDone:
-    - wobbly-operations
+    - wobblie-operations
   bestFor:
     - Teams validating the examples catalog generator.
   notFor:
-    - Production wobbly deployments without local review.
+    - Production wobblie deployments without local review.
 requirements:
   requiredIntegrations:
     - github
   optionalIntegrations: []
   other: []
 specializationIdeas:
-  - Restrict the wobbly to a narrower repository area.
+  - Restrict the wobblie to a narrower repository area.
   - Add a team-specific output format.
 `,
         'utf8'
@@ -434,7 +434,7 @@ specializationIdeas:
       }
 
       expect(result.value.examples[0]?.specializationIdeas).toEqual([
-        'Restrict the wobbly to a narrower repository area.',
+        'Restrict the wobblie to a narrower repository area.',
         'Add a team-specific output format.',
       ]);
     });
@@ -443,7 +443,7 @@ specializationIdeas:
   test('reports invalid specialization ideas', async () => {
     await withFixture('valid-no-support', async (repoRoot) => {
       await writeFile(
-        join(repoRoot, 'wobblys/no-support/example.yml'),
+        join(repoRoot, 'wobblies/no-support/example.yml'),
         `id: no-support
 title: no support fixture
 status: ready
@@ -453,11 +453,11 @@ showOnWebsite: true
 showInDashboard: false
 fit:
   jobsToBeDone:
-    - wobbly-operations
+    - wobblie-operations
   bestFor:
     - Teams validating the examples catalog generator.
   notFor:
-    - Production wobbly deployments without local review.
+    - Production wobblie deployments without local review.
 requirements:
   requiredIntegrations:
     - github
@@ -485,7 +485,7 @@ specializationIdeas:
   test('reports duplicate structured adaptation keys', async () => {
     await withFixture('valid-no-support', async (repoRoot) => {
       await writeFile(
-        join(repoRoot, 'wobblys/no-support/example.yml'),
+        join(repoRoot, 'wobblies/no-support/example.yml'),
         `id: no-support
 title: no support fixture
 status: ready
@@ -495,11 +495,11 @@ showOnWebsite: true
 showInDashboard: false
 fit:
   jobsToBeDone:
-    - wobbly-operations
+    - wobblie-operations
   bestFor:
     - Teams validating the examples catalog generator.
   notFor:
-    - Production wobbly deployments without local review.
+    - Production wobblie deployments without local review.
 requirements:
   requiredIntegrations:
     - github
@@ -534,7 +534,7 @@ adaptations:
   test('reports structured adaptation metadata validation failures', async () => {
     await withFixture('valid-no-support', async (repoRoot) => {
       await writeFile(
-        join(repoRoot, 'wobblys/no-support/example.yml'),
+        join(repoRoot, 'wobblies/no-support/example.yml'),
         `id: no-support
 title: no support fixture
 status: ready
@@ -544,11 +544,11 @@ showOnWebsite: true
 showInDashboard: false
 fit:
   jobsToBeDone:
-    - wobbly-operations
+    - wobblie-operations
   bestFor:
     - Teams validating the examples catalog generator.
   notFor:
-    - Production wobbly deployments without local review.
+    - Production wobblie deployments without local review.
 requirements:
   requiredIntegrations:
     - github
@@ -604,10 +604,10 @@ adaptations:
       }
 
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'public_safety', path: 'wobblys/public-safety/example.yml' })
+        expect.objectContaining({ code: 'public_safety', path: 'wobblies/public-safety/example.yml' })
       );
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'public_safety', path: 'wobblys/public-safety/references/secret.md' })
+        expect.objectContaining({ code: 'public_safety', path: 'wobblies/public-safety/references/secret.md' })
       );
     });
   });
@@ -622,7 +622,7 @@ adaptations:
       }
 
       expect(result.errors).toContainEqual(
-        expect.objectContaining({ code: 'unsupported_support_path', path: 'wobblys/unsupported-support/notes.md' })
+        expect.objectContaining({ code: 'unsupported_support_path', path: 'wobblies/unsupported-support/notes.md' })
       );
     });
   });
@@ -630,13 +630,13 @@ adaptations:
   test('reports duplicate example IDs', async () => {
     await withFixture('valid-no-support', async (repoRoot) => {
       await cp(
-        join(repoRoot, 'wobblys/no-support'),
-        join(repoRoot, 'wobblys/duplicate-support'),
+        join(repoRoot, 'wobblies/no-support'),
+        join(repoRoot, 'wobblies/duplicate-support'),
         { recursive: true }
       );
       await writeFile(
-        join(repoRoot, 'wobblys/duplicate-support/WOBBLY.md'),
-        validWobblyMarkdown('duplicate-support'),
+        join(repoRoot, 'wobblies/duplicate-support/WOBBLIE.md'),
+        validWobblieMarkdown('duplicate-support'),
         'utf8'
       );
 
@@ -662,7 +662,7 @@ adaptations:
         throw new TypeError('Expected deterministic fixture to be valid.');
       }
 
-      expect(first.value.examples.map((example) => example.id)).toEqual(['alpha-wobbly', 'zebra-wobbly']);
+      expect(first.value.examples.map((example) => example.id)).toEqual(['alpha-wobblie', 'zebra-wobblie']);
       expect(first.value.examples[0]?.scripts).toEqual(['scripts/a.ts', 'scripts/b.ts']);
       expect(serializeCatalog(first.value)).toEqual(serializeCatalog(second.value));
     });
@@ -673,7 +673,7 @@ async function withFixture(
   fixtureName: string,
   run: (repoRoot: string) => Promise<void>
 ): Promise<void> {
-  const tempRoot = await mkdtemp(join(tmpdir(), `wobbly-examples-${fixtureName}-`));
+  const tempRoot = await mkdtemp(join(tmpdir(), `wobblie-examples-${fixtureName}-`));
   try {
     await cp(join(FIXTURES_DIR, fixtureName), tempRoot, { recursive: true });
     await run(tempRoot);
@@ -682,7 +682,7 @@ async function withFixture(
   }
 }
 
-function validWobblyMarkdown(id: string): string {
+function validWobblieMarkdown(id: string): string {
   return `---
 id: ${id}
 purpose: Keep the ${id} fixture valid for catalog generation tests.

@@ -21,7 +21,7 @@ requirements:
   optionalIntegrations:
     - linear
   other:
-    - Pull request titles and bodies are editable by Wobbly.
+    - Pull request titles and bodies are editable by Wobblie.
     - Issue identifiers are available from linked issue metadata or clear repository conventions.
 specializationIdeas:
   - Customize required pull request body sections to match the team's template.

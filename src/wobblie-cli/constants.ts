@@ -1,4 +1,4 @@
-export const WOBBLY_CLI_VERSION = '2.0.2';
+export const WOBBLIE_CLI_VERSION = '2.0.2';
 
 export const EXIT_CODE_SUCCESS = 0;
 export const EXIT_CODE_USAGE = 64;
@@ -13,12 +13,12 @@ export const CATALOG_PATH = 'examples.json';
 export const SUPPORTED_CATALOG_SCHEMA_VERSION = 2;
 export const CATALOG_SOURCE_BASE_DIRECTORY = 'wobblies';
 
-export const DEFAULT_WOBBLY_ROOT = '.wobblies';
-export const WOBBLY_FILENAME = 'WOBBLIE.md';
-export const WOBBLY_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+export const DEFAULT_WOBBLIE_ROOT = '.wobblies';
+export const WOBBLIE_FILENAME = 'WOBBLIE.md';
+export const WOBBLIE_ID_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 export const ACTIVATION_CAVEAT =
-  'Scaffolding writes files only. The wobbly is not active until the change is merged to the target repo default branch and ingested by Wobbly.';
+  'Scaffolding writes files only. The wobblie is not active until the change is merged to the target repo default branch and ingested by Wobblie.';
 
 export const canonicalFrontmatterKeys = [
   'id',
@@ -49,7 +49,7 @@ export const catalogMetadataFrontmatterKeys = [
   'scripts',
   'references',
   'source',
-  'wobbly',
+  'wobblie',
   'riskTier',
   'activationMode',
   'display',

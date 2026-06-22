@@ -6,17 +6,17 @@ watch:
   - A top-level GitHub PR comment is created on an open non-draft pull request.
   - A GitHub pull request head commit changes on an open non-draft pull request.
 routines:
-  - Bootstrap PR review, issue-comment, thread, and pagination context via `bun .agents/wobblys/pr-review-triage/scripts/bootstrap-data.ts --pr <number>` before any triage action.
+  - Bootstrap PR review, issue-comment, thread, and pagination context via `bun .agents/wobblies/pr-review-triage/scripts/bootstrap-data.ts --pr <number>` before any triage action.
   - Treat each review thread or top-level PR issue comment as one triage item.
   - "Assign each actionable item one disposition: `valid`, `invalid`, `duplicate`, `fixed`, or `uncertain`."
   - Apply the author-specific action policy for the item disposition.
   - Re-check unresolved review feedback after PR head updates and resolve fixed threads only with code-level evidence.
 deny:
   - Do not act on draft, closed, or merged pull requests.
-  - Do not process events authored by Wobbly; exit with no action.
+  - Do not process events authored by Wobblie; exit with no action.
   - Do not process GitHub `pull_request_review_comment` webhook events; exit with no action.
   - Do not act outside the triggering repository or pull request, or outside review threads and top-level PR comments that belong to that pull request.
-  - Do not treat Wobbly-authored triage comments as actionable feedback.
+  - Do not treat Wobblie-authored triage comments as actionable feedback.
   - Do not reply to, hide, minimize, or add reactions to human-authored review comments or top-level PR comments.
   - Do not approve, request changes, dismiss reviews, merge pull requests, or change pull request state.
   - Do not edit code, push commits, open pull requests, or open issues.
@@ -24,7 +24,7 @@ deny:
   - Do not resolve human-authored review threads unless the fix is mechanical, unambiguous, and strongly evidenced in code.
   - Do not resolve, hide, minimize, or react when confidence is low.
   - Do not resolve a feedback thread just because a new commit mentions it; require code-level evidence.
-  - Do not post repetitive comments when an equivalent Wobbly comment or fix acknowledgement already exists.
+  - Do not post repetitive comments when an equivalent Wobblie comment or fix acknowledgement already exists.
 ---
 
 # PR Review Triage
@@ -34,7 +34,7 @@ deny:
 Before evaluating feedback, run:
 
 ```bash
-bun .agents/wobblys/pr-review-triage/scripts/bootstrap-data.ts --pr <number>
+bun .agents/wobblies/pr-review-triage/scripts/bootstrap-data.ts --pr <number>
 ```
 
 The script emits raw GraphQL JSON. Parse the response, confirm the PR is open and non-draft, and inspect every relevant `pageInfo`. If relevant reviews, review threads, thread comments, or top-level PR comments are paginated beyond the returned data, stop/no-op rather than acting from incomplete context.
@@ -45,9 +45,9 @@ Treat each review thread as one item. Treat each top-level PR issue comment as o
 
 Top-level PR issue comments are eligible only when they contain concrete merge-readiness feedback or a correctness claim. Silently skip routine automation, status, subscription, or linkback comments. This issue-comment gate does not apply to PR review comments or review threads.
 
-Ignore Wobbly-authored triage output. Treat output as Wobbly-authored when the author is Wobbly or the body contains `wobblied/pr-review-triage`.
+Ignore Wobblie-authored triage output. Treat output as Wobblie-authored when the author is Wobblie or the body contains `wobblied/pr-review-triage`.
 
-Use fetched author metadata for action policy: Wobbly markers win; `User` authors are human-authored; bot/app authors are non-human; missing or ambiguous author identity uses the most restrictive applicable policy.
+Use fetched author metadata for action policy: Wobblie markers win; `User` authors are human-authored; bot/app authors are non-human; missing or ambiguous author identity uses the most restrictive applicable policy.
 
 Human-authored feedback is authoritative context for merge-readiness. Use it to choose canonical duplicate items and to invalidate conflicting non-human feedback, but do not publicly adjudicate human feedback.
 
@@ -102,9 +102,9 @@ Treat feedback as conflicting when requested changes cannot both be correct. Hum
 
 ## Idempotency
 
-Before any visible action, check whether an equivalent Wobbly reply, top-level comment, reaction, resolve, hide, or minimize action already exists for the same item and PR head. If yes, do not repeat it.
+Before any visible action, check whether an equivalent Wobblie reply, top-level comment, reaction, resolve, hide, or minimize action already exists for the same item and PR head. If yes, do not repeat it.
 
-Stay silent for routine no-ops: draft/closed/merged PRs, Wobbly-authored triggers, unsupported event types, incomplete relevant pagination, or equivalent actions already taken.
+Stay silent for routine no-ops: draft/closed/merged PRs, Wobblie-authored triggers, unsupported event types, incomplete relevant pagination, or equivalent actions already taken.
 
 When a PR head update makes feedback fixed, do not post a fixed comment if the fix author or another reviewer already said the thread/comment was fixed. Resolve the thread when resolution is allowed.
 

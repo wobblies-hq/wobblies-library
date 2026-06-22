@@ -1,6 +1,6 @@
 ---
-id: alpha-wobbly
-purpose: Keep the alpha-wobbly fixture valid for catalog generation tests.
+id: alpha-wobblie
+purpose: Keep the alpha-wobblie fixture valid for catalog generation tests.
 watch:
   - Wake on pull request changes for this fixture.
 routines:
@@ -9,7 +9,7 @@ deny:
   - Do not mutate production resources.
 ---
 
-# alpha-wobbly
+# alpha-wobblie
 
 ## Policy
 

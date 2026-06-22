@@ -24,7 +24,7 @@ requirements:
 adaptations:
   - key: package_manager
     label: Package manager
-    description: The JavaScript package manager Wobbly should use when reporting and running dependency update commands.
+    description: The JavaScript package manager Wobblie should use when reporting and running dependency update commands.
     required: true
     suggestions:
       - npm

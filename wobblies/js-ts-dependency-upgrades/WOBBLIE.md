@@ -47,8 +47,8 @@ Create or update at most two pull requests per run:
 
 Use these branch names and pull request titles:
 
-- Runtime dependency branch: `wobbly/deps-runtime-minor-patch`
-- Development dependency branch: `wobbly/deps-dev-minor-patch`
+- Runtime dependency branch: `wobblie/deps-runtime-minor-patch`
+- Development dependency branch: `wobblie/deps-dev-minor-patch`
 - Runtime dependency title: `deps: update runtime dependencies`
 - Development dependency title: `deps(dev): update development dependencies`
 
@@ -63,7 +63,7 @@ Each PR body must include:
 
 ## Verification and freshness
 
-Before modifying files, re-read the current default branch and existing wobbly upgrade branches or pull requests to avoid duplicate work.
+Before modifying files, re-read the current default branch and existing wobblie upgrade branches or pull requests to avoid duplicate work.
 
 After applying updates:
 

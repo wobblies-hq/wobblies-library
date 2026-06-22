@@ -3,9 +3,9 @@ import path from 'node:path';
 import { parseArgs } from 'node:util';
 import {
   ACTIVATION_CAVEAT,
-  WOBBLY_ID_PATTERN,
+  WOBBLIE_ID_PATTERN,
   DEFAULT_CATALOG_REF,
-  DEFAULT_WOBBLY_ROOT,
+  DEFAULT_WOBBLIE_ROOT,
   EXIT_CODE_DATA,
   EXIT_CODE_INTERNAL,
   EXIT_CODE_SUCCESS,
@@ -13,8 +13,8 @@ import {
   SOURCE_REPO,
 } from './constants';
 import {
-  discoverRuntimeWobblyFiles,
-  expectedWobblyIdFromPath,
+  discoverRuntimeWobblieFiles,
+  expectedWobblieIdFromPath,
   findGitRoot,
   findInstallRoot,
   pathExists,
@@ -27,15 +27,15 @@ import {
   parseAdaptFlags,
   resolveAdaptations,
 } from './adaptations';
-import { createWobblyInstallPlan } from './install-plan';
-import { prepareWobblyInstallFiles } from './install-rendering';
+import { createWobblieInstallPlan } from './install-plan';
+import { prepareWobblieInstallFiles } from './install-rendering';
 import { issue, normalizeErrorMessage } from './issues';
 import {
-  createWobblyInstallPullRequest,
-  WobblyInstallPullRequestError,
-  listWobblyInstallPullRequests,
-  type WobblyInstallPrGitHubClient,
-} from '../wobbly-install-pr';
+  createWobblieInstallPullRequest,
+  WobblieInstallPullRequestError,
+  listWobblieInstallPullRequests,
+  type WobblieInstallPrGitHubClient,
+} from '../wobblie-install-pr';
 import type {
   AddData,
   CatalogClient,
@@ -49,7 +49,7 @@ import type {
   ValidateData,
   ValidateFileResult,
 } from './types';
-import { validateRuntimeWobblyMarkdown } from './validation/runtime';
+import { validateRuntimeWobblieMarkdown } from './validation/runtime';
 import type { CatalogExample } from '../examples/types';
 
 function usageResult(command: string, summary: string): CliCommandResult {
@@ -95,7 +95,7 @@ function catalogErrorResult(command: string, error: unknown): CliCommandResult {
     command,
     ok: false,
     exitCode: EXIT_CODE_DATA,
-    summary: `Unable to read wobbly examples catalog.`,
+    summary: `Unable to read wobblie examples catalog.`,
     warnings: [],
     errors: [issue({ code, message: normalizeErrorMessage(error), path: pathValue })],
     data: null,
@@ -148,7 +148,7 @@ export async function runListCommand(args: {
       command: 'list',
       ok: true,
       exitCode: EXIT_CODE_SUCCESS,
-      summary: `Found ${examples.length.toString()} wobbly example${examples.length === 1 ? '' : 's'}.`,
+      summary: `Found ${examples.length.toString()} wobblie example${examples.length === 1 ? '' : 's'}.`,
       warnings: [],
       errors: [],
       data: {
@@ -182,11 +182,11 @@ export async function runShowCommand(args: {
   }
 
   if (parsed.positionals.length !== 1) {
-    return usageResult('show', 'Expected exactly one example id: wobbly show <example-id>.') as CliCommandResult<ShowData>;
+    return usageResult('show', 'Expected exactly one example id: wobblie show <example-id>.') as CliCommandResult<ShowData>;
   }
 
   const exampleId = parsed.positionals[0];
-  if (!exampleId || !WOBBLY_ID_PATTERN.test(exampleId)) {
+  if (!exampleId || !WOBBLIE_ID_PATTERN.test(exampleId)) {
     return usageResult('show', `Invalid example id '${exampleId ?? ''}'. Expected kebab-case.`) as CliCommandResult<ShowData>;
   }
 
@@ -199,9 +199,9 @@ export async function runShowCommand(args: {
         command: 'show',
         ok: false,
         exitCode: EXIT_CODE_DATA,
-        summary: `No wobbly example found for '${exampleId}'.`,
+        summary: `No wobblie example found for '${exampleId}'.`,
         warnings: [],
-        errors: [issue({ code: 'EXAMPLE_NOT_FOUND', message: `No wobbly example found for '${exampleId}'.` })],
+        errors: [issue({ code: 'EXAMPLE_NOT_FOUND', message: `No wobblie example found for '${exampleId}'.` })],
         data: null,
       };
     }
@@ -222,7 +222,7 @@ export async function runShowCommand(args: {
         otherRequirements: [...entry.requirements.other],
         scripts: [...entry.scripts],
         references: [...entry.references],
-        wobblyPath: entry.wobbly.path,
+        wobbliePath: entry.wobblie.path,
         sourceDirectory: entry.source.directory,
         sourceUrl: entry.source.url,
         adaptations: [...(entry.adaptations ?? [])],
@@ -259,9 +259,9 @@ function addDataForBlocked(args: {
   deprecatedBlocked: boolean;
   adaptationsApplied?: string[] | undefined;
 }): AddData {
-  const destinationDirectory = path.join(args.installRoot, DEFAULT_WOBBLY_ROOT, args.entry.id);
+  const destinationDirectory = path.join(args.installRoot, DEFAULT_WOBBLIE_ROOT, args.entry.id);
   return {
-    wobblyId: args.entry.id,
+    wobblieId: args.entry.id,
     filePath: toDisplayPath(args.installRoot, destinationDirectory),
     targetRoot: args.installRoot,
     dryRun: args.dryRun,
@@ -350,11 +350,11 @@ export async function runAddCommand(args: {
   }
 
   if (parsed.positionals.length !== 1) {
-    return usageResult(args.commandName, `Expected exactly one example id: wobbly ${args.commandName} <example-id>.`) as CliCommandResult<AddData>;
+    return usageResult(args.commandName, `Expected exactly one example id: wobblie ${args.commandName} <example-id>.`) as CliCommandResult<AddData>;
   }
 
   const exampleId = parsed.positionals[0];
-  if (!exampleId || !WOBBLY_ID_PATTERN.test(exampleId)) {
+  if (!exampleId || !WOBBLIE_ID_PATTERN.test(exampleId)) {
     return usageResult(args.commandName, `Invalid example id '${exampleId ?? ''}'. Expected kebab-case.`) as CliCommandResult<AddData>;
   }
 
@@ -379,14 +379,14 @@ export async function runAddCommand(args: {
         command: args.commandName,
         ok: false,
         exitCode: EXIT_CODE_DATA,
-        summary: `No wobbly example found for '${exampleId}'.`,
+        summary: `No wobblie example found for '${exampleId}'.`,
         warnings: [],
-        errors: [issue({ code: 'EXAMPLE_NOT_FOUND', message: `No wobbly example found for '${exampleId}'.` })],
+        errors: [issue({ code: 'EXAMPLE_NOT_FOUND', message: `No wobblie example found for '${exampleId}'.` })],
         data: null,
       };
     }
 
-    const installPlanResult = createWobblyInstallPlan({ entry, installRoot });
+    const installPlanResult = createWobblieInstallPlan({ entry, installRoot });
     if (!installPlanResult.ok) {
       return {
         command: args.commandName,
@@ -407,7 +407,7 @@ export async function runAddCommand(args: {
         command: args.commandName,
         ok: false,
         exitCode: EXIT_CODE_DATA,
-        summary: `Refusing to install deprecated wobbly example '${exampleId}'. Re-run with --allow-deprecated if you intentionally need it.`,
+        summary: `Refusing to install deprecated wobblie example '${exampleId}'. Re-run with --allow-deprecated if you intentionally need it.`,
         warnings: [],
         errors: [issue({ code: 'DEPRECATED_EXAMPLE_BLOCKED', message: `Example '${exampleId}' is deprecated.` })],
         data: addDataForBlocked({ entry, ref, installRoot, files: installPlan.files, dryRun, force, collisions, deprecatedBlocked: true }),
@@ -419,7 +419,7 @@ export async function runAddCommand(args: {
         command: args.commandName,
         ok: false,
         exitCode: EXIT_CODE_DATA,
-        summary: `Refusing to overwrite ${collisions.length.toString()} existing wobbly file${collisions.length === 1 ? '' : 's'}. Re-run with --force to overwrite catalog-managed files.`,
+        summary: `Refusing to overwrite ${collisions.length.toString()} existing wobblie file${collisions.length === 1 ? '' : 's'}. Re-run with --force to overwrite catalog-managed files.`,
         warnings: [],
         errors: collisions.map((collision) => issue({ code: 'INSTALL_COLLISION', message: `Destination already exists: ${collision}`, path: collision })),
         data: addDataForBlocked({ entry, ref, installRoot, files: installPlan.files, dryRun, force, collisions, deprecatedBlocked: false }),
@@ -451,7 +451,7 @@ export async function runAddCommand(args: {
       );
     }
 
-    const rendered = await prepareWobblyInstallFiles({
+    const rendered = await prepareWobblieInstallFiles({
       entry,
       ref,
       catalogClient: args.catalogClient,
@@ -462,7 +462,7 @@ export async function runAddCommand(args: {
     if (!rendered.ok) {
       return dataErrorResult(
         args.commandName,
-        `Rendered wobbly example '${exampleId}' is invalid.`,
+        `Rendered wobblie example '${exampleId}' is invalid.`,
         rendered.errors,
         addDataForBlocked({
           entry,
@@ -493,7 +493,7 @@ export async function runAddCommand(args: {
     }
 
     const data: AddData = {
-      wobblyId: entry.id,
+      wobblieId: entry.id,
       filePath: toDisplayPath(installRoot, destinationDirectory),
       targetRoot: installRoot,
       dryRun,
@@ -519,7 +519,7 @@ export async function runAddCommand(args: {
       exitCode: EXIT_CODE_SUCCESS,
       summary: dryRun
         ? `Dry run: would scaffold '${entry.id}' into ${data.filePath}. Applied adaptation keys: ${data.adaptationsApplied.length.toString()}.`
-        : `Scaffolded '${entry.id}' into ${data.filePath}. Applied adaptation keys: ${data.adaptationsApplied.length.toString()}; wobbly is not active yet.`,
+        : `Scaffolded '${entry.id}' into ${data.filePath}. Applied adaptation keys: ${data.adaptationsApplied.length.toString()}; wobblie is not active yet.`,
       warnings: [],
       errors: [],
       data,
@@ -533,8 +533,8 @@ export async function runAddCommand(args: {
 }
 
 
-function prErrorResult<TData>(command: string, error: WobblyInstallPullRequestError): CliCommandResult<TData> {
-  const exitCode = error.code === 'INVALID_REPOSITORY' || error.code === 'INVALID_WOBBLY_ID' || error.code === 'INVALID_INSTALL_BRANCH'
+function prErrorResult<TData>(command: string, error: WobblieInstallPullRequestError): CliCommandResult<TData> {
+  const exitCode = error.code === 'INVALID_REPOSITORY' || error.code === 'INVALID_WOBBLIE_ID' || error.code === 'INVALID_INSTALL_BRANCH'
     ? EXIT_CODE_USAGE
     : EXIT_CODE_DATA;
   return {
@@ -548,7 +548,7 @@ function prErrorResult<TData>(command: string, error: WobblyInstallPullRequestEr
   };
 }
 
-function stripMarkerText(result: Awaited<ReturnType<typeof createWobblyInstallPullRequest>>): PrOpenData {
+function stripMarkerText(result: Awaited<ReturnType<typeof createWobblieInstallPullRequest>>): PrOpenData {
   const { markerText: _markerText, ...data } = result;
   return data;
 }
@@ -557,11 +557,11 @@ export async function runPrCommand(args: {
   commandArgs: readonly string[];
   cwd: string;
   catalogClient: CatalogClient;
-  githubClient?: WobblyInstallPrGitHubClient | undefined;
+  githubClient?: WobblieInstallPrGitHubClient | undefined;
 }): Promise<CliCommandResult<PrOpenData | PrListData>> {
   const subcommand = args.commandArgs[0];
   if (subcommand !== 'open' && subcommand !== 'list') {
-    return usageResult('pr', 'Expected wobbly pr open <example-id> or wobbly pr list.') as CliCommandResult<PrOpenData | PrListData>;
+    return usageResult('pr', 'Expected wobblie pr open <example-id> or wobblie pr list.') as CliCommandResult<PrOpenData | PrListData>;
   }
 
   if (subcommand === 'open') {
@@ -585,7 +585,7 @@ export async function runPrCommand(args: {
     }
 
     if (parsed.positionals.length !== 1) {
-      return usageResult('pr open', 'Expected exactly one example id: wobbly pr open <example-id> --repo owner/repo.') as CliCommandResult<PrOpenData | PrListData>;
+      return usageResult('pr open', 'Expected exactly one example id: wobblie pr open <example-id> --repo owner/repo.') as CliCommandResult<PrOpenData | PrListData>;
     }
     const repo = parsed.values.repo;
     if (!repo) {
@@ -593,7 +593,7 @@ export async function runPrCommand(args: {
     }
 
     const exampleId = parsed.positionals[0] ?? '';
-    if (!WOBBLY_ID_PATTERN.test(exampleId)) {
+    if (!WOBBLIE_ID_PATTERN.test(exampleId)) {
       return usageResult('pr open', `Invalid example id '${exampleId}'. Expected kebab-case.`) as CliCommandResult<PrOpenData | PrListData>;
     }
 
@@ -616,7 +616,7 @@ export async function runPrCommand(args: {
     }
 
     try {
-      const opened = await createWobblyInstallPullRequest({
+      const opened = await createWobblieInstallPullRequest({
         repo,
         exampleId,
         sourceRef: parsed.values.ref ?? DEFAULT_CATALOG_REF,
@@ -632,13 +632,13 @@ export async function runPrCommand(args: {
         command: 'pr open',
         ok: true,
         exitCode: EXIT_CODE_SUCCESS,
-        summary: `${opened.status === 'created' ? 'Opened' : opened.status === 'existing_open' ? 'Found existing open' : 'Recovered existing branch and opened'} wobbly install PR #${opened.pullRequest.number.toString()} for '${opened.wobblyId}'.`,
+        summary: `${opened.status === 'created' ? 'Opened' : opened.status === 'existing_open' ? 'Found existing open' : 'Recovered existing branch and opened'} wobblie install PR #${opened.pullRequest.number.toString()} for '${opened.wobblieId}'.`,
         warnings: opened.warnings,
         errors: [],
         data,
       };
     } catch (error) {
-      if (error instanceof WobblyInstallPullRequestError) {
+      if (error instanceof WobblieInstallPullRequestError) {
         return prErrorResult('pr open', error) as CliCommandResult<PrOpenData | PrListData>;
       }
       return internalResult('pr open', error) as CliCommandResult<PrOpenData | PrListData>;
@@ -665,12 +665,12 @@ export async function runPrCommand(args: {
   }
 
   try {
-    const listed = await listWobblyInstallPullRequests({ repo, githubClient: args.githubClient });
+    const listed = await listWobblieInstallPullRequests({ repo, githubClient: args.githubClient });
     return {
       command: 'pr list',
       ok: true,
       exitCode: EXIT_CODE_SUCCESS,
-      summary: `Found ${listed.count.toString()} wobbly install pull request${listed.count === 1 ? '' : 's'} or branches.`,
+      summary: `Found ${listed.count.toString()} wobblie install pull request${listed.count === 1 ? '' : 's'} or branches.`,
       warnings: listed.warnings,
       errors: [],
       data: {
@@ -681,7 +681,7 @@ export async function runPrCommand(args: {
       },
     };
   } catch (error) {
-    if (error instanceof WobblyInstallPullRequestError) {
+    if (error instanceof WobblieInstallPullRequestError) {
       return prErrorResult('pr list', error) as CliCommandResult<PrOpenData | PrListData>;
     }
     return internalResult('pr list', error) as CliCommandResult<PrOpenData | PrListData>;
@@ -692,22 +692,22 @@ async function validateOneFile(args: { filePath: string; root: string }): Promis
   const displayPath = toDisplayPath(args.root, args.filePath);
   try {
     const content = await readUtf8File(args.filePath);
-    const expectedId = expectedWobblyIdFromPath(displayPath);
-    const result = validateRuntimeWobblyMarkdown({ content, path: displayPath, expectedId });
+    const expectedId = expectedWobblieIdFromPath(displayPath);
+    const result = validateRuntimeWobblieMarkdown({ content, path: displayPath, expectedId });
     return {
       filePath: displayPath,
       ok: result.ok,
       warnings: result.warnings,
       errors: result.errors,
-      wobbly: result.ok ? result.wobbly : null,
+      wobblie: result.ok ? result.wobblie : null,
     };
   } catch (error) {
     return {
       filePath: displayPath,
       ok: false,
       warnings: [],
-      errors: [issue({ code: 'WOBBLY_FILE_READ_FAILED', message: normalizeErrorMessage(error), path: displayPath })],
-      wobbly: null,
+      errors: [issue({ code: 'WOBBLIE_FILE_READ_FAILED', message: normalizeErrorMessage(error), path: displayPath })],
+      wobblie: null,
     };
   }
 }
@@ -734,16 +734,16 @@ export async function runValidateCommand(args: {
   const dryRun = parsed.values['dry-run'] === true;
   const all = parsed.values.all === true;
   if (all && parsed.positionals.length > 0) {
-    return usageResult('validate', 'Use either wobbly validate <path> or wobbly validate --all, not both.') as CliCommandResult<ValidateData>;
+    return usageResult('validate', 'Use either wobblie validate <path> or wobblie validate --all, not both.') as CliCommandResult<ValidateData>;
   }
   if (!all && parsed.positionals.length !== 1) {
-    return usageResult('validate', 'Expected wobbly validate <path> or wobbly validate --all.') as CliCommandResult<ValidateData>;
+    return usageResult('validate', 'Expected wobblie validate <path> or wobblie validate --all.') as CliCommandResult<ValidateData>;
   }
 
   try {
     const validationRoot = (await findGitRoot(args.cwd)) ?? args.cwd;
     const files = all
-      ? await discoverRuntimeWobblyFiles(validationRoot)
+      ? await discoverRuntimeWobblieFiles(validationRoot)
       : [path.resolve(args.cwd, parsed.positionals[0] as string)];
     const results = await Promise.all(files.map((filePath) => validateOneFile({ filePath, root: validationRoot })));
     const validCount = results.filter((result) => result.ok).length;
@@ -753,7 +753,7 @@ export async function runValidateCommand(args: {
       warnings.push(issue({ code: 'VALIDATE_DRY_RUN_NOOP', message: 'Validation is read-only; --dry-run did not change behavior.' }));
     }
     if (all && files.length === 0) {
-      warnings.push(issue({ code: 'NO_WOBBLY_FILES_FOUND', message: `No runtime wobbly files found under ${DEFAULT_WOBBLY_ROOT}.` }));
+      warnings.push(issue({ code: 'NO_WOBBLIE_FILES_FOUND', message: `No runtime wobblie files found under ${DEFAULT_WOBBLIE_ROOT}.` }));
     }
 
     const data: ValidateData = {
@@ -769,7 +769,7 @@ export async function runValidateCommand(args: {
       command: 'validate',
       ok: invalidCount === 0,
       exitCode: invalidCount === 0 ? EXIT_CODE_SUCCESS : EXIT_CODE_DATA,
-      summary: `Validated ${results.length.toString()} wobbly file${results.length === 1 ? '' : 's'}: ${validCount.toString()} valid, ${invalidCount.toString()} invalid.`,
+      summary: `Validated ${results.length.toString()} wobblie file${results.length === 1 ? '' : 's'}: ${validCount.toString()} valid, ${invalidCount.toString()} invalid.`,
       warnings,
       errors: results.flatMap((result) => result.errors),
       data,

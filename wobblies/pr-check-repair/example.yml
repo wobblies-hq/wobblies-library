@@ -10,7 +10,7 @@ fit:
     - review-with-confidence
   bestFor:
     - Repositories with active pull request queues and required checks.
-    - Teams comfortable with Wobbly pushing narrow check-fix commits to pull request branches.
+    - Teams comfortable with Wobblie pushing narrow check-fix commits to pull request branches.
     - Repositories where failures have useful logs, local reproduction commands, or clear provider data.
   notFor:
     - Teams that do not want automated commits pushed to pull request branches.

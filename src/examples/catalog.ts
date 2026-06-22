@@ -3,10 +3,10 @@ import { access, lstat, mkdir, readFile, readdir, writeFile } from 'node:fs/prom
 import { join, relative } from 'node:path';
 import { findPublicSafetyErrors } from './public-safety';
 import { isKebabCaseSlug, isSupportPath, toPosixPath } from './paths';
-import { parseWobblyMarkdown, parseExampleYaml } from './schema';
+import { parseWobblieMarkdown, parseExampleYaml } from './schema';
 import type {
   CatalogExample,
-  WobblyPackage,
+  WobbliePackage,
   ExampleAdaptation,
   ExampleMetadata,
   ExamplesCatalog,
@@ -19,7 +19,7 @@ const SOURCE_REPOSITORY = 'wobblie-hq/wobblies-library';
 const SOURCE_BASE_DIRECTORY = 'wobblies';
 const DEFAULT_PUBLICATION_REF = 'master';
 const ROOT_CATALOG_PATH = 'examples.json';
-const ALLOWED_WOBBLY_PACKAGE_ENTRIES = new Set(['WOBBLIE.md', 'example.yml', 'scripts', 'references']);
+const ALLOWED_WOBBLIE_PACKAGE_ENTRIES = new Set(['WOBBLIE.md', 'example.yml', 'scripts', 'references']);
 const MUSTACHE_TOKEN_PATTERN = /{{\s*([^{}]*?)\s*}}/g;
 const ADAPTATION_EXPRESSION_PREFIX_PATTERN = /^adapt(?:$|[.\s])/;
 const ADAPTATION_TOKEN_EXPRESSION_PATTERN = /^adapt\.([a-z][a-z0-9_]*)$/;
@@ -28,13 +28,13 @@ export async function generateCatalogFromRepository(
   repoRoot: string,
   options: { publicationRef?: string } = {}
 ): Promise<ValidationResult<ExamplesCatalog>> {
-  const packagesResult = await discoverWobblyPackages(repoRoot);
+  const packagesResult = await discoverWobbliePackages(repoRoot);
   if (!packagesResult.ok) {
     return packagesResult;
   }
 
   const packageResults = await Promise.all(
-    packagesResult.value.map((wobblyPackage) => loadCatalogExample(repoRoot, wobblyPackage, options))
+    packagesResult.value.map((wobbliePackage) => loadCatalogExample(repoRoot, wobbliePackage, options))
   );
 
   const errors = packageResults.flatMap((result) => result.errors);
@@ -138,10 +138,10 @@ type LoadedPackageResult = {
   errors: ValidationError[];
 };
 
-async function discoverWobblyPackages(repoRoot: string): Promise<ValidationResult<WobblyPackage[]>> {
-  const wobblysDirectory = join(repoRoot, SOURCE_BASE_DIRECTORY);
+async function discoverWobbliePackages(repoRoot: string): Promise<ValidationResult<WobbliePackage[]>> {
+  const wobbliesDirectory = join(repoRoot, SOURCE_BASE_DIRECTORY);
   try {
-    const stat = await lstat(wobblysDirectory);
+    const stat = await lstat(wobbliesDirectory);
     if (!stat.isDirectory()) {
       return {
         ok: false,
@@ -149,7 +149,7 @@ async function discoverWobblyPackages(repoRoot: string): Promise<ValidationResul
           machineError({
             code: 'invalid_repository_layout',
             path: SOURCE_BASE_DIRECTORY,
-            message: 'wobblys must be a directory.',
+            message: 'wobblies must be a directory.',
           }),
         ],
       };
@@ -161,14 +161,14 @@ async function discoverWobblyPackages(repoRoot: string): Promise<ValidationResul
         machineError({
           code: 'invalid_repository_layout',
           path: SOURCE_BASE_DIRECTORY,
-          message: `Unable to read wobblys directory: ${normalizeThrownMessage(error)}`,
+          message: `Unable to read wobblies directory: ${normalizeThrownMessage(error)}`,
         }),
       ],
     };
   }
 
-  const entries = await readdir(wobblysDirectory, { withFileTypes: true });
-  const packages: WobblyPackage[] = [];
+  const entries = await readdir(wobbliesDirectory, { withFileTypes: true });
+  const packages: WobbliePackage[] = [];
   const errors: ValidationError[] = [];
 
   for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
@@ -176,13 +176,13 @@ async function discoverWobblyPackages(repoRoot: string): Promise<ValidationResul
       continue;
     }
 
-    const entryPath = `wobblys/${entry.name}`;
+    const entryPath = `wobblies/${entry.name}`;
     if (!entry.isDirectory()) {
       errors.push(
         machineError({
           code: 'invalid_repository_layout',
           path: entryPath,
-          message: 'Entries directly under wobblys/ must be wobbly package directories.',
+          message: 'Entries directly under wobblies/ must be wobblie package directories.',
         })
       );
       continue;
@@ -191,9 +191,9 @@ async function discoverWobblyPackages(repoRoot: string): Promise<ValidationResul
     if (!isKebabCaseSlug(entry.name)) {
       errors.push(
         machineError({
-          code: 'invalid_wobbly_id',
+          code: 'invalid_wobblie_id',
           path: entryPath,
-          message: 'Wobbly package directory names must be stable kebab-case slugs.',
+          message: 'Wobblie package directory names must be stable kebab-case slugs.',
         })
       );
       continue;
@@ -202,7 +202,7 @@ async function discoverWobblyPackages(repoRoot: string): Promise<ValidationResul
     packages.push({
       directoryName: entry.name,
       directoryPath: entryPath,
-      wobblyPath: `${entryPath}/WOBBLIE.md`,
+      wobbliePath: `${entryPath}/WOBBLIE.md`,
       examplePath: `${entryPath}/example.yml`,
     });
   }
@@ -216,29 +216,29 @@ async function discoverWobblyPackages(repoRoot: string): Promise<ValidationResul
 
 async function loadCatalogExample(
   repoRoot: string,
-  wobblyPackage: WobblyPackage,
+  wobbliePackage: WobbliePackage,
   options: { publicationRef?: string }
 ): Promise<LoadedPackageResult> {
   const errors: ValidationError[] = [];
-  const wobblyDirectoryAbsolutePath = join(repoRoot, wobblyPackage.directoryPath);
+  const wobblieDirectoryAbsolutePath = join(repoRoot, wobbliePackage.directoryPath);
 
-  errors.push(...(await validatePackageTopLevelEntries(wobblyDirectoryAbsolutePath, wobblyPackage.directoryPath)));
+  errors.push(...(await validatePackageTopLevelEntries(wobblieDirectoryAbsolutePath, wobbliePackage.directoryPath)));
 
-  const wobblyContent = await readRequiredTextFile(repoRoot, wobblyPackage.wobblyPath, 'missing_wobbly_md');
-  if (!wobblyContent.ok) {
-    errors.push(...wobblyContent.errors);
+  const wobblieContent = await readRequiredTextFile(repoRoot, wobbliePackage.wobbliePath, 'missing_wobblie_md');
+  if (!wobblieContent.ok) {
+    errors.push(...wobblieContent.errors);
   }
 
-  const exampleContent = await readRequiredTextFile(repoRoot, wobblyPackage.examplePath, 'missing_example_yml');
+  const exampleContent = await readRequiredTextFile(repoRoot, wobbliePackage.examplePath, 'missing_example_yml');
   if (!exampleContent.ok) {
     errors.push(...exampleContent.errors);
   }
 
   let exampleMetadata: ExampleMetadata | undefined;
-  let wobblyFrontmatterId: string | undefined;
+  let wobblieFrontmatterId: string | undefined;
 
   if (exampleContent.ok) {
-    const parsedExample = parseExampleYaml({ content: exampleContent.value, path: wobblyPackage.examplePath });
+    const parsedExample = parseExampleYaml({ content: exampleContent.value, path: wobbliePackage.examplePath });
     if (parsedExample.ok) {
       exampleMetadata = parsedExample.value;
     } else {
@@ -246,78 +246,78 @@ async function loadCatalogExample(
     }
   }
 
-  if (wobblyContent.ok) {
-    const parsedWobbly = parseWobblyMarkdown({ content: wobblyContent.value, path: wobblyPackage.wobblyPath });
-    if (parsedWobbly.ok) {
-      wobblyFrontmatterId = parsedWobbly.value.frontmatter.id;
+  if (wobblieContent.ok) {
+    const parsedWobblie = parseWobblieMarkdown({ content: wobblieContent.value, path: wobbliePackage.wobbliePath });
+    if (parsedWobblie.ok) {
+      wobblieFrontmatterId = parsedWobblie.value.frontmatter.id;
     } else {
-      errors.push(...parsedWobbly.errors);
+      errors.push(...parsedWobblie.errors);
     }
   }
 
-  if (exampleMetadata && exampleMetadata.id !== wobblyPackage.directoryName) {
+  if (exampleMetadata && exampleMetadata.id !== wobbliePackage.directoryName) {
     errors.push(
       machineError({
         code: 'id_mismatch',
-        path: wobblyPackage.examplePath,
+        path: wobbliePackage.examplePath,
         fieldPath: 'id',
-        message: `example.yml id ${exampleMetadata.id} must match directory id ${wobblyPackage.directoryName}.`,
+        message: `example.yml id ${exampleMetadata.id} must match directory id ${wobbliePackage.directoryName}.`,
       })
     );
   }
 
-  if (wobblyFrontmatterId && wobblyFrontmatterId !== wobblyPackage.directoryName) {
+  if (wobblieFrontmatterId && wobblieFrontmatterId !== wobbliePackage.directoryName) {
     errors.push(
       machineError({
         code: 'id_mismatch',
-        path: wobblyPackage.wobblyPath,
+        path: wobbliePackage.wobbliePath,
         fieldPath: 'id',
-        message: `WOBBLIE.md id ${wobblyFrontmatterId} must match directory id ${wobblyPackage.directoryName}.`,
+        message: `WOBBLIE.md id ${wobblieFrontmatterId} must match directory id ${wobbliePackage.directoryName}.`,
       })
     );
   }
 
-  if (exampleMetadata && wobblyFrontmatterId && exampleMetadata.id !== wobblyFrontmatterId) {
+  if (exampleMetadata && wobblieFrontmatterId && exampleMetadata.id !== wobblieFrontmatterId) {
     errors.push(
       machineError({
         code: 'id_mismatch',
-        path: wobblyPackage.examplePath,
+        path: wobbliePackage.examplePath,
         fieldPath: 'id',
-        message: `example.yml id ${exampleMetadata.id} must match WOBBLIE.md id ${wobblyFrontmatterId}.`,
+        message: `example.yml id ${exampleMetadata.id} must match WOBBLIE.md id ${wobblieFrontmatterId}.`,
       })
     );
   }
 
-  const supportPaths = await discoverSupportPaths(repoRoot, wobblyPackage.directoryPath);
+  const supportPaths = await discoverSupportPaths(repoRoot, wobbliePackage.directoryPath);
   errors.push(...supportPaths.errors);
 
-  if (exampleMetadata && wobblyContent.ok) {
+  if (exampleMetadata && wobblieContent.ok) {
     errors.push(
       ...(await validateDeclaredAdaptationTokens({
         repoRoot,
-        wobblyPackage,
-        wobblyContent: wobblyContent.value,
+        wobbliePackage,
+        wobblieContent: wobblieContent.value,
         supportPaths: [...supportPaths.scripts, ...supportPaths.references],
         exampleMetadata,
       }))
     );
   }
 
-  if (!exampleMetadata || !wobblyContent.ok || errors.length > 0) {
+  if (!exampleMetadata || !wobblieContent.ok || errors.length > 0) {
     return {
-      directoryName: wobblyPackage.directoryName,
-      examplePath: wobblyPackage.examplePath,
+      directoryName: wobbliePackage.directoryName,
+      examplePath: wobbliePackage.examplePath,
       exampleId: exampleMetadata?.id,
       errors,
     };
   }
 
   const publicationRef = options.publicationRef ?? DEFAULT_PUBLICATION_REF;
-  const sourceDirectory = `${SOURCE_BASE_DIRECTORY}/${wobblyPackage.directoryName}`;
+  const sourceDirectory = `${SOURCE_BASE_DIRECTORY}/${wobbliePackage.directoryName}`;
 
   return {
-    directoryName: wobblyPackage.directoryName,
-    examplePath: wobblyPackage.examplePath,
+    directoryName: wobbliePackage.directoryName,
+    examplePath: wobbliePackage.examplePath,
     exampleId: exampleMetadata.id,
     entry: {
       id: exampleMetadata.id,
@@ -339,9 +339,9 @@ async function loadCatalogExample(
       },
       adaptations: catalogAdaptations(exampleMetadata.adaptations),
       specializationIdeas: [...exampleMetadata.specializationIdeas],
-      wobbly: {
+      wobblie: {
         path: 'WOBBLIE.md',
-        content: wobblyContent.value,
+        content: wobblieContent.value,
       },
       scripts: supportPaths.scripts,
       references: supportPaths.references,
@@ -355,22 +355,22 @@ async function loadCatalogExample(
 }
 
 async function validatePackageTopLevelEntries(
-  wobblyDirectoryAbsolutePath: string,
-  wobblyDirectoryPath: string
+  wobblieDirectoryAbsolutePath: string,
+  wobblieDirectoryPath: string
 ): Promise<ValidationError[]> {
   const errors: ValidationError[] = [];
-  const entries = await readdir(wobblyDirectoryAbsolutePath, { withFileTypes: true });
+  const entries = await readdir(wobblieDirectoryAbsolutePath, { withFileTypes: true });
 
   for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
-    if (ALLOWED_WOBBLY_PACKAGE_ENTRIES.has(entry.name)) {
+    if (ALLOWED_WOBBLIE_PACKAGE_ENTRIES.has(entry.name)) {
       continue;
     }
 
     errors.push(
       machineError({
         code: entry.name === 'README.md' ? 'per_example_readme' : 'unsupported_support_path',
-        path: `${wobblyDirectoryPath}/${entry.name}`,
-        message: 'Wobbly packages may only contain WOBBLIE.md, example.yml, scripts/**, and references/**.',
+        path: `${wobblieDirectoryPath}/${entry.name}`,
+        message: 'Wobblie packages may only contain WOBBLIE.md, example.yml, scripts/**, and references/**.',
       })
     );
   }
@@ -381,7 +381,7 @@ async function validatePackageTopLevelEntries(
 async function readRequiredTextFile(
   repoRoot: string,
   catalogPath: string,
-  missingCode: 'missing_wobbly_md' | 'missing_example_yml'
+  missingCode: 'missing_wobblie_md' | 'missing_example_yml'
 ): Promise<ValidationResult<string>> {
   const absolutePath = join(repoRoot, catalogPath);
   try {
@@ -416,10 +416,10 @@ async function readRequiredTextFile(
 
 async function discoverSupportPaths(
   repoRoot: string,
-  wobblyDirectoryPath: string
+  wobblieDirectoryPath: string
 ): Promise<{ scripts: string[]; references: string[]; errors: ValidationError[] }> {
-  const scriptPaths = await discoverSupportDirectory(repoRoot, wobblyDirectoryPath, 'scripts');
-  const referencePaths = await discoverSupportDirectory(repoRoot, wobblyDirectoryPath, 'references');
+  const scriptPaths = await discoverSupportDirectory(repoRoot, wobblieDirectoryPath, 'scripts');
+  const referencePaths = await discoverSupportDirectory(repoRoot, wobblieDirectoryPath, 'references');
 
   return {
     scripts: scriptPaths.paths,
@@ -430,10 +430,10 @@ async function discoverSupportPaths(
 
 async function discoverSupportDirectory(
   repoRoot: string,
-  wobblyDirectoryPath: string,
+  wobblieDirectoryPath: string,
   supportDirectoryName: 'scripts' | 'references'
 ): Promise<{ paths: string[]; errors: ValidationError[] }> {
-  const supportDirectoryPath = `${wobblyDirectoryPath}/${supportDirectoryName}`;
+  const supportDirectoryPath = `${wobblieDirectoryPath}/${supportDirectoryName}`;
   const supportDirectoryAbsolutePath = join(repoRoot, supportDirectoryPath);
   try {
     await access(supportDirectoryAbsolutePath, constants.F_OK);
@@ -473,7 +473,7 @@ async function walkSupportDirectory(
 
   for (const entry of entries.sort((left, right) => left.name.localeCompare(right.name))) {
     const entryPath = `${currentDirectoryPath}/${entry.name}`;
-    const wobblyRelativePath = toPosixPath(relative(join(repoRoot, currentDirectoryPath, '..'), join(repoRoot, entryPath)));
+    const wobblieRelativePath = toPosixPath(relative(join(repoRoot, currentDirectoryPath, '..'), join(repoRoot, entryPath)));
 
     if (entry.isDirectory()) {
       const nested = await walkSupportDirectory(repoRoot, entryPath, supportDirectoryName);
@@ -488,7 +488,7 @@ async function walkSupportDirectory(
         machineError({
           code: 'unsupported_support_path',
           path: entryPath,
-          message: `Unsupported support path: ${wobblyRelativePath}.`,
+          message: `Unsupported support path: ${wobblieRelativePath}.`,
         })
       );
       continue;
@@ -519,20 +519,20 @@ async function walkSupportDirectory(
 
 async function validateDeclaredAdaptationTokens(args: {
   repoRoot: string;
-  wobblyPackage: WobblyPackage;
-  wobblyContent: string;
+  wobbliePackage: WobbliePackage;
+  wobblieContent: string;
   supportPaths: readonly string[];
   exampleMetadata: ExampleMetadata;
 }): Promise<ValidationError[]> {
   const declaredKeys = new Set(args.exampleMetadata.adaptations.map((adaptation) => adaptation.key));
   const errors = findAdaptationTokenErrors({
-    content: args.wobblyContent,
-    path: args.wobblyPackage.wobblyPath,
+    content: args.wobblieContent,
+    path: args.wobbliePackage.wobbliePath,
     declaredKeys,
   });
 
   for (const supportPath of args.supportPaths) {
-    const path = `${args.wobblyPackage.directoryPath}/${supportPath}`;
+    const path = `${args.wobbliePackage.directoryPath}/${supportPath}`;
     let content: string;
     try {
       content = await readFile(join(args.repoRoot, path), 'utf8');

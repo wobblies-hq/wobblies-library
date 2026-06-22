@@ -30,9 +30,9 @@ const safeEnvKeys = [
   'TMPDIR',
 ] as const;
 
-const validWobblyFixture = `---
-id: smoke-wobbly
-purpose: Validate the packaged wobbly binary.
+const validWobblieFixture = `---
+id: smoke-wobblie
+purpose: Validate the packaged wobblie binary.
 watch:
   - when smoke tests run
 routines:
@@ -42,9 +42,9 @@ deny:
 schedule: "0 9 * * 1-5"
 ---
 
-# Smoke wobbly
+# Smoke wobblie
 
-This fixture exists only to verify the packaged CLI validates local wobbly files.
+This fixture exists only to verify the packaged CLI validates local wobblie files.
 `;
 
 function assert(condition: unknown, message: string): asserts condition {
@@ -81,7 +81,7 @@ function assertExportEntry(
 function assertPackageEntrypoints(packageJson: Record<string, unknown>, description: string): void {
   const bin = packageJson.bin;
   const packageExports = packageJson.exports;
-  assert(isRecord(bin) && bin.wobbly === './dist/bin.js', `${description} package is missing the wobbly bin mapping.`);
+  assert(isRecord(bin) && bin.wobblie === './dist/bin.js', `${description} package is missing the wobblie bin mapping.`);
   assert(packageJson.main === './dist/index.js', `${description} package is missing the root main entry.`);
   assert(packageJson.module === './dist/index.js', `${description} package is missing the root module entry.`);
   assert(packageJson.types === './dist/index.d.ts', `${description} package is missing the root types entry.`);
@@ -164,7 +164,7 @@ async function main(): Promise<void> {
 
   const distBinPath = join(repoRoot, 'dist', 'bin.js');
   const distBinStat = await stat(distBinPath).catch(() => null);
-  assert(distBinStat !== null && distBinStat.isFile(), 'dist/bin.js is missing. Run `bun run build` before `bun run smoke:wobbly`.');
+  assert(distBinStat !== null && distBinStat.isFile(), 'dist/bin.js is missing. Run `bun run build` before `bun run smoke:wobblie`.');
   assert((distBinStat.mode & 0o111) !== 0, 'dist/bin.js is not executable.');
 
   const env = baseEnv();
@@ -181,20 +181,20 @@ async function main(): Promise<void> {
     '--eval',
     `const mod = await import(${JSON.stringify(distIndexUrl)});
 const expected = [
-  'createWobblyInstallPlan',
-  'getWobblyExample',
-  'listWobblyExamples',
-  'loadWobblyExamplesCatalog',
+  'createWobblieInstallPlan',
+  'getWobblieExample',
+  'listWobblieExamples',
+  'loadWobblieExamplesCatalog',
 ];
 for (const name of expected) {
   if (typeof mod[name] !== 'function') throw new Error('missing function export ' + name);
 }
-const catalog = await mod.loadWobblyExamplesCatalog();
+const catalog = await mod.loadWobblieExamplesCatalog();
 if (catalog.schemaVersion !== 2 || catalog.examples.length === 0) throw new Error('dist catalog did not load');
-const examples = await mod.listWobblyExamples();
-const example = await mod.getWobblyExample(examples[0].id);
-if (!example || example.id !== examples[0].id) throw new Error('dist getWobblyExample did not return the first example');
-const planResult = mod.createWobblyInstallPlan({ entry: example, installRoot: process.cwd() });
+const examples = await mod.listWobblieExamples();
+const example = await mod.getWobblieExample(examples[0].id);
+if (!example || example.id !== examples[0].id) throw new Error('dist getWobblieExample did not return the first example');
+const planResult = mod.createWobblieInstallPlan({ entry: example, installRoot: process.cwd() });
 if (!planResult.ok) throw new Error('dist install planner rejected a packaged example');
 console.log('dist import smoke loaded ' + examples.length + ' examples');`,
   ], {
@@ -203,7 +203,7 @@ console.log('dist import smoke loaded ' + examples.length + ' examples');`,
   });
   assert(localImportResult.stdout.includes('dist import smoke loaded'), 'dist package import smoke did not print its success marker.');
 
-  const tempRoot = await mkdtemp(join(tmpdir(), 'wobbly-bin-smoke-'));
+  const tempRoot = await mkdtemp(join(tmpdir(), 'wobblie-bin-smoke-'));
   try {
     const packDir = join(tempRoot, 'pack');
     const consumerDir = join(tempRoot, 'consumer');
@@ -242,18 +242,18 @@ console.log('dist import smoke loaded ' + examples.length + ' examples');`,
     });
 
     const installedPackageJson = parseJsonObject(
-      await readFile(join(consumerDir, 'node_modules', '@wobblies', 'wobblys', 'package.json'), 'utf8'),
+      await readFile(join(consumerDir, 'node_modules', '@wobblies', 'wobblies', 'package.json'), 'utf8'),
       'installed package.json'
     );
     assertPackageEntrypoints(installedPackageJson, 'Installed');
 
     const installedBinDir = join(consumerDir, 'node_modules', '.bin');
-    const wobblyCommand = process.platform === 'win32' ? 'wobbly.cmd' : 'wobbly';
-    const installedBinPath = join(installedBinDir, wobblyCommand);
+    const wobblieCommand = process.platform === 'win32' ? 'wobblie.cmd' : 'wobblie';
+    const installedBinPath = join(installedBinDir, wobblieCommand);
     const installedBinStat = await stat(installedBinPath).catch(() => null);
     assert(installedBinStat !== null, `Installed package did not create ${installedBinPath}.`);
 
-    const installedPackageRoot = join(consumerDir, 'node_modules', '@wobblies', 'wobblys');
+    const installedPackageRoot = join(consumerDir, 'node_modules', '@wobblies', 'wobblies');
     const installedDistBinPath = join(installedPackageRoot, 'dist', 'bin.js');
     const installedDistBinStat = await stat(installedDistBinPath).catch(() => null);
     assert(installedDistBinStat !== null && installedDistBinStat.isFile(), 'Installed package is missing dist/bin.js.');
@@ -276,20 +276,20 @@ console.log('dist import smoke loaded ' + examples.length + ' examples');`,
       '--input-type=module',
       '--eval',
       `import {
-  createWobblyInstallPlan,
-  getWobblyExample,
-  listWobblyExamples,
-  loadWobblyExamplesCatalog,
+  createWobblieInstallPlan,
+  getWobblieExample,
+  listWobblieExamples,
+  loadWobblieExamplesCatalog,
 } from '@wobblies/library';
-const catalog = await loadWobblyExamplesCatalog();
+const catalog = await loadWobblieExamplesCatalog();
 if (catalog.schemaVersion !== 2 || catalog.examples.length === 0) throw new Error('catalog did not load');
-const examples = await listWobblyExamples();
-const example = await getWobblyExample(examples[0].id);
-if (!example || example.id !== examples[0].id) throw new Error('getWobblyExample did not return the first example');
+const examples = await listWobblieExamples();
+const example = await getWobblieExample(examples[0].id);
+if (!example || example.id !== examples[0].id) throw new Error('getWobblieExample did not return the first example');
 const subpath = await import('@wobblies/library/examples');
-const subpathExamples = await subpath.listWobblyExamples();
+const subpathExamples = await subpath.listWobblieExamples();
 if (subpathExamples.length !== examples.length) throw new Error('./examples export returned a different catalog');
-const planResult = createWobblyInstallPlan({ entry: example, installRoot: process.cwd() });
+const planResult = createWobblieInstallPlan({ entry: example, installRoot: process.cwd() });
 if (!planResult.ok) throw new Error('install planner rejected a packaged example');
 if (!planResult.plan.files.some((file) => file.mode === '100644')) throw new Error('install plan is missing 100644 modes');
 console.log('package import smoke loaded ' + examples.length + ' examples');`,
@@ -299,54 +299,54 @@ console.log('package import smoke loaded ' + examples.length + ' examples');`,
     });
     assert(importResult.stdout.includes('package import smoke loaded'), 'Package import smoke did not print its success marker.');
 
-    const versionResult = await run(wobblyCommand, ['--version'], {
+    const versionResult = await run(wobblieCommand, ['--version'], {
       cwd: consumerDir,
       env: cliEnv,
     });
-    assert(versionResult.stdout.trim() === version, `Expected wobbly --version to print ${version}, got ${versionResult.stdout.trim()}.`);
-    assert(versionResult.stderr.trim() === '', 'wobbly --version wrote to stderr.');
+    assert(versionResult.stdout.trim() === version, `Expected wobblie --version to print ${version}, got ${versionResult.stdout.trim()}.`);
+    assert(versionResult.stderr.trim() === '', 'wobblie --version wrote to stderr.');
 
-    const rootHelpResult = await run(wobblyCommand, ['--help'], {
+    const rootHelpResult = await run(wobblieCommand, ['--help'], {
       cwd: consumerDir,
       env: cliEnv,
     });
-    assert(rootHelpResult.stdout.includes('wobbly - Wobbly wobbly catalog CLI'), 'wobbly --help did not print root help.');
-    assert(rootHelpResult.stdout.includes('wobbly validate <path>'), 'wobbly --help did not include validate usage.');
+    assert(rootHelpResult.stdout.includes('wobblie - Wobblie wobblie catalog CLI'), 'wobblie --help did not print root help.');
+    assert(rootHelpResult.stdout.includes('wobblie validate <path>'), 'wobblie --help did not include validate usage.');
 
-    const showHelpJsonResult = await run(wobblyCommand, ['show', '--help', '--json'], {
+    const showHelpJsonResult = await run(wobblieCommand, ['show', '--help', '--json'], {
       cwd: consumerDir,
       env: cliEnv,
     });
-    const showHelpJson = parseJsonObject(showHelpJsonResult.stdout, 'wobbly show --help --json');
-    assert(showHelpJson.command === 'help' && showHelpJson.ok === true, 'wobbly show --help --json returned an unexpected envelope.');
-    assert(isRecord(showHelpJson.data) && showHelpJson.data.topic === 'show', 'wobbly show --help --json did not return show help data.');
-    assert(typeof showHelpJson.data.text === 'string' && showHelpJson.data.text.includes('Usage: wobbly show'), 'wobbly show --help --json did not include show usage text.');
+    const showHelpJson = parseJsonObject(showHelpJsonResult.stdout, 'wobblie show --help --json');
+    assert(showHelpJson.command === 'help' && showHelpJson.ok === true, 'wobblie show --help --json returned an unexpected envelope.');
+    assert(isRecord(showHelpJson.data) && showHelpJson.data.topic === 'show', 'wobblie show --help --json did not return show help data.');
+    assert(typeof showHelpJson.data.text === 'string' && showHelpJson.data.text.includes('Usage: wobblie show'), 'wobblie show --help --json did not include show usage text.');
 
-    const wobblyDir = join(consumerDir, '.agents', 'wobblys', 'smoke-wobbly');
-    await mkdir(wobblyDir, { recursive: true });
-    await writeFile(join(wobblyDir, 'WOBBLY.md'), validWobblyFixture, 'utf8');
+    const wobblieDir = join(consumerDir, '.agents', 'wobblies', 'smoke-wobblie');
+    await mkdir(wobblieDir, { recursive: true });
+    await writeFile(join(wobblieDir, 'WOBBLIE.md'), validWobblieFixture, 'utf8');
 
-    const validateJsonResult = await run(wobblyCommand, ['validate', '.agents/wobblys/smoke-wobbly/WOBBLY.md', '--json'], {
+    const validateJsonResult = await run(wobblieCommand, ['validate', '.agents/wobblies/smoke-wobblie/WOBBLIE.md', '--json'], {
       cwd: consumerDir,
       env: cliEnv,
     });
-    const validateJson = parseJsonObject(validateJsonResult.stdout, 'wobbly validate --json');
-    assert(validateJson.command === 'validate' && validateJson.ok === true, 'wobbly validate --json returned an unexpected envelope.');
-    assert(isRecord(validateJson.data), 'wobbly validate --json did not include data.');
-    assert(validateJson.data.fileCount === 1 && validateJson.data.validCount === 1, 'wobbly validate --json did not validate exactly one fixture.');
+    const validateJson = parseJsonObject(validateJsonResult.stdout, 'wobblie validate --json');
+    assert(validateJson.command === 'validate' && validateJson.ok === true, 'wobblie validate --json returned an unexpected envelope.');
+    assert(isRecord(validateJson.data), 'wobblie validate --json did not include data.');
+    assert(validateJson.data.fileCount === 1 && validateJson.data.validCount === 1, 'wobblie validate --json did not validate exactly one fixture.');
 
-    const validateAllJsonResult = await run(wobblyCommand, ['validate', '--all', '--json'], {
+    const validateAllJsonResult = await run(wobblieCommand, ['validate', '--all', '--json'], {
       cwd: consumerDir,
       env: cliEnv,
     });
-    const validateAllJson = parseJsonObject(validateAllJsonResult.stdout, 'wobbly validate --all --json');
-    assert(validateAllJson.command === 'validate' && validateAllJson.ok === true, 'wobbly validate --all --json returned an unexpected envelope.');
-    assert(isRecord(validateAllJson.data), 'wobbly validate --all --json did not include data.');
-    assert(validateAllJson.data.fileCount === 1 && validateAllJson.data.validCount === 1, 'wobbly validate --all --json did not discover exactly one fixture.');
+    const validateAllJson = parseJsonObject(validateAllJsonResult.stdout, 'wobblie validate --all --json');
+    assert(validateAllJson.command === 'validate' && validateAllJson.ok === true, 'wobblie validate --all --json returned an unexpected envelope.');
+    assert(isRecord(validateAllJson.data), 'wobblie validate --all --json did not include data.');
+    assert(validateAllJson.data.fileCount === 1 && validateAllJson.data.validCount === 1, 'wobblie validate --all --json did not discover exactly one fixture.');
 
-    console.log('wobbly binary smoke tests passed');
+    console.log('wobblie binary smoke tests passed');
     console.log('- packed package tarball and installed it into a temp consumer project');
-    console.log('- invoked the CLI as `wobbly` via node_modules/.bin');
+    console.log('- invoked the CLI as `wobblie` via node_modules/.bin');
     console.log('- verified direct node dist/bin.js execution plus installed version, help, show help JSON, and validate JSON commands');
     console.log('- imported dist and packaged APIs, loaded examples.json, showed an example, and created an install plan');
   } finally {

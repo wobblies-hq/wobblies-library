@@ -1,6 +1,6 @@
 ---
-id: zebra-wobbly
-purpose: Keep the zebra-wobbly fixture valid for catalog generation tests.
+id: zebra-wobblie
+purpose: Keep the zebra-wobblie fixture valid for catalog generation tests.
 watch:
   - Wake on pull request changes for this fixture.
 routines:
@@ -9,7 +9,7 @@ deny:
   - Do not mutate production resources.
 ---
 
-# zebra-wobbly
+# zebra-wobblie
 
 ## Policy
 

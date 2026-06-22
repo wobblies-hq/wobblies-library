@@ -12,7 +12,7 @@ fit:
     - Repositories where README, API, setup, or runbook docs drift after implementation changes.
     - Teams that want recent documentation updates tied to source changes and verification evidence.
   notFor:
-    - Teams looking for this wobbly to perform broad historical stale-documentation cleanup.
+    - Teams looking for this wobblie to perform broad historical stale-documentation cleanup.
     - Repositories where documentation updates require product, legal, or policy decisions.
     - Teams without clear ownership of generated versus hand-authored documentation.
 requirements:

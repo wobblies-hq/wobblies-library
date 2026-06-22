@@ -59,7 +59,7 @@ Omit empty sections. Do not include raw log dumps, long search transcripts, or s
 
 ## Idempotency
 
-Before commenting, inspect existing Wobbly comments on the issue. If an equivalent `Bug triage context` comment already covers the same issue content and search results, no-op.
+Before commenting, inspect existing Wobblie comments on the issue. If an equivalent `Bug triage context` comment already covers the same issue content and search results, no-op.
 
 If the issue changed materially and a fresh comment would reduce triage work, post one new concise follow-up rather than repeating the original content.
 
@@ -69,4 +69,4 @@ If the issue changed materially and a fresh comment would reduce triage work, po
 - Linear issue data or repository mapping is unavailable
 - no related context is found and no specific repro detail is missing
 - search results are too weak or ambiguous to be useful
-- an equivalent Wobbly triage comment already exists
+- an equivalent Wobblie triage comment already exists

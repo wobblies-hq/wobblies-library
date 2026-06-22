@@ -5,12 +5,12 @@ import { describe, expect, test } from 'vitest';
 import { parseExamplesCatalogValue } from '../../examples/schema';
 import type { ExamplesCatalog } from '../../examples/types';
 import { executeCli } from '../cli';
-import { createWobblyInstallPlan } from '../install-plan';
+import { createWobblieInstallPlan } from '../install-plan';
 import type { CatalogClient } from '../types';
 import { validateCronExpression } from '../validation/cron';
 
-const readyWobbly = `---
-id: ready-wobbly
+const readyWobblie = `---
+id: ready-wobblie
 purpose: Keep the fixture ready.
 watch:
   - when a pull request changes files under src/
@@ -21,13 +21,13 @@ deny:
 schedule: "0 9 * * 1-5"
 ---
 
-# Ready wobbly
+# Ready wobblie
 
 Use this fixture for CLI tests.
 `;
 
-const deprecatedWobbly = `---
-id: deprecated-wobbly
+const deprecatedWobblie = `---
+id: deprecated-wobblie
 purpose: Keep the deprecated fixture valid.
 watch:
   - when a deprecated test event occurs
@@ -37,14 +37,14 @@ deny:
   - do not mutate production resources
 ---
 
-# Deprecated wobbly
+# Deprecated wobblie
 
 Deprecated fixture content.
 `;
 
 
-const templatedWobbly = `---
-id: templated-wobbly
+const templatedWobblie = `---
+id: templated-wobblie
 purpose: Keep {{ adapt.required_value }} healthy.
 watch:
   - when {{adapt.required_value}} changes
@@ -54,7 +54,7 @@ deny:
   - do not expose raw adaptation values in CLI output
 ---
 
-# Templated wobbly
+# Templated wobblie
 
 Target: {{adapt.required_value}}
 Optional: {{ adapt.optional_value }}
@@ -64,14 +64,14 @@ const catalog: ExamplesCatalog = {
   schemaVersion: 2,
   source: {
     repository: 'universe-backwards/wobblies-library',
-    baseDirectory: 'wobblys',
+    baseDirectory: 'wobblies',
   },
   examples: [
     {
-      id: 'ready-wobbly',
-      title: 'Ready wobbly',
+      id: 'ready-wobblie',
+      title: 'Ready wobblie',
       status: 'ready',
-      summary: 'A ready wobbly fixture.',
+      summary: 'A ready wobblie fixture.',
       readiness: 'direct-copy',
       showOnWebsite: true,
       showInDashboard: true,
@@ -87,22 +87,22 @@ const catalog: ExamplesCatalog = {
       },
       adaptations: [],
       specializationIdeas: ['Tighten fixture command scope for production tests.'],
-      wobbly: {
-        path: 'WOBBLY.md',
-        content: readyWobbly,
+      wobblie: {
+        path: 'WOBBLIE.md',
+        content: readyWobblie,
       },
       scripts: ['scripts/run.sh'],
       references: ['references/guide.md'],
       source: {
-        directory: 'wobblys/ready-wobbly',
-        url: 'https://github.com/universe-backwards/wobblies-library/tree/master/wobblys/ready-wobbly',
+        directory: 'wobblies/ready-wobblie',
+        url: 'https://github.com/universe-backwards/wobblies-library/tree/master/wobblies/ready-wobblie',
       },
     },
     {
-      id: 'deprecated-wobbly',
-      title: 'Deprecated wobbly',
+      id: 'deprecated-wobblie',
+      title: 'Deprecated wobblie',
       status: 'deprecated',
-      summary: 'A deprecated wobbly fixture.',
+      summary: 'A deprecated wobblie fixture.',
       readiness: 'direct-copy',
       showOnWebsite: false,
       showInDashboard: false,
@@ -118,22 +118,22 @@ const catalog: ExamplesCatalog = {
       },
       adaptations: [],
       specializationIdeas: [],
-      wobbly: {
-        path: 'WOBBLY.md',
-        content: deprecatedWobbly,
+      wobblie: {
+        path: 'WOBBLIE.md',
+        content: deprecatedWobblie,
       },
       scripts: [],
       references: [],
       source: {
-        directory: 'wobblys/deprecated-wobbly',
-        url: 'https://github.com/universe-backwards/wobblies-library/tree/master/wobblys/deprecated-wobbly',
+        directory: 'wobblies/deprecated-wobblie',
+        url: 'https://github.com/universe-backwards/wobblies-library/tree/master/wobblies/deprecated-wobblie',
       },
     },
     {
-      id: 'templated-wobbly',
-      title: 'Templated wobbly',
+      id: 'templated-wobblie',
+      title: 'Templated wobblie',
       status: 'ready',
-      summary: 'A wobbly fixture with structured adaptations.',
+      summary: 'A wobblie fixture with structured adaptations.',
       readiness: 'adapt-before-use',
       showOnWebsite: true,
       showInDashboard: true,
@@ -151,29 +151,29 @@ const catalog: ExamplesCatalog = {
         {
           key: 'required_value',
           label: 'Required value',
-          description: 'Required string rendered into the wobbly and support files.',
+          description: 'Required string rendered into the wobblie and support files.',
           required: true,
           suggestions: ['from-cli', 'from-file'],
         },
         {
           key: 'optional_value',
           label: 'Optional value',
-          description: 'Optional string rendered into the wobbly and support files.',
+          description: 'Optional string rendered into the wobblie and support files.',
           required: false,
           default: 'from-default',
           suggestions: ['from-default', 'from-file', 'from-cli'],
         },
       ],
       specializationIdeas: ['Render optional values into extra support files when needed.'],
-      wobbly: {
-        path: 'WOBBLY.md',
-        content: templatedWobbly,
+      wobblie: {
+        path: 'WOBBLIE.md',
+        content: templatedWobblie,
       },
       scripts: ['scripts/render.sh'],
       references: ['references/render.md'],
       source: {
-        directory: 'wobblys/templated-wobbly',
-        url: 'https://github.com/universe-backwards/wobblies-library/tree/master/wobblys/templated-wobbly',
+        directory: 'wobblies/templated-wobblie',
+        url: 'https://github.com/universe-backwards/wobblies-library/tree/master/wobblies/templated-wobblie',
       },
     },
   ],
@@ -184,14 +184,14 @@ function memoryCatalogClient(
   catalogValue: ExamplesCatalog = catalog
 ): CatalogClient {
   const files = new Map<string, string>([
-    ['test-ref:wobblys/ready-wobbly/scripts/run.sh', '#!/usr/bin/env bash\necho ready\n'],
-    ['test-ref:wobblys/ready-wobbly/references/guide.md', '# Guide\n\nAdapt me.\n'],
-    ['master:wobblys/ready-wobbly/scripts/run.sh', '#!/usr/bin/env bash\necho ready\n'],
-    ['master:wobblys/ready-wobbly/references/guide.md', '# Guide\n\nAdapt me.\n'],
-    ['test-ref:wobblys/templated-wobbly/scripts/render.sh', '#!/usr/bin/env bash\necho {{adapt.required_value}} {{adapt.optional_value}}\n'],
-    ['test-ref:wobblys/templated-wobbly/references/render.md', '# Rendered\n\nTarget: {{ adapt.required_value }}\nOptional: {{adapt.optional_value}}\n'],
-    ['master:wobblys/templated-wobbly/scripts/render.sh', '#!/usr/bin/env bash\necho {{adapt.required_value}} {{adapt.optional_value}}\n'],
-    ['master:wobblys/templated-wobbly/references/render.md', '# Rendered\n\nTarget: {{ adapt.required_value }}\nOptional: {{adapt.optional_value}}\n'],
+    ['test-ref:wobblies/ready-wobblie/scripts/run.sh', '#!/usr/bin/env bash\necho ready\n'],
+    ['test-ref:wobblies/ready-wobblie/references/guide.md', '# Guide\n\nAdapt me.\n'],
+    ['master:wobblies/ready-wobblie/scripts/run.sh', '#!/usr/bin/env bash\necho ready\n'],
+    ['master:wobblies/ready-wobblie/references/guide.md', '# Guide\n\nAdapt me.\n'],
+    ['test-ref:wobblies/templated-wobblie/scripts/render.sh', '#!/usr/bin/env bash\necho {{adapt.required_value}} {{adapt.optional_value}}\n'],
+    ['test-ref:wobblies/templated-wobblie/references/render.md', '# Rendered\n\nTarget: {{ adapt.required_value }}\nOptional: {{adapt.optional_value}}\n'],
+    ['master:wobblies/templated-wobblie/scripts/render.sh', '#!/usr/bin/env bash\necho {{adapt.required_value}} {{adapt.optional_value}}\n'],
+    ['master:wobblies/templated-wobblie/references/render.md', '# Rendered\n\nTarget: {{ adapt.required_value }}\nOptional: {{adapt.optional_value}}\n'],
   ]);
   for (const [key, value] of Object.entries(overrides)) {
     if (value !== undefined) {
@@ -215,7 +215,7 @@ function memoryCatalogClient(
 }
 
 async function withTempDir(run: (directory: string) => Promise<void>): Promise<void> {
-  const directory = await mkdtemp(path.join(tmpdir(), 'wobbly-cli-test-'));
+  const directory = await mkdtemp(path.join(tmpdir(), 'wobblie-cli-test-'));
   try {
     await run(directory);
   } finally {
@@ -242,7 +242,7 @@ async function runJson(argv: string[], cwd: string, client: CatalogClient = memo
   return { code, stdout, stderr, json: JSON.parse(stdout) };
 }
 
-describe('wobbly CLI catalog commands', () => {
+describe('wobblie CLI catalog commands', () => {
   test('list returns stable JSON envelope with pinned ref', async () => {
     await withTempDir(async (directory) => {
       const result = await runJson(['list', '--ref', 'test-ref'], directory);
@@ -255,7 +255,7 @@ describe('wobbly CLI catalog commands', () => {
         exitCode: 0,
         data: {
           sourceRef: 'test-ref',
-          exampleIds: ['ready-wobbly', 'deprecated-wobbly', 'templated-wobbly'],
+          exampleIds: ['ready-wobblie', 'deprecated-wobblie', 'templated-wobblie'],
         },
       });
     });
@@ -263,11 +263,11 @@ describe('wobbly CLI catalog commands', () => {
 
   test('show exposes support files, integrations, and specialization ideas', async () => {
     await withTempDir(async (directory) => {
-      const result = await runJson(['show', 'ready-wobbly', '--ref', 'test-ref'], directory);
+      const result = await runJson(['show', 'ready-wobblie', '--ref', 'test-ref'], directory);
 
       expect(result.code).toBe(0);
       expect(result.json.data).toMatchObject({
-        id: 'ready-wobbly',
+        id: 'ready-wobblie',
         status: 'ready',
         readiness: 'direct-copy',
         requiredIntegrations: ['github'],
@@ -282,7 +282,7 @@ describe('wobbly CLI catalog commands', () => {
 
   test('show exposes structured adaptation metadata', async () => {
     await withTempDir(async (directory) => {
-      const result = await runJson(['show', 'templated-wobbly', '--ref', 'test-ref'], directory);
+      const result = await runJson(['show', 'templated-wobblie', '--ref', 'test-ref'], directory);
 
       expect(result.code).toBe(0);
       expect(result.json.data.specializationIdeas).toEqual(['Render optional values into extra support files when needed.']);
@@ -290,14 +290,14 @@ describe('wobbly CLI catalog commands', () => {
         {
           key: 'required_value',
           label: 'Required value',
-          description: 'Required string rendered into the wobbly and support files.',
+          description: 'Required string rendered into the wobblie and support files.',
           required: true,
           suggestions: ['from-cli', 'from-file'],
         },
         {
           key: 'optional_value',
           label: 'Optional value',
-          description: 'Optional string rendered into the wobbly and support files.',
+          description: 'Optional string rendered into the wobblie and support files.',
           required: false,
           default: 'from-default',
           suggestions: ['from-default', 'from-file', 'from-cli'],
@@ -306,7 +306,7 @@ describe('wobbly CLI catalog commands', () => {
     });
   });
 
-  test('add renders adaptations into wobbly and support files with deterministic precedence', async () => {
+  test('add renders adaptations into wobblie and support files with deterministic precedence', async () => {
     await withTempDir(async (directory) => {
       const adaptFile = path.join(directory, 'adaptations.json');
       await writeFile(
@@ -317,7 +317,7 @@ describe('wobbly CLI catalog commands', () => {
 
       const result = await runJson([
         'add',
-        'templated-wobbly',
+        'templated-wobblie',
         '--ref',
         'test-ref',
         '--adapt-file',
@@ -333,10 +333,10 @@ describe('wobbly CLI catalog commands', () => {
       expect(result.stdout).not.toContain('from-cli');
       expect(result.stdout).not.toContain('from-file');
       expect(result.stdout).not.toContain('from-default');
-      await expect(readFile(path.join(directory, '.agents/wobblys/templated-wobbly/WOBBLY.md'), 'utf8')).resolves.toContain('Keep from-cli healthy');
-      await expect(readFile(path.join(directory, '.agents/wobblys/templated-wobbly/scripts/render.sh'), 'utf8')).resolves.toContain('echo from-cli from-cli');
-      await expect(readFile(path.join(directory, '.agents/wobblys/templated-wobbly/references/render.md'), 'utf8')).resolves.toContain('Optional: from-cli');
-      const scriptMode = (await stat(path.join(directory, '.agents/wobblys/templated-wobbly/scripts/render.sh'))).mode;
+      await expect(readFile(path.join(directory, '.agents/wobblies/templated-wobblie/WOBBLIE.md'), 'utf8')).resolves.toContain('Keep from-cli healthy');
+      await expect(readFile(path.join(directory, '.agents/wobblies/templated-wobblie/scripts/render.sh'), 'utf8')).resolves.toContain('echo from-cli from-cli');
+      await expect(readFile(path.join(directory, '.agents/wobblies/templated-wobblie/references/render.md'), 'utf8')).resolves.toContain('Optional: from-cli');
+      const scriptMode = (await stat(path.join(directory, '.agents/wobblies/templated-wobblie/scripts/render.sh'))).mode;
       expect(scriptMode & 0o777).toBe(0o755);
     });
   });
@@ -345,7 +345,7 @@ describe('wobbly CLI catalog commands', () => {
     await withTempDir(async (directory) => {
       const result = await runJson([
         'add',
-        'templated-wobbly',
+        'templated-wobblie',
         '--ref',
         'test-ref',
         '--dry-run',
@@ -356,19 +356,19 @@ describe('wobbly CLI catalog commands', () => {
       expect(result.code).toBe(0);
       expect(result.json.data).toMatchObject({ dryRun: true, filesWritten: [] });
       expect(result.json.data.adaptationsApplied).toEqual(['optional_value', 'required_value']);
-      await expect(readFile(path.join(directory, '.agents/wobblys/templated-wobbly/WOBBLY.md'), 'utf8')).rejects.toThrow();
+      await expect(readFile(path.join(directory, '.agents/wobblies/templated-wobblie/WOBBLIE.md'), 'utf8')).rejects.toThrow();
     });
   });
 
   test('add rejects missing required and unknown adaptation input keys', async () => {
     await withTempDir(async (directory) => {
-      const missing = await runJson(['add', 'templated-wobbly', '--ref', 'test-ref', '--dry-run'], directory);
+      const missing = await runJson(['add', 'templated-wobblie', '--ref', 'test-ref', '--dry-run'], directory);
       expect(missing.code).toBe(65);
       expect(missing.json.errors).toContainEqual(expect.objectContaining({ code: 'MISSING_REQUIRED_ADAPTATION', field: 'required_value' }));
 
       const unknown = await runJson([
         'add',
-        'templated-wobbly',
+        'templated-wobblie',
         '--ref',
         'test-ref',
         '--dry-run',
@@ -389,7 +389,7 @@ describe('wobbly CLI catalog commands', () => {
 
       const invalidFile = await runJson([
         'add',
-        'templated-wobbly',
+        'templated-wobblie',
         '--ref',
         'test-ref',
         '--dry-run',
@@ -399,7 +399,7 @@ describe('wobbly CLI catalog commands', () => {
       expect(invalidFile.code).toBe(65);
       expect(invalidFile.json.errors).toContainEqual(expect.objectContaining({ code: 'ADAPT_FILE_VALUE_INVALID_TYPE', field: 'required_value' }));
 
-      const invalidFlag = await runJson(['add', 'templated-wobbly', '--adapt', 'required_value'], directory);
+      const invalidFlag = await runJson(['add', 'templated-wobblie', '--adapt', 'required_value'], directory);
       expect(invalidFlag.code).toBe(64);
       expect(invalidFlag.json.errors).toContainEqual(expect.objectContaining({ code: 'ADAPT_FLAG_INVALID' }));
     });
@@ -408,11 +408,11 @@ describe('wobbly CLI catalog commands', () => {
   test('add rejects unknown and unresolved adaptation tokens before writing', async () => {
     await withTempDir(async (directory) => {
       const withUnknownSupportToken = memoryCatalogClient({
-        'test-ref:wobblys/templated-wobbly/references/render.md': 'Unknown {{adapt.unknown_key}}\n',
+        'test-ref:wobblies/templated-wobblie/references/render.md': 'Unknown {{adapt.unknown_key}}\n',
       });
       const unknown = await runJson([
         'add',
-        'templated-wobbly',
+        'templated-wobblie',
         '--ref',
         'test-ref',
         '--dry-run',
@@ -423,11 +423,11 @@ describe('wobbly CLI catalog commands', () => {
       expect(unknown.json.errors).toContainEqual(expect.objectContaining({ code: 'UNKNOWN_ADAPTATION_TOKEN', field: 'unknown_key' }));
 
       const withMalformedSupportToken = memoryCatalogClient({
-        'test-ref:wobblys/templated-wobbly/references/render.md': 'Malformed {{ adapt .required_value }}\n',
+        'test-ref:wobblies/templated-wobblie/references/render.md': 'Malformed {{ adapt .required_value }}\n',
       });
       const malformed = await runJson([
         'add',
-        'templated-wobbly',
+        'templated-wobblie',
         '--ref',
         'test-ref',
         '--dry-run',
@@ -439,7 +439,7 @@ describe('wobbly CLI catalog commands', () => {
 
       const unresolved = await runJson([
         'add',
-        'templated-wobbly',
+        'templated-wobblie',
         '--ref',
         'test-ref',
         '--dry-run',
@@ -454,12 +454,12 @@ describe('wobbly CLI catalog commands', () => {
   test('add aborts non-dry-run before any writes when support-file rendering fails', async () => {
     await withTempDir(async (directory) => {
       const withUnknownSupportToken = memoryCatalogClient({
-        'test-ref:wobblys/templated-wobbly/references/render.md': 'Unknown {{adapt.unknown_key}}\n',
+        'test-ref:wobblies/templated-wobblie/references/render.md': 'Unknown {{adapt.unknown_key}}\n',
       });
 
       const result = await runJson([
         'add',
-        'templated-wobbly',
+        'templated-wobblie',
         '--ref',
         'test-ref',
         '--adapt',
@@ -468,23 +468,23 @@ describe('wobbly CLI catalog commands', () => {
 
       expect(result.code).toBe(65);
       expect(result.json.errors).toContainEqual(expect.objectContaining({ code: 'UNKNOWN_ADAPTATION_TOKEN', field: 'unknown_key' }));
-      await expect(readFile(path.join(directory, '.agents/wobblys/templated-wobbly/WOBBLY.md'), 'utf8')).rejects.toThrow();
-      await expect(readFile(path.join(directory, '.agents/wobblys/templated-wobbly/scripts/render.sh'), 'utf8')).rejects.toThrow();
-      await expect(readFile(path.join(directory, '.agents/wobblys/templated-wobbly/references/render.md'), 'utf8')).rejects.toThrow();
+      await expect(readFile(path.join(directory, '.agents/wobblies/templated-wobblie/WOBBLIE.md'), 'utf8')).rejects.toThrow();
+      await expect(readFile(path.join(directory, '.agents/wobblies/templated-wobblie/scripts/render.sh'), 'utf8')).rejects.toThrow();
+      await expect(readFile(path.join(directory, '.agents/wobblies/templated-wobblie/references/render.md'), 'utf8')).rejects.toThrow();
     });
   });
 
-  test('add validates rendered WOBBLY.md before writing any files', async () => {
+  test('add validates rendered WOBBLIE.md before writing any files', async () => {
     await withTempDir(async (directory) => {
       const invalidRenderedCatalog: ExamplesCatalog = {
         ...catalog,
         examples: catalog.examples.map((example) =>
-          example.id === 'templated-wobbly'
+          example.id === 'templated-wobblie'
             ? {
                 ...example,
-                wobbly: {
-                  path: 'WOBBLY.md',
-                  content: `---\nid: templated-wobbly\npurpose: {{adapt.required_value}}\nwatch: []\nroutines: []\n---\n`,
+                wobblie: {
+                  path: 'WOBBLIE.md',
+                  content: `---\nid: templated-wobblie\npurpose: {{adapt.required_value}}\nwatch: []\nroutines: []\n---\n`,
                 },
               }
             : example
@@ -492,7 +492,7 @@ describe('wobbly CLI catalog commands', () => {
       };
       const result = await runJson([
         'add',
-        'templated-wobbly',
+        'templated-wobblie',
         '--dry-run',
         '--adapt',
         'required_value=ok',
@@ -500,13 +500,13 @@ describe('wobbly CLI catalog commands', () => {
 
       expect(result.code).toBe(65);
       expect(result.json.errors).toContainEqual(expect.objectContaining({ code: 'FRONTMATTER_ROUTINES_EMPTY' }));
-      await expect(readFile(path.join(directory, '.agents/wobblys/templated-wobbly/WOBBLY.md'), 'utf8')).rejects.toThrow();
+      await expect(readFile(path.join(directory, '.agents/wobblies/templated-wobblie/WOBBLIE.md'), 'utf8')).rejects.toThrow();
     });
   });
 
   test('add dry-run plans catalog-listed files without writing them', async () => {
     await withTempDir(async (directory) => {
-      const result = await runJson(['add', 'ready-wobbly', '--ref', 'test-ref', '--dry-run'], directory);
+      const result = await runJson(['add', 'ready-wobblie', '--ref', 'test-ref', '--dry-run'], directory);
 
       expect(result.code).toBe(0);
       expect(result.json.data).toMatchObject({
@@ -516,46 +516,46 @@ describe('wobbly CLI catalog commands', () => {
       });
       expect(result.json.data.filesPlanned).toEqual([
         {
-          sourcePath: 'wobblys/ready-wobbly/WOBBLY.md',
-          destinationPath: '.agents/wobblys/ready-wobbly/WOBBLY.md',
-          kind: 'wobbly',
+          sourcePath: 'wobblies/ready-wobblie/WOBBLIE.md',
+          destinationPath: '.agents/wobblies/ready-wobblie/WOBBLIE.md',
+          kind: 'wobblie',
           mode: '100644',
         },
         {
-          sourcePath: 'wobblys/ready-wobbly/scripts/run.sh',
-          destinationPath: '.agents/wobblys/ready-wobbly/scripts/run.sh',
+          sourcePath: 'wobblies/ready-wobblie/scripts/run.sh',
+          destinationPath: '.agents/wobblies/ready-wobblie/scripts/run.sh',
           kind: 'script',
           mode: '100755',
         },
         {
-          sourcePath: 'wobblys/ready-wobbly/references/guide.md',
-          destinationPath: '.agents/wobblys/ready-wobbly/references/guide.md',
+          sourcePath: 'wobblies/ready-wobblie/references/guide.md',
+          destinationPath: '.agents/wobblies/ready-wobblie/references/guide.md',
           kind: 'reference',
           mode: '100644',
         },
       ]);
-      await expect(readFile(path.join(directory, '.agents/wobblys/ready-wobbly/WOBBLY.md'), 'utf8')).rejects.toThrow();
+      await expect(readFile(path.join(directory, '.agents/wobblies/ready-wobblie/WOBBLIE.md'), 'utf8')).rejects.toThrow();
     });
   });
 
-  test('install writes WOBBLY.md and only catalog-listed support files', async () => {
+  test('install writes WOBBLIE.md and only catalog-listed support files', async () => {
     await withTempDir(async (directory) => {
-      const result = await runJson(['install', 'ready-wobbly', '--ref', 'test-ref'], directory);
+      const result = await runJson(['install', 'ready-wobblie', '--ref', 'test-ref'], directory);
 
       expect(result.code).toBe(0);
       expect(result.json.command).toBe('install');
       expect(result.json.data.filesWritten).toEqual([
-        '.agents/wobblys/ready-wobbly/WOBBLY.md',
-        '.agents/wobblys/ready-wobbly/scripts/run.sh',
-        '.agents/wobblys/ready-wobbly/references/guide.md',
+        '.agents/wobblies/ready-wobblie/WOBBLIE.md',
+        '.agents/wobblies/ready-wobblie/scripts/run.sh',
+        '.agents/wobblies/ready-wobblie/references/guide.md',
       ]);
-      await expect(readFile(path.join(directory, '.agents/wobblys/ready-wobbly/example.yml'), 'utf8')).rejects.toThrow();
-      await expect(readFile(path.join(directory, '.agents/wobblys/ready-wobbly/WOBBLY.md'), 'utf8')).resolves.toContain('id: ready-wobbly');
-      await expect(readFile(path.join(directory, '.agents/wobblys/ready-wobbly/scripts/run.sh'), 'utf8')).resolves.toContain('echo ready');
-      const wobblyMode = (await stat(path.join(directory, '.agents/wobblys/ready-wobbly/WOBBLY.md'))).mode;
-      const scriptMode = (await stat(path.join(directory, '.agents/wobblys/ready-wobbly/scripts/run.sh'))).mode;
-      const referenceMode = (await stat(path.join(directory, '.agents/wobblys/ready-wobbly/references/guide.md'))).mode;
-      expect(wobblyMode & 0o777).toBe(0o644);
+      await expect(readFile(path.join(directory, '.agents/wobblies/ready-wobblie/example.yml'), 'utf8')).rejects.toThrow();
+      await expect(readFile(path.join(directory, '.agents/wobblies/ready-wobblie/WOBBLIE.md'), 'utf8')).resolves.toContain('id: ready-wobblie');
+      await expect(readFile(path.join(directory, '.agents/wobblies/ready-wobblie/scripts/run.sh'), 'utf8')).resolves.toContain('echo ready');
+      const wobblieMode = (await stat(path.join(directory, '.agents/wobblies/ready-wobblie/WOBBLIE.md'))).mode;
+      const scriptMode = (await stat(path.join(directory, '.agents/wobblies/ready-wobblie/scripts/run.sh'))).mode;
+      const referenceMode = (await stat(path.join(directory, '.agents/wobblies/ready-wobblie/references/guide.md'))).mode;
+      expect(wobblieMode & 0o777).toBe(0o644);
       expect(scriptMode & 0o777).toBe(0o755);
       expect(referenceMode & 0o777).toBe(0o644);
     });
@@ -563,51 +563,51 @@ describe('wobbly CLI catalog commands', () => {
 
   test('add refuses collisions unless forced', async () => {
     await withTempDir(async (directory) => {
-      await mkdir(path.join(directory, '.agents/wobblys/ready-wobbly'), { recursive: true });
-      await writeFile(path.join(directory, '.agents/wobblys/ready-wobbly/WOBBLY.md'), 'existing', 'utf8');
+      await mkdir(path.join(directory, '.agents/wobblies/ready-wobblie'), { recursive: true });
+      await writeFile(path.join(directory, '.agents/wobblies/ready-wobblie/WOBBLIE.md'), 'existing', 'utf8');
 
-      const blocked = await runJson(['add', 'ready-wobbly'], directory);
+      const blocked = await runJson(['add', 'ready-wobblie'], directory);
       expect(blocked.code).toBe(65);
       expect(blocked.json).toMatchObject({ ok: false, exitCode: 65 });
       expect(blocked.json.data.collisions).toEqual([
-        '.agents/wobblys/ready-wobbly/',
-        '.agents/wobblys/ready-wobbly/WOBBLY.md',
+        '.agents/wobblies/ready-wobblie/',
+        '.agents/wobblies/ready-wobblie/WOBBLIE.md',
       ]);
 
-      const forced = await runJson(['add', 'ready-wobbly', '--force'], directory);
+      const forced = await runJson(['add', 'ready-wobblie', '--force'], directory);
       expect(forced.code).toBe(0);
       expect(forced.json.data.overwritten).toBe(true);
-      await expect(readFile(path.join(directory, '.agents/wobblys/ready-wobbly/WOBBLY.md'), 'utf8')).resolves.toContain('id: ready-wobbly');
+      await expect(readFile(path.join(directory, '.agents/wobblies/ready-wobblie/WOBBLIE.md'), 'utf8')).resolves.toContain('id: ready-wobblie');
     });
   });
 
   test('install planner validates paths, support files, and file modes before writes', async () => {
     await withTempDir(async (directory) => {
       const entry = catalog.examples[0]!;
-      const result = createWobblyInstallPlan({ entry, installRoot: directory });
+      const result = createWobblieInstallPlan({ entry, installRoot: directory });
 
       expect(result.ok).toBe(true);
       if (!result.ok) {
         throw new TypeError('Expected install plan to be valid.');
       }
 
-      expect(result.plan.destinationDirectory).toBe(path.join(directory, '.agents/wobblys/ready-wobbly'));
+      expect(result.plan.destinationDirectory).toBe(path.join(directory, '.agents/wobblies/ready-wobblie'));
       expect(result.plan.files).toEqual([
         {
-          sourcePath: 'wobblys/ready-wobbly/WOBBLY.md',
-          destinationPath: path.join(directory, '.agents/wobblys/ready-wobbly/WOBBLY.md'),
-          kind: 'wobbly',
+          sourcePath: 'wobblies/ready-wobblie/WOBBLIE.md',
+          destinationPath: path.join(directory, '.agents/wobblies/ready-wobblie/WOBBLIE.md'),
+          kind: 'wobblie',
           mode: '100644',
         },
         {
-          sourcePath: 'wobblys/ready-wobbly/scripts/run.sh',
-          destinationPath: path.join(directory, '.agents/wobblys/ready-wobbly/scripts/run.sh'),
+          sourcePath: 'wobblies/ready-wobblie/scripts/run.sh',
+          destinationPath: path.join(directory, '.agents/wobblies/ready-wobblie/scripts/run.sh'),
           kind: 'script',
           mode: '100755',
         },
         {
-          sourcePath: 'wobblys/ready-wobbly/references/guide.md',
-          destinationPath: path.join(directory, '.agents/wobblys/ready-wobbly/references/guide.md'),
+          sourcePath: 'wobblies/ready-wobblie/references/guide.md',
+          destinationPath: path.join(directory, '.agents/wobblies/ready-wobblie/references/guide.md'),
           kind: 'reference',
           mode: '100644',
         },
@@ -623,12 +623,12 @@ describe('wobbly CLI catalog commands', () => {
         scripts: ['scripts/../escape.sh'],
         references: ['other/guide.md'],
         source: {
-          directory: 'wobblys/other-wobbly',
-          url: 'https://github.com/universe-backwards/wobblies-library/tree/master/wobblys/other-wobbly',
+          directory: 'wobblies/other-wobblie',
+          url: 'https://github.com/universe-backwards/wobblies-library/tree/master/wobblies/other-wobblie',
         },
       };
 
-      const result = createWobblyInstallPlan({ entry: unsafeEntry, installRoot: directory });
+      const result = createWobblieInstallPlan({ entry: unsafeEntry, installRoot: directory });
       expect(result.ok).toBe(false);
       if (result.ok) {
         throw new TypeError('Expected install plan to be invalid.');
@@ -643,7 +643,7 @@ describe('wobbly CLI catalog commands', () => {
 
   test('pr open rejects --allow-deprecated as a non-public flag', async () => {
     await withTempDir(async (directory) => {
-      const result = await runJson(['pr', 'open', 'ready-wobbly', '--repo', 'acme/widgets', '--allow-deprecated'], directory);
+      const result = await runJson(['pr', 'open', 'ready-wobblie', '--repo', 'acme/widgets', '--allow-deprecated'], directory);
 
       expect(result.code).toBe(64);
       expect(result.json).toMatchObject({
@@ -657,28 +657,28 @@ describe('wobbly CLI catalog commands', () => {
 
   test('deprecated examples are blocked by default and allowed with explicit flag', async () => {
     await withTempDir(async (directory) => {
-      const blocked = await runJson(['add', 'deprecated-wobbly'], directory);
+      const blocked = await runJson(['add', 'deprecated-wobblie'], directory);
       expect(blocked.code).toBe(65);
       expect(blocked.json.errors[0].code).toBe('DEPRECATED_EXAMPLE_BLOCKED');
       expect(blocked.json.data.adaptationsApplied).toEqual([]);
 
-      const allowed = await runJson(['add', 'deprecated-wobbly', '--allow-deprecated'], directory);
+      const allowed = await runJson(['add', 'deprecated-wobblie', '--allow-deprecated'], directory);
       expect(allowed.code).toBe(0);
-      await expect(readFile(path.join(directory, '.agents/wobblys/deprecated-wobbly/WOBBLY.md'), 'utf8')).resolves.toContain('Deprecated wobbly');
+      await expect(readFile(path.join(directory, '.agents/wobblies/deprecated-wobblie/WOBBLIE.md'), 'utf8')).resolves.toContain('Deprecated wobblie');
     });
   });
 });
 
-describe('wobbly CLI validation', () => {
+describe('wobblie CLI validation', () => {
   test('validate reports cron, unknown key, body, and slug errors with exit 65', async () => {
     await withTempDir(async (directory) => {
-      const wobblyPath = path.join(directory, '.agents/wobblys/path-id/WOBBLY.md');
-      await mkdir(path.dirname(wobblyPath), { recursive: true });
+      const wobbliePath = path.join(directory, '.agents/wobblies/path-id/WOBBLIE.md');
+      await mkdir(path.dirname(wobbliePath), { recursive: true });
       await writeFile(
-        wobblyPath,
+        wobbliePath,
         `---
 id: wrong-id
-purpose: Bad wobbly
+purpose: Bad wobblie
 watch: []
 routines:
   - do bad things
@@ -689,40 +689,40 @@ readiness: adapt-before-use
         'utf8'
       );
 
-      const result = await runJson(['validate', wobblyPath], directory);
+      const result = await runJson(['validate', wobbliePath], directory);
       expect(result.code).toBe(65);
       const codes = result.json.errors.map((error: { code: string }) => error.code);
       expect(codes).toContain('FRONTMATTER_SCHEDULE_INVALID_CRON');
       expect(codes).toContain('FRONTMATTER_CATALOG_METADATA_NOT_ALLOWED');
-      expect(codes).toContain('WOBBLY_BODY_MISSING');
-      // Schema errors are returned before path consistency checks because the wobbly is not canonical yet.
+      expect(codes).toContain('WOBBLIE_BODY_MISSING');
+      // Schema errors are returned before path consistency checks because the wobblie is not canonical yet.
     });
   });
 
-  test('validate enforces directory slug consistency for runtime wobbly files', async () => {
+  test('validate enforces directory slug consistency for runtime wobblie files', async () => {
     await withTempDir(async (directory) => {
-      const wobblyPath = path.join(directory, '.agents/wobblys/path-id/WOBBLY.md');
-      await mkdir(path.dirname(wobblyPath), { recursive: true });
+      const wobbliePath = path.join(directory, '.agents/wobblies/path-id/WOBBLIE.md');
+      await mkdir(path.dirname(wobbliePath), { recursive: true });
       await writeFile(
-        wobblyPath,
-        readyWobbly.replace('id: ready-wobbly', 'id: wrong-id'),
+        wobbliePath,
+        readyWobblie.replace('id: ready-wobblie', 'id: wrong-id'),
         'utf8'
       );
 
-      const result = await runJson(['validate', wobblyPath], directory);
+      const result = await runJson(['validate', wobbliePath], directory);
       expect(result.code).toBe(65);
-      expect(result.json.errors).toContainEqual(expect.objectContaining({ code: 'WOBBLY_ID_PATH_MISMATCH' }));
+      expect(result.json.errors).toContainEqual(expect.objectContaining({ code: 'WOBBLIE_ID_PATH_MISMATCH' }));
     });
   });
 
-  test('validate --all discovers runtime WOBBLY.md files and supports dry-run no-op output', async () => {
+  test('validate --all discovers runtime WOBBLIE.md files and supports dry-run no-op output', async () => {
     await withTempDir(async (directory) => {
-      const goodPath = path.join(directory, '.agents/wobblys/ready-wobbly/WOBBLY.md');
-      const badPath = path.join(directory, '.agents/wobblys/bad-wobbly/WOBBLY.md');
+      const goodPath = path.join(directory, '.agents/wobblies/ready-wobblie/WOBBLIE.md');
+      const badPath = path.join(directory, '.agents/wobblies/bad-wobblie/WOBBLIE.md');
       await mkdir(path.dirname(goodPath), { recursive: true });
       await mkdir(path.dirname(badPath), { recursive: true });
-      await writeFile(goodPath, readyWobbly, 'utf8');
-      await writeFile(badPath, readyWobbly.replace('id: ready-wobbly', 'name: bad-wobbly'), 'utf8');
+      await writeFile(goodPath, readyWobblie, 'utf8');
+      await writeFile(badPath, readyWobblie.replace('id: ready-wobblie', 'name: bad-wobblie'), 'utf8');
 
       const result = await runJson(['validate', '--all', '--dry-run'], directory);
       expect(result.code).toBe(65);
@@ -741,7 +741,7 @@ readiness: adapt-before-use
   });
 });
 
-describe('wobbly CLI catalog and cron helpers', () => {
+describe('wobblie CLI catalog and cron helpers', () => {
   test('unsupported catalog schema versions fail closed', () => {
     const result = parseExamplesCatalogValue({ value: { ...catalog, schemaVersion: 999 }, path: 'examples.json' });
     expect(result.ok).toBe(false);

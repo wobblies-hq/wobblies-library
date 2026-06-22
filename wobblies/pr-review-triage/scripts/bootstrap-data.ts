@@ -1,9 +1,9 @@
 import { spawnSync } from "node:child_process";
 
 const USAGE =
-  "Usage: bun .agents/wobblys/pr-review-triage/scripts/bootstrap-data.ts [--repo <owner/repo>] --pr <number>";
+  "Usage: bun .agents/wobblies/pr-review-triage/scripts/bootstrap-data.ts [--repo <owner/repo>] --pr <number>";
 
-const HELP_TEXT = `Bootstrap baseline data for the pr-review-triage wobbly.
+const HELP_TEXT = `Bootstrap baseline data for the pr-review-triage wobblie.
 
 ${USAGE}
 

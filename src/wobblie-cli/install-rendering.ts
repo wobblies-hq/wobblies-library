@@ -1,30 +1,30 @@
-import { expectedWobblyIdFromPath, toDisplayPath } from './fs-utils';
+import { expectedWobblieIdFromPath, toDisplayPath } from './fs-utils';
 import { knownAdaptationKeys, renderAdaptationTokens, type AdaptationResolution } from './adaptations';
 import { issue } from './issues';
 import type { CatalogClient, CliIssue, InstallFilePlan } from './types';
-import { validateRuntimeWobblyMarkdown } from './validation/runtime';
+import { validateRuntimeWobblieMarkdown } from './validation/runtime';
 import type { CatalogExample } from '../examples/types';
 
-export type RenderedWobblyInstallFile = InstallFilePlan & {
+export type RenderedWobblieInstallFile = InstallFilePlan & {
   content: string;
 };
 
-export async function prepareWobblyInstallFiles(args: {
+export async function prepareWobblieInstallFiles(args: {
   entry: CatalogExample;
   ref: string;
   catalogClient: CatalogClient;
   installRoot: string;
   files: readonly InstallFilePlan[];
   resolution: AdaptationResolution;
-}): Promise<{ ok: true; files: RenderedWobblyInstallFile[] } | { ok: false; errors: CliIssue[] }> {
-  const renderedFiles: RenderedWobblyInstallFile[] = [];
+}): Promise<{ ok: true; files: RenderedWobblieInstallFile[] } | { ok: false; errors: CliIssue[] }> {
+  const renderedFiles: RenderedWobblieInstallFile[] = [];
   const errors: CliIssue[] = [];
   const knownKeys = knownAdaptationKeys(args.entry);
 
   for (const file of args.files) {
     const content =
-      file.kind === 'wobbly'
-        ? args.entry.wobbly.content
+      file.kind === 'wobblie'
+        ? args.entry.wobblie.content
         : await args.catalogClient.readTextFile(args.ref, file.sourcePath);
     const displayPath = toDisplayPath(args.installRoot, file.destinationPath);
     const rendered = renderAdaptationTokens({
@@ -44,19 +44,19 @@ export async function prepareWobblyInstallFiles(args: {
     return { ok: false, errors };
   }
 
-  const wobblyFile = renderedFiles.find((file) => file.kind === 'wobbly');
-  if (!wobblyFile) {
+  const wobblieFile = renderedFiles.find((file) => file.kind === 'wobblie');
+  if (!wobblieFile) {
     return {
       ok: false,
-      errors: [issue({ code: 'INSTALL_PLAN_MISSING_WOBBLY', message: 'Install plan did not include WOBBLY.md.' })],
+      errors: [issue({ code: 'INSTALL_PLAN_MISSING_WOBBLIE', message: 'Install plan did not include WOBBLIE.md.' })],
     };
   }
 
-  const wobblyDisplayPath = toDisplayPath(args.installRoot, wobblyFile.destinationPath);
-  const validation = validateRuntimeWobblyMarkdown({
-    content: wobblyFile.content,
-    path: wobblyDisplayPath,
-    expectedId: expectedWobblyIdFromPath(wobblyDisplayPath),
+  const wobblieDisplayPath = toDisplayPath(args.installRoot, wobblieFile.destinationPath);
+  const validation = validateRuntimeWobblieMarkdown({
+    content: wobblieFile.content,
+    path: wobblieDisplayPath,
+    expectedId: expectedWobblieIdFromPath(wobblieDisplayPath),
   });
   if (!validation.ok) {
     return { ok: false, errors: validation.errors };

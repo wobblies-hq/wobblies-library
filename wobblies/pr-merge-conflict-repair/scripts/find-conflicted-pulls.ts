@@ -1,7 +1,7 @@
 import { spawnSync } from "node:child_process";
 
 const USAGE =
-  "Usage: bun .agents/wobblys/pr-merge-conflict-repair/scripts/find-conflicted-pulls.ts [--repo <owner/repo>] [--unknown-retries N] [--unknown-retry-delay-ms N] [--max-pages N]";
+  "Usage: bun .agents/wobblies/pr-merge-conflict-repair/scripts/find-conflicted-pulls.ts [--repo <owner/repo>] [--unknown-retries N] [--unknown-retry-delay-ms N] [--max-pages N]";
 
 const HELP_TEXT = `Find open non-draft pull requests with merge conflicts.
 

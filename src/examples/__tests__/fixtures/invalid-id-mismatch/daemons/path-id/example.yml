@@ -7,11 +7,11 @@ showOnWebsite: true
 showInDashboard: false
 fit:
   jobsToBeDone:
-    - wobbly-operations
+    - wobblie-operations
   bestFor:
     - Teams validating the examples catalog generator.
   notFor:
-    - Production wobbly deployments without local review.
+    - Production wobblie deployments without local review.
 requirements:
   requiredIntegrations:
     - github
