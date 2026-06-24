@@ -1,0 +1,23 @@
+id: ping
+title: Ping
+status: ready
+summary: Heartbeat Wobblie that runs every 5 minutes to verify the scheduling and activation runtime is healthy.
+readiness: direct-copy
+showOnWebsite: false
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - operate
+  bestFor:
+    - Teams debugging whether the Wobblie runtime is scheduling and activating correctly.
+    - Initial setup verification after installing Lord Wobblie.
+  notFor:
+    - Production monitoring of application health (use a dedicated uptime tool).
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other: []
+specializationIdeas:
+  - Post a Slack message on each ping for visible confirmation.
+  - Track consecutive missed pings and alert after N failures.
