@@ -1,0 +1,30 @@
+name: Generate wobblies.json
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'wobblies/**'
+      - 'scripts/generate-examples.ts'
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - run: bun install --frozen-lockfile
+
+      - run: bun scripts/generate-examples.ts
+
+      - run: cp examples.json wobblies.json
+
+      - name: Commit and push
+        run: |
+          git config user.name "Lord Wobblie"
+          git config user.email "lord@wobbli.es"
+          git add examples.json wobblies.json
+          git diff --cached --quiet || git commit -m "chore: regenerate wobblies.json"
+          git push
