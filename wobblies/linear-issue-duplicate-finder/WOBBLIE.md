@@ -1,6 +1,9 @@
 ---
 id: linear-issue-duplicate-finder
 purpose: Reduce duplicate Linear issue triage by suggesting likely matches without changing issue state.
+integrations:
+  - github
+  - linear
 watch:
   - A Linear issue is created with enough title, description, label, project, or linked GitHub context to search for likely duplicates.
 routines:

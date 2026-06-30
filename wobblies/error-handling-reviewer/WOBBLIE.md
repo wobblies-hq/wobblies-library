@@ -1,6 +1,8 @@
 ---
 id: error-handling-reviewer
 purpose: Reviews PRs for missing error handling patterns like uncaught promises or empty catch blocks.
+integrations:
+  - github
 watch:
   - when a pull request is opened
   - when a pull request is synchronized

@@ -1,6 +1,8 @@
 ---
 id: commit-message-enforcer
 purpose: Validates commit messages follow Conventional Commits and comments with corrections.
+integrations:
+  - github
 watch:
   - when a pull request is opened
   - when a pull request is synchronized

@@ -1,6 +1,8 @@
 ---
 id: security-advisory-watcher
 purpose: Monitors GitHub security advisories for dependencies and opens issues for affected packages.
+integrations:
+  - github
 watch:
   - when a pull request is opened
   - when a pull request is synchronized

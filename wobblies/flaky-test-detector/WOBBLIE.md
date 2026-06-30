@@ -1,6 +1,8 @@
 ---
 id: flaky-test-detector
 purpose: Identifies tests that intermittently fail across recent CI runs and opens issues to fix them.
+integrations:
+  - github
 watch:
   - when a pull request is opened
   - when a pull request is synchronized

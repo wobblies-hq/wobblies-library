@@ -1,6 +1,9 @@
 ---
 id: linear-bug-context-researcher
 purpose: Help teams triage likely Linear bugs by adding concise repository context and next-step guidance to the issue.
+integrations:
+  - github
+  - linear
 watch:
   - A Linear issue is created for a bug or likely regression.
 routines:

@@ -1,6 +1,8 @@
 ---
 id: pr-metadata
 purpose: Keep open non-draft pull request titles and bodies accurate, reviewable, and linked to the right issues.
+integrations:
+  - github
 watch:
   - A GitHub pull request is opened, edited, reopened, or synchronized while open and non-draft.
 routines:

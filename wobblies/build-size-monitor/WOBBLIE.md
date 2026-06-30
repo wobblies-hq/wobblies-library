@@ -1,6 +1,8 @@
 ---
 id: build-size-monitor
 purpose: Tracks bundle size changes across PRs and flags significant increases with detailed breakdowns.
+integrations:
+  - github
 watch:
   - when a pull request is opened
   - when a pull request is synchronized
