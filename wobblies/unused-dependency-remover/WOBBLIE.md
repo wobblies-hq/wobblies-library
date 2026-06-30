@@ -1,6 +1,8 @@
 ---
 id: unused-dependency-remover
 purpose: Scans for unused npm packages and opens PRs to remove them.
+integrations:
+  - github
 watch:
   - when a pull request is opened
   - when a pull request is synchronized

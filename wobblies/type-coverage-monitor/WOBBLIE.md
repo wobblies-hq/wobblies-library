@@ -1,6 +1,8 @@
 ---
 id: type-coverage-monitor
 purpose: Tracks TypeScript strict-mode coverage and flags PRs that introduce any-typed code.
+integrations:
+  - github
 watch:
   - when a pull request is opened
   - when a pull request is synchronized

@@ -1,6 +1,8 @@
 ---
 id: release-drafter
 purpose: Maintains a draft GitHub release with categorized changes from merged pull requests.
+integrations:
+  - github
 watch:
   - when a pull request is opened
   - when a pull request is synchronized

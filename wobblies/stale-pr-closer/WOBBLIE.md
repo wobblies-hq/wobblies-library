@@ -1,6 +1,8 @@
 ---
 id: stale-pr-closer
 purpose: Closes pull requests with no activity for a configurable period after warning the author.
+integrations:
+  - github
 watch:
   - when a pull request is opened
   - when a pull request is synchronized

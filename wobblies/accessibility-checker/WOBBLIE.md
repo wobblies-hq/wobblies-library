@@ -1,6 +1,8 @@
 ---
 id: accessibility-checker
 purpose: Scans frontend code changes for accessibility violations like missing alt text and ARIA attributes.
+integrations:
+  - github
 watch:
   - when a pull request is opened
   - when a pull request is synchronized

@@ -1,6 +1,8 @@
 ---
 id: migration-reviewer
 purpose: Reviews database migration files for safety issues like missing rollbacks or locking operations.
+integrations:
+  - github
 watch:
   - when a pull request is opened
   - when a pull request is synchronized

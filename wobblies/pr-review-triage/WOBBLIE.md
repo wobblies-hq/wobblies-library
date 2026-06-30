@@ -1,6 +1,8 @@
 ---
 id: pr-review-triage
 purpose: Keep non-draft pull request feedback focused on merge-readiness by assessing feedback and resolving items that no longer need reviewer attention.
+integrations:
+  - github
 watch:
   - A GitHub pull request review is submitted on an open non-draft pull request.
   - A top-level GitHub PR comment is created on an open non-draft pull request.

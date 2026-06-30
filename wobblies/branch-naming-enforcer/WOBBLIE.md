@@ -1,6 +1,8 @@
 ---
 id: branch-naming-enforcer
 purpose: Validates branch names follow team conventions and comments with guidance when they don't.
+integrations:
+  - github
 watch:
   - when a pull request is opened
   - when a pull request is synchronized
