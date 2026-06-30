@@ -1,6 +1,8 @@
 ---
 id: pr-merge-conflict-repair
 purpose: Resolve merge conflicts on non-draft pull requests found after repository branch changes.
+integrations:
+  - github
 watch:
   - A GitHub push updates the repository default branch.
 routines:

@@ -1,6 +1,8 @@
 ---
 id: todo-tracker
 purpose: Finds TODO and FIXME comments in code and creates linked issues for tracking.
+integrations:
+  - github
 watch:
   - when a pull request is opened
   - when a pull request is synchronized

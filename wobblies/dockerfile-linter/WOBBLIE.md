@@ -1,6 +1,8 @@
 ---
 id: dockerfile-linter
 purpose: Reviews Dockerfiles in PRs for best practice violations and security issues.
+integrations:
+  - github
 watch:
   - when a pull request is opened
   - when a pull request is synchronized

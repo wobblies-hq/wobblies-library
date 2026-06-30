@@ -1,6 +1,8 @@
 ---
 id: api-breaking-change-detector
 purpose: Detects breaking changes in API endpoints and flags PRs that need versioning.
+integrations:
+  - github
 watch:
   - when a pull request is opened
   - when a pull request is synchronized

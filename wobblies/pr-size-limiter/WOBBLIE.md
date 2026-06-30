@@ -1,6 +1,8 @@
 ---
 id: pr-size-limiter
 purpose: Flags pull requests that exceed a configurable diff size threshold and suggests splitting strategies.
+integrations:
+  - github
 watch:
   - when a pull request is opened
   - when a pull request is synchronized

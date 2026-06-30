@@ -1,6 +1,8 @@
 ---
 id: env-var-documenter
 purpose: Ensures all environment variables referenced in code are documented in the README or .env.example.
+integrations:
+  - github
 watch:
   - when a pull request is opened
   - when a pull request is synchronized

@@ -1,6 +1,8 @@
 ---
 id: codeowner-validator
 purpose: Validates CODEOWNERS file is complete and flags new directories without ownership.
+integrations:
+  - github
 watch:
   - when a pull request is opened
   - when a pull request is synchronized

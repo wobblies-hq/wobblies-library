@@ -1,6 +1,15 @@
 ---
 id: slack-meeting-followup-planner
 purpose: Convert Slack-shared meeting notes into concrete, repo-aware follow-up options without taking action automatically.
+config:
+  slack_channel:
+    type: channel
+    provider: slack
+    label: "Which Slack channel should this wobblie use?"
+    required: true
+integrations:
+  - github
+  - slack
 watch:
   - "A Slack message is posted in `{{adapt.slack_channel}}` with meeting notes, a meeting transcript, an accessible transcript link, or an uploaded note file."
   - "A Slack thread reply is posted in `{{adapt.slack_channel}}` with meeting notes, a meeting transcript, an accessible transcript link, or an uploaded note file."

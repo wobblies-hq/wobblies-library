@@ -1,6 +1,8 @@
 ---
 id: changelog-enforcer
 purpose: Requires a CHANGELOG entry for every pull request that changes application code.
+integrations:
+  - github
 watch:
   - when a pull request is opened
   - when a pull request is synchronized

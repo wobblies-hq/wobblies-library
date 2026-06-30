@@ -1,6 +1,8 @@
 ---
 id: test-coverage-gate
 purpose: Blocks PRs that reduce overall test coverage below the configured threshold.
+integrations:
+  - github
 watch:
   - when a pull request is opened
   - when a pull request is synchronized
