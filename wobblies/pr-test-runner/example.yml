@@ -1,0 +1,36 @@
+id: pr-test-runner
+title: Pull Request Test Runner
+status: ready
+summary: Runs the repository's test suite against each pull request and posts a single pass or fail comment with failing output.
+readiness: adapt-before-use
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - review-with-confidence
+    - operate
+  bestFor:
+    - Repositories with a fast, deterministic test command that installs and runs cleanly in a sandbox.
+    - Teams that want real per-PR test signal without wiring a separate CI job.
+  notFor:
+    - Repositories whose tests require external services, production secrets, or long-running infrastructure.
+    - Teams whose CI already posts equivalent per-PR test status.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other:
+    - A repo-local test command that installs and runs in a sandbox without production secrets.
+adaptations:
+  - key: test_command
+    label: Test command
+    description: The command Wobblie runs to execute the repository's tests, including any install step.
+    required: true
+    suggestions:
+      - pnpm install && pnpm test
+      - npm ci && npm test
+      - make test
+specializationIdeas:
+  - Scope the runner to a single package or workspace in a monorepo.
+  - Add a lint or type-check command alongside tests for a combined gate.
+  - Post results only on failure to reduce comment noise on green pull requests.

@@ -1,0 +1,35 @@
+id: format-autofix-maintainer
+title: Format Autofix Maintainer
+status: ready
+summary: Opens one scheduled formatting-only pull request when the repository's formatter finds drift.
+readiness: adapt-before-use
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - maintain-and-modernize
+  bestFor:
+    - Repositories with a single formatter or lint autofix command that is safe to run repo-wide.
+    - Teams that want consistent formatting without enforcing it on every contributor commit.
+  notFor:
+    - Repositories that enforce formatting in CI or a pre-commit hook already.
+    - Codebases where the formatter is not safe to run across the whole tree.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other:
+    - A repo-local formatter or lint autofix command, plus a package manager and lockfile if dependencies are required.
+adaptations:
+  - key: format_command
+    label: Format command
+    description: The command Wobblie runs to apply formatting or safe lint autofixes across the repository.
+    required: true
+    suggestions:
+      - pnpm format
+      - npm run format
+      - prettier --write .
+specializationIdeas:
+  - Scope the formatter to specific directories or file globs.
+  - Combine formatting with a safe lint autofix pass in the same command.
+  - Change the schedule to match the team's review cadence.

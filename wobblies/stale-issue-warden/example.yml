@@ -1,0 +1,40 @@
+id: stale-issue-warden
+title: Stale Issue Warden
+status: ready
+summary: Warns on inactive issues and closes them only after a grace period, with a per-run cap and label exemptions.
+readiness: adapt-before-use
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - organize
+    - operate
+  bestFor:
+    - Repositories with a large or noisy open-issue backlog that needs regular hygiene.
+    - Teams comfortable with warn-then-close automation bounded by clear thresholds and exemptions.
+  notFor:
+    - Small repositories where every issue is expected to stay open until resolved.
+    - Teams that consider issue closure a human-only decision.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other:
+    - A stale label exists, and exempt labels such as pinned, security, or roadmap are defined.
+adaptations:
+  - key: inactivity_days
+    label: Inactivity window (days)
+    description: Days of no activity before an issue is warned as stale.
+    required: true
+    suggestions:
+      - "60"
+      - "90"
+  - key: grace_days
+    label: Grace period (days)
+    description: Additional days of inactivity after a warning before the issue is closed.
+    required: false
+    default: "14"
+specializationIdeas:
+  - Expand the exempt-label set to match the team's conventions.
+  - Lower the per-run cap during an initial rollout, then raise it once trusted.
+  - Add a friendly close message that invites reopening with new information.
