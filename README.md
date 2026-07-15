@@ -84,7 +84,7 @@ The catalog APIs read the package-root `examples.json`, so they work from the bu
 
 This package is npm-ready as `@wobblies/library` and exposes the `wobblie` binary.
 
-Use it to browse the public examples catalog, safely scaffold catalog examples into `.agents/wobblies/<id>/`, and validate runtime wobblie files:
+Use it to browse the public examples catalog, safely scaffold catalog examples into `.wobblies/<id>/`, and validate runtime wobblie files:
 
 ```bash
 wobblie list
@@ -97,7 +97,7 @@ wobblie pr open js-ts-dependency-upgrades --repo owner/repo --base main --adapt 
 
 wobblie pr list --repo owner/repo
 
-wobblie validate .agents/wobblies/js-ts-dependency-upgrades/WOBBLIE.md
+wobblie validate .wobblies/js-ts-dependency-upgrades/WOBBLIE.md
 
 wobblie validate --all --json
 ```

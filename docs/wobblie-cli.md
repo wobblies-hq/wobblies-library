@@ -89,7 +89,7 @@ wobblie show pr-metadata --json
 Scaffolds a catalog example into the current repository:
 
 ```text
-.agents/wobblies/<example-id>/
+.wobblies/<example-id>/
   WOBBLIE.md
   scripts/      # only catalog-listed scripts
   references/   # only catalog-listed references
@@ -172,7 +172,7 @@ Options:
 - `--ref <sha|branch|tag>` pins the wobblie catalog source ref. It defaults to `master`.
 - `--base <branch>` selects the target PR base branch. If omitted, the GitHub repository default branch is used.
 - `--adapt key=value` and `--adapt-file adaptations.json` use the same structured adaptation rules and precedence as `wobblie add`.
-- `--force` allows the PR commit to write catalog-managed install paths even when the target base already contains `.agents/wobblies/<example-id>/`. Without `--force`, existing target files or directories are reported as collisions and no branch is created.
+- `--force` allows the PR commit to write catalog-managed install paths even when the target base already contains `.wobblies/<example-id>/`. Without `--force`, existing target files or directories are reported as collisions and no branch is created.
 
 The command uses `GITHUB_TOKEN` or `GH_TOKEN` for GitHub API authentication. Node callers can pass an explicit token or injected GitHub client to `createWobblieInstallPullRequest()`.
 
@@ -230,7 +230,7 @@ If a PR body was edited and the hidden marker was removed, `wobblie pr list` sti
 `wobblie validate` validates runtime wobblie files, not catalog metadata.
 
 ```bash
-wobblie validate .agents/wobblies/pr-metadata/WOBBLIE.md
+wobblie validate .wobblies/pr-metadata/WOBBLIE.md
 
 wobblie validate --all
 
@@ -240,7 +240,7 @@ wobblie validate --all --dry-run --json
 `--all` discovers runtime wobblie files under:
 
 ```text
-.agents/wobblies/**/WOBBLIE.md
+.wobblies/**/WOBBLIE.md
 ```
 
 `--dry-run` is accepted for validation as an explicit read-only/no-op flag and is reported in output.
@@ -258,7 +258,7 @@ Validation enforces the canonical runtime `WOBBLIE.md` contract:
 - `schedule`, when present and non-blank, must be a standard five-field cron expression.
 - Cron validation returns field-level reasons such as `cron:minute value out of range`.
 - The Markdown body below frontmatter must be non-empty.
-- Files under `.agents/wobblies/<id>/WOBBLIE.md` must have matching frontmatter `id` and directory slug.
+- Files under `.wobblies/<id>/WOBBLIE.md` must have matching frontmatter `id` and directory slug.
 
 ## Exit codes
 

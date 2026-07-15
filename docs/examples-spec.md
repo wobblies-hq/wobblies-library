@@ -269,7 +269,7 @@ Use `scripts/**` for reusable helper scripts that are part of the example patter
 Examples are reference patterns, not automatically installed wobblies. Catalog consumers install an example into a customer repo under:
 
 ```text
-.agents/wobblies/<id>/
+.wobblies/<id>/
 ```
 
 Customer copies include:
@@ -285,7 +285,7 @@ Customer copies exclude:
 
 `example.yml` is public catalog metadata for discovery, recommendation, docs, dashboard, and adaptation flows. It is not part of the wobblie runtime contract and must not be copied into customer repositories.
 
-Catalog-based consumers must not recursively copy the whole upstream `wobblies/<id>/` directory. They should install from one `examples.json` entry by collecting and validating structured adaptation values, building a full install plan, fetching every listed `scripts[]` and `references[]` support file from the same source ref used to fetch the catalog, rendering `wobblie.content` and all fetched support files, validating the rendered `WOBBLIE.md`, rejecting adaptation errors across all planned files, and only then writing rendered files under `.agents/wobblies/<id>/`.
+Catalog-based consumers must not recursively copy the whole upstream `wobblies/<id>/` directory. They should install from one `examples.json` entry by collecting and validating structured adaptation values, building a full install plan, fetching every listed `scripts[]` and `references[]` support file from the same source ref used to fetch the catalog, rendering `wobblie.content` and all fetched support files, validating the rendered `WOBBLIE.md`, rejecting adaptation errors across all planned files, and only then writing rendered files under `.wobblies/<id>/`.
 
 Before enabling a copied example in a customer repo:
 
@@ -364,7 +364,7 @@ Install consumers should:
 6. Render `wobblie.content` and all fetched support files.
 7. Validate rendered `WOBBLIE.md`.
 8. Reject malformed, unknown, missing, or unresolved `{{adapt.*}}` tokens across all planned files before writing any files.
-9. Write all rendered planned files under `.agents/wobblies/<id>/`, preserving support-file relative paths and modes.
+9. Write all rendered planned files under `.wobblies/<id>/`, preserving support-file relative paths and modes.
 10. Exclude `example.yml` and all unlisted files.
 
 ## Validation expectations

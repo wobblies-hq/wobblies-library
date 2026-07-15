@@ -17,7 +17,7 @@ Consumers should:
 - use `entry.wobblie.content` as the `WOBBLIE.md` source for install or rendering;
 - fetch only the support paths listed in `entry.scripts` and `entry.references`;
 - render and validate the full planned install set before writing any files;
-- preserve package-relative support paths under `.agents/wobblies/<id>/` when installing;
+- preserve package-relative support paths under `.wobblies/<id>/` when installing;
 - treat missing wobblie content or failed support-file fetches as blocking install failures.
 
 Consumers should not:
@@ -59,7 +59,7 @@ await listWobblieInstallPullRequests({ repo: "owner/repo" });
 
 `loadWobblieExamplesCatalog()` reads the package-root `examples.json` in Node, validates the catalog schema, and returns the same catalog shape documented below. `listWobblieExamples()` returns `catalog.examples`, and `getWobblieExample(id)` returns the matching catalog entry or `null`.
 
-For install flows, the package also exports `createWobblieInstallPlan({ entry, installRoot })`. The planner validates source/support paths, maps catalog files into `.agents/wobblies/<id>/`, excludes `example.yml`, and includes Git tree-compatible file modes (`100644`/`100755`) before any writes.
+For install flows, the package also exports `createWobblieInstallPlan({ entry, installRoot })`. The planner validates source/support paths, maps catalog files into `.wobblies/<id>/`, excludes `example.yml`, and includes Git tree-compatible file modes (`100644`/`100755`) before any writes.
 
 Install-PR consumers can use `createWobblieInstallPullRequest()` to render the same install plan into a GitHub pull request. The API writes via GitHub tree/commit/ref/PR REST APIs, uses deterministic `wobblie/wobblie-installs/<example-id>` branches, and stores a hidden `wobblie-wobblie-install-v1` marker in the PR body for reconciliation. Marker and result metadata include adaptation key names only; callers must not log or persist raw adaptation values unless their own product flow explicitly requires it.
 
@@ -174,7 +174,7 @@ Install consumers should merge values deterministically in this order: optional 
 Install consumers should copy from one catalog entry into:
 
 ```text
-.agents/wobblies/<id>/
+.wobblies/<id>/
 ```
 
 Recommended flow:
@@ -190,7 +190,7 @@ Recommended flow:
 9. Render `entry.wobblie.content` and all fetched support files with the collected adaptation values.
 10. Validate the rendered runtime wobblie.
 11. Reject malformed, unknown, missing, or still-unresolved `{{adapt.*}}` tokens across all planned files.
-12. Only after all fetch, render, and validation work succeeds, write all rendered planned files under `.agents/wobblies/<id>/` using the same package-relative paths.
+12. Only after all fetch, render, and validation work succeeds, write all rendered planned files under `.wobblies/<id>/` using the same package-relative paths.
 13. Apply planned file modes when the write surface supports them (`100644` for `WOBBLIE.md`/references, `100755` for scripts).
 14. Exclude `example.yml` and all unlisted upstream files.
 15. Run the consumer's preflight, collision, review, and rollout checks before enabling the wobblie.
@@ -199,7 +199,7 @@ Path mapping example:
 
 ```text
 source:      wobblies/github-activity-digest/references/digest-template.md
-installed:   .agents/wobblies/github-activity-digest/references/digest-template.md
+installed:   .wobblies/github-activity-digest/references/digest-template.md
 ```
 
 TypeScript-shaped pseudocode:
@@ -219,7 +219,7 @@ if (!entry?.wobblie?.content) {
 const plannedFiles = [
   {
     sourcePath: `${entry.source.directory}/WOBBLIE.md`,
-    destinationPath: `.agents/wobblies/${entry.id}/WOBBLIE.md`,
+    destinationPath: `.wobblies/${entry.id}/WOBBLIE.md`,
     mode: "100644",
     content: entry.wobblie.content,
   },
@@ -229,7 +229,7 @@ for (const supportPath of [...entry.scripts, ...entry.references]) {
   const sourcePath = `${entry.source.directory}/${supportPath}`;
   plannedFiles.push({
     sourcePath,
-    destinationPath: `.agents/wobblies/${entry.id}/${supportPath}`,
+    destinationPath: `.wobblies/${entry.id}/${supportPath}`,
     mode: supportPath.startsWith("scripts/") ? "100755" : "100644",
     content: await fetchText("universe-backwards/wobblies-library", ref, sourcePath),
   });
@@ -305,7 +305,7 @@ Before shipping a catalog integration, verify that it:
 - renders `{{adapt.key}}` tokens in `WOBBLIE.md`, scripts, and references before writing any file;
 - rejects malformed, unknown, missing, or unresolved adaptation tokens across all planned files;
 - validates rendered `WOBBLIE.md` before writing files;
-- writes rendered planned files under `.agents/wobblies/<id>/` while preserving package-relative paths;
+- writes rendered planned files under `.wobblies/<id>/` while preserving package-relative paths;
 - excludes `example.yml` and unlisted files;
 - handles support script executable mode intentionally;
 - preserves existing collision, preflight, and human-review gates;

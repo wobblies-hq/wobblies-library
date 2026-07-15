@@ -333,10 +333,10 @@ describe('wobblie CLI catalog commands', () => {
       expect(result.stdout).not.toContain('from-cli');
       expect(result.stdout).not.toContain('from-file');
       expect(result.stdout).not.toContain('from-default');
-      await expect(readFile(path.join(directory, '.agents/wobblies/templated-wobblie/WOBBLIE.md'), 'utf8')).resolves.toContain('Keep from-cli healthy');
-      await expect(readFile(path.join(directory, '.agents/wobblies/templated-wobblie/scripts/render.sh'), 'utf8')).resolves.toContain('echo from-cli from-cli');
-      await expect(readFile(path.join(directory, '.agents/wobblies/templated-wobblie/references/render.md'), 'utf8')).resolves.toContain('Optional: from-cli');
-      const scriptMode = (await stat(path.join(directory, '.agents/wobblies/templated-wobblie/scripts/render.sh'))).mode;
+      await expect(readFile(path.join(directory, '.wobblies/templated-wobblie/WOBBLIE.md'), 'utf8')).resolves.toContain('Keep from-cli healthy');
+      await expect(readFile(path.join(directory, '.wobblies/templated-wobblie/scripts/render.sh'), 'utf8')).resolves.toContain('echo from-cli from-cli');
+      await expect(readFile(path.join(directory, '.wobblies/templated-wobblie/references/render.md'), 'utf8')).resolves.toContain('Optional: from-cli');
+      const scriptMode = (await stat(path.join(directory, '.wobblies/templated-wobblie/scripts/render.sh'))).mode;
       expect(scriptMode & 0o777).toBe(0o755);
     });
   });
@@ -356,7 +356,7 @@ describe('wobblie CLI catalog commands', () => {
       expect(result.code).toBe(0);
       expect(result.json.data).toMatchObject({ dryRun: true, filesWritten: [] });
       expect(result.json.data.adaptationsApplied).toEqual(['optional_value', 'required_value']);
-      await expect(readFile(path.join(directory, '.agents/wobblies/templated-wobblie/WOBBLIE.md'), 'utf8')).rejects.toThrow();
+      await expect(readFile(path.join(directory, '.wobblies/templated-wobblie/WOBBLIE.md'), 'utf8')).rejects.toThrow();
     });
   });
 
@@ -468,9 +468,9 @@ describe('wobblie CLI catalog commands', () => {
 
       expect(result.code).toBe(65);
       expect(result.json.errors).toContainEqual(expect.objectContaining({ code: 'UNKNOWN_ADAPTATION_TOKEN', field: 'unknown_key' }));
-      await expect(readFile(path.join(directory, '.agents/wobblies/templated-wobblie/WOBBLIE.md'), 'utf8')).rejects.toThrow();
-      await expect(readFile(path.join(directory, '.agents/wobblies/templated-wobblie/scripts/render.sh'), 'utf8')).rejects.toThrow();
-      await expect(readFile(path.join(directory, '.agents/wobblies/templated-wobblie/references/render.md'), 'utf8')).rejects.toThrow();
+      await expect(readFile(path.join(directory, '.wobblies/templated-wobblie/WOBBLIE.md'), 'utf8')).rejects.toThrow();
+      await expect(readFile(path.join(directory, '.wobblies/templated-wobblie/scripts/render.sh'), 'utf8')).rejects.toThrow();
+      await expect(readFile(path.join(directory, '.wobblies/templated-wobblie/references/render.md'), 'utf8')).rejects.toThrow();
     });
   });
 
@@ -500,7 +500,7 @@ describe('wobblie CLI catalog commands', () => {
 
       expect(result.code).toBe(65);
       expect(result.json.errors).toContainEqual(expect.objectContaining({ code: 'FRONTMATTER_ROUTINES_EMPTY' }));
-      await expect(readFile(path.join(directory, '.agents/wobblies/templated-wobblie/WOBBLIE.md'), 'utf8')).rejects.toThrow();
+      await expect(readFile(path.join(directory, '.wobblies/templated-wobblie/WOBBLIE.md'), 'utf8')).rejects.toThrow();
     });
   });
 
@@ -517,24 +517,24 @@ describe('wobblie CLI catalog commands', () => {
       expect(result.json.data.filesPlanned).toEqual([
         {
           sourcePath: 'wobblies/ready-wobblie/WOBBLIE.md',
-          destinationPath: '.agents/wobblies/ready-wobblie/WOBBLIE.md',
+          destinationPath: '.wobblies/ready-wobblie/WOBBLIE.md',
           kind: 'wobblie',
           mode: '100644',
         },
         {
           sourcePath: 'wobblies/ready-wobblie/scripts/run.sh',
-          destinationPath: '.agents/wobblies/ready-wobblie/scripts/run.sh',
+          destinationPath: '.wobblies/ready-wobblie/scripts/run.sh',
           kind: 'script',
           mode: '100755',
         },
         {
           sourcePath: 'wobblies/ready-wobblie/references/guide.md',
-          destinationPath: '.agents/wobblies/ready-wobblie/references/guide.md',
+          destinationPath: '.wobblies/ready-wobblie/references/guide.md',
           kind: 'reference',
           mode: '100644',
         },
       ]);
-      await expect(readFile(path.join(directory, '.agents/wobblies/ready-wobblie/WOBBLIE.md'), 'utf8')).rejects.toThrow();
+      await expect(readFile(path.join(directory, '.wobblies/ready-wobblie/WOBBLIE.md'), 'utf8')).rejects.toThrow();
     });
   });
 
@@ -545,16 +545,16 @@ describe('wobblie CLI catalog commands', () => {
       expect(result.code).toBe(0);
       expect(result.json.command).toBe('install');
       expect(result.json.data.filesWritten).toEqual([
-        '.agents/wobblies/ready-wobblie/WOBBLIE.md',
-        '.agents/wobblies/ready-wobblie/scripts/run.sh',
-        '.agents/wobblies/ready-wobblie/references/guide.md',
+        '.wobblies/ready-wobblie/WOBBLIE.md',
+        '.wobblies/ready-wobblie/scripts/run.sh',
+        '.wobblies/ready-wobblie/references/guide.md',
       ]);
-      await expect(readFile(path.join(directory, '.agents/wobblies/ready-wobblie/example.yml'), 'utf8')).rejects.toThrow();
-      await expect(readFile(path.join(directory, '.agents/wobblies/ready-wobblie/WOBBLIE.md'), 'utf8')).resolves.toContain('id: ready-wobblie');
-      await expect(readFile(path.join(directory, '.agents/wobblies/ready-wobblie/scripts/run.sh'), 'utf8')).resolves.toContain('echo ready');
-      const wobblieMode = (await stat(path.join(directory, '.agents/wobblies/ready-wobblie/WOBBLIE.md'))).mode;
-      const scriptMode = (await stat(path.join(directory, '.agents/wobblies/ready-wobblie/scripts/run.sh'))).mode;
-      const referenceMode = (await stat(path.join(directory, '.agents/wobblies/ready-wobblie/references/guide.md'))).mode;
+      await expect(readFile(path.join(directory, '.wobblies/ready-wobblie/example.yml'), 'utf8')).rejects.toThrow();
+      await expect(readFile(path.join(directory, '.wobblies/ready-wobblie/WOBBLIE.md'), 'utf8')).resolves.toContain('id: ready-wobblie');
+      await expect(readFile(path.join(directory, '.wobblies/ready-wobblie/scripts/run.sh'), 'utf8')).resolves.toContain('echo ready');
+      const wobblieMode = (await stat(path.join(directory, '.wobblies/ready-wobblie/WOBBLIE.md'))).mode;
+      const scriptMode = (await stat(path.join(directory, '.wobblies/ready-wobblie/scripts/run.sh'))).mode;
+      const referenceMode = (await stat(path.join(directory, '.wobblies/ready-wobblie/references/guide.md'))).mode;
       expect(wobblieMode & 0o777).toBe(0o644);
       expect(scriptMode & 0o777).toBe(0o755);
       expect(referenceMode & 0o777).toBe(0o644);
@@ -563,21 +563,21 @@ describe('wobblie CLI catalog commands', () => {
 
   test('add refuses collisions unless forced', async () => {
     await withTempDir(async (directory) => {
-      await mkdir(path.join(directory, '.agents/wobblies/ready-wobblie'), { recursive: true });
-      await writeFile(path.join(directory, '.agents/wobblies/ready-wobblie/WOBBLIE.md'), 'existing', 'utf8');
+      await mkdir(path.join(directory, '.wobblies/ready-wobblie'), { recursive: true });
+      await writeFile(path.join(directory, '.wobblies/ready-wobblie/WOBBLIE.md'), 'existing', 'utf8');
 
       const blocked = await runJson(['add', 'ready-wobblie'], directory);
       expect(blocked.code).toBe(65);
       expect(blocked.json).toMatchObject({ ok: false, exitCode: 65 });
       expect(blocked.json.data.collisions).toEqual([
-        '.agents/wobblies/ready-wobblie/',
-        '.agents/wobblies/ready-wobblie/WOBBLIE.md',
+        '.wobblies/ready-wobblie/',
+        '.wobblies/ready-wobblie/WOBBLIE.md',
       ]);
 
       const forced = await runJson(['add', 'ready-wobblie', '--force'], directory);
       expect(forced.code).toBe(0);
       expect(forced.json.data.overwritten).toBe(true);
-      await expect(readFile(path.join(directory, '.agents/wobblies/ready-wobblie/WOBBLIE.md'), 'utf8')).resolves.toContain('id: ready-wobblie');
+      await expect(readFile(path.join(directory, '.wobblies/ready-wobblie/WOBBLIE.md'), 'utf8')).resolves.toContain('id: ready-wobblie');
     });
   });
 
@@ -591,23 +591,23 @@ describe('wobblie CLI catalog commands', () => {
         throw new TypeError('Expected install plan to be valid.');
       }
 
-      expect(result.plan.destinationDirectory).toBe(path.join(directory, '.agents/wobblies/ready-wobblie'));
+      expect(result.plan.destinationDirectory).toBe(path.join(directory, '.wobblies/ready-wobblie'));
       expect(result.plan.files).toEqual([
         {
           sourcePath: 'wobblies/ready-wobblie/WOBBLIE.md',
-          destinationPath: path.join(directory, '.agents/wobblies/ready-wobblie/WOBBLIE.md'),
+          destinationPath: path.join(directory, '.wobblies/ready-wobblie/WOBBLIE.md'),
           kind: 'wobblie',
           mode: '100644',
         },
         {
           sourcePath: 'wobblies/ready-wobblie/scripts/run.sh',
-          destinationPath: path.join(directory, '.agents/wobblies/ready-wobblie/scripts/run.sh'),
+          destinationPath: path.join(directory, '.wobblies/ready-wobblie/scripts/run.sh'),
           kind: 'script',
           mode: '100755',
         },
         {
           sourcePath: 'wobblies/ready-wobblie/references/guide.md',
-          destinationPath: path.join(directory, '.agents/wobblies/ready-wobblie/references/guide.md'),
+          destinationPath: path.join(directory, '.wobblies/ready-wobblie/references/guide.md'),
           kind: 'reference',
           mode: '100644',
         },
@@ -664,7 +664,7 @@ describe('wobblie CLI catalog commands', () => {
 
       const allowed = await runJson(['add', 'deprecated-wobblie', '--allow-deprecated'], directory);
       expect(allowed.code).toBe(0);
-      await expect(readFile(path.join(directory, '.agents/wobblies/deprecated-wobblie/WOBBLIE.md'), 'utf8')).resolves.toContain('Deprecated wobblie');
+      await expect(readFile(path.join(directory, '.wobblies/deprecated-wobblie/WOBBLIE.md'), 'utf8')).resolves.toContain('Deprecated wobblie');
     });
   });
 });
@@ -672,7 +672,7 @@ describe('wobblie CLI catalog commands', () => {
 describe('wobblie CLI validation', () => {
   test('validate reports cron, unknown key, body, and slug errors with exit 65', async () => {
     await withTempDir(async (directory) => {
-      const wobbliePath = path.join(directory, '.agents/wobblies/path-id/WOBBLIE.md');
+      const wobbliePath = path.join(directory, '.wobblies/path-id/WOBBLIE.md');
       await mkdir(path.dirname(wobbliePath), { recursive: true });
       await writeFile(
         wobbliePath,
@@ -701,7 +701,7 @@ readiness: adapt-before-use
 
   test('validate enforces directory slug consistency for runtime wobblie files', async () => {
     await withTempDir(async (directory) => {
-      const wobbliePath = path.join(directory, '.agents/wobblies/path-id/WOBBLIE.md');
+      const wobbliePath = path.join(directory, '.wobblies/path-id/WOBBLIE.md');
       await mkdir(path.dirname(wobbliePath), { recursive: true });
       await writeFile(
         wobbliePath,
@@ -717,8 +717,8 @@ readiness: adapt-before-use
 
   test('validate --all discovers runtime WOBBLIE.md files and supports dry-run no-op output', async () => {
     await withTempDir(async (directory) => {
-      const goodPath = path.join(directory, '.agents/wobblies/ready-wobblie/WOBBLIE.md');
-      const badPath = path.join(directory, '.agents/wobblies/bad-wobblie/WOBBLIE.md');
+      const goodPath = path.join(directory, '.wobblies/ready-wobblie/WOBBLIE.md');
+      const badPath = path.join(directory, '.wobblies/bad-wobblie/WOBBLIE.md');
       await mkdir(path.dirname(goodPath), { recursive: true });
       await mkdir(path.dirname(badPath), { recursive: true });
       await writeFile(goodPath, readyWobblie, 'utf8');
