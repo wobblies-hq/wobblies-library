@@ -1,0 +1,28 @@
+id: first-response-triage
+title: Issue First-Response Triage
+status: ready
+summary: Gives every new issue a fast first response by classifying it, applying a type label, and requesting missing bug details.
+readiness: direct-copy
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - organize
+    - review-with-confidence
+  bestFor:
+    - Repositories that receive external or cross-team issues and want a consistent first touch.
+    - Teams with an issue type label taxonomy such as bug, enhancement, and question.
+  notFor:
+    - Private repositories where every issue is already triaged by a human immediately.
+    - Teams without any issue label taxonomy.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other:
+    - Issue type labels such as bug, enhancement, or question already exist.
+adaptations: []
+specializationIdeas:
+  - Tailor the requested bug details to the project's issue template fields.
+  - Add area labels alongside the type label.
+  - Adjust the acknowledgement tone to match the project's contributor guidelines.

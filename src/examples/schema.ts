@@ -166,6 +166,29 @@ const wobblieFrontmatterSchema = z
     routines: z.array(nonEmptyStringSchema).min(1),
     deny: z.array(nonEmptyStringSchema).min(1).optional(),
     schedule: fiveFieldCronSchema.optional(),
+    // Optional runtime frontmatter fields understood by the engine's WOBBLIE.md
+    // parser. Kept in sync with packages/core agent-parser so authored files
+    // that declare real runtime behavior validate instead of failing on unknown
+    // keys. Catalog-presentation metadata (readiness, showOnWebsite, title, …)
+    // deliberately stays out — it belongs in example.yml.
+    integrations: z.array(nonEmptyStringSchema).optional(),
+    approve: z.array(nonEmptyStringSchema).optional(),
+    config: z.record(z.unknown()).optional(),
+    execution: z.enum(['api-only', 'sandbox']).optional(),
+    digest: z.string().optional(),
+    model: nonEmptyStringSchema.optional(),
+    dry_run: z.boolean().optional(),
+    max_activations_per_day: z.number().int().positive().optional(),
+    max_steps: z.number().int().positive().optional(),
+    verify: z
+      .object({
+        setup: z.string().optional(),
+        test: z.string().optional(),
+        lint: z.string().optional(),
+        timeoutMinutes: z.number().optional(),
+      })
+      .passthrough()
+      .optional(),
   })
   .strict()
   .superRefine((value, context) => {

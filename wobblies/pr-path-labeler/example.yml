@@ -1,0 +1,27 @@
+id: pr-path-labeler
+title: PR Path Labeler
+status: ready
+summary: Applies the repository's existing area or component labels to pull requests based on the files they change.
+readiness: direct-copy
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - organize
+  bestFor:
+    - Repositories with an established area or component label taxonomy that maps to top-level directories.
+    - Teams that route review or triage by label and want consistent tagging without manual effort.
+  notFor:
+    - Repositories without a stable label taxonomy.
+    - Teams that intentionally keep pull requests unlabeled.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other:
+    - An existing area or component label taxonomy in the repository.
+adaptations: []
+specializationIdeas:
+  - Maintain an explicit path-to-label mapping for areas that do not follow directory names.
+  - Add size labels derived from the pull request diff.
+  - Restrict labeling to a subset of directories that matter most for routing.

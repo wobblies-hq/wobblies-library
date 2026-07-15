@@ -1,0 +1,27 @@
+id: secret-leak-guard
+title: Secret Leak Guard
+status: ready
+summary: Flags likely committed secrets or credentials in a pull request diff, with the value redacted, before they merge.
+readiness: direct-copy
+showOnWebsite: true
+showInDashboard: true
+fit:
+  jobsToBeDone:
+    - review-with-confidence
+    - operate
+  bestFor:
+    - Repositories that want a fast, reviewable backstop against accidental secret commits.
+    - Teams without a dedicated secret-scanning tool already gating pull requests.
+  notFor:
+    - Repositories that already enforce push protection or a dedicated secret scanner on every change.
+    - Teams that require blocking enforcement rather than an advisory comment.
+requirements:
+  requiredIntegrations:
+    - github
+  optionalIntegrations: []
+  other: []
+adaptations: []
+specializationIdeas:
+  - Tune the detection to the credential formats the organization actually uses.
+  - Add an allowlist for known test fixtures or example values.
+  - Escalate high-confidence findings by also opening a tracking issue.
